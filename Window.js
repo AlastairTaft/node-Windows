@@ -4,8 +4,11 @@ var ReferenceType = require('./ReferenceType'),
 var windows = new WeakMap,
     handles = {};
 
-module.exports = Window;
+var user32 = require('bindings').user32;
 
+
+
+module.exports = Window;
 
 function Window(hwnd){
   var window = new WindowReference(new WindowHandle(hwnd));
@@ -14,24 +17,34 @@ function Window(hwnd){
   return window;
 }
 
+
+
 var GWL_STYLE = -16,
     GWL_EXSTYLE = -20;
 
-function getWindowStyle(hwnd, index){
+function getStyle(hwnd, index){
   return user32.GetWindowLong(hwnd, GWL_STYLE, index);
 }
 
-function setWindowStyle(hwnd, index, value){
+function setStyle(hwnd, index, value){
   user32.SetWindowLong(hwnd, GWL_STYLE, index, value);
 }
 
-function getWindowExStyle(hwnd, index){
+function getExStyle(hwnd, index){
   return user32.GetWindowLong(hwnd, GWL_EXSTYLE, index);
 }
 
-function setWindowExStyle(hwnd, index, value){
+function setExStyle(hwnd, index, value){
   user32.SetWindowLong(hwnd, GWL_EXSTYLE, index, value);
 }
+
+function getTitle(hwnd, buffer){
+  buffer = Buffer.isBuffer(buffer) ? buffer : new Buffer(160);
+  buffer.fill();
+  user32.GetWindowTextA(hwnd, buffer, 160);
+  return buffer.readCString();
+}
+
 
 
 var Styles = new BitfieldType({
@@ -118,6 +131,56 @@ WindowHandle.prototype = {
   }
 };
 
+
+
+
 var WindowReference = new ReferenceType('Window', ReferenceType.listAccessors(WindowHandle.prototype));
 
 WindowReference.prototype = Window.prototype;
+
+
+
+
+
+
+function enumerateWindows(){
+  var out = [],
+      buff = new Buffer(160);
+
+  user32.EnumWindows(WindowEnumProc(function(hwnd, lparam){
+    if (isAltTabWindow(hwnd)) {
+      user32.GetWindowTextA(hwnd, buff, 160);
+      out.push({ hwnd: hwnd, title: buff.readCString() });
+    }
+    return 1;
+  }), NULL);
+
+  return out;
+}
+
+
+
+function isAltTabWindow(hwnd){
+  if (!user32.IsWindowVisible(hwnd)) {
+    return false;
+  }
+  var hwndWalk = NULL;
+  var hwndTry = user32.GetAncestor(hwnd, GA.ROOT_OWNER);
+
+  while (hwndTry != hwndWalk) {
+    hwndWalk = hwndTry;
+    hwndTry = user32.GetLastActivePopup(hwndWalk);
+    if (user32.IsWindowVisible(hwndTry)) {
+      break;
+    }
+  }
+  if (hwndWalk != hwnd) {
+    return false;
+  }
+
+  var ti = new TITLEBARINFO;
+  ti.size = TITLEBARINFO.size;
+  user32.GetTitleBarInfo(hwnd, ti.ref());
+  return !(ti.state & STATE_SYSTEM.INVISIBLE);
+}
+
