@@ -38,8 +38,8 @@ function BitfieldType(opts){
     set(o._target, o._value);
   }
 
-  function lister(o){
-    if (opts.showFalse !== false) {
+  function lister(o, showFalse){
+    if (showFalse !== false) {
       return list;
     } else {
       var val = get(o._target);
@@ -64,12 +64,12 @@ function BitfieldType(opts){
       return lister(this).concat(Object.getOwnPropertyNames(this.facade));
     },
     function keys(){
-      return lister(this).concat(Object.keys(this.facade));
+      return lister(this, false).concat(Object.keys(this.facade));
     },
     function enumerate(){
       var i=0, k=[];
       for (k[i++] in this.facade);
-      return lister(this).concat(k);
+      return lister(this, false).concat(k);
     },
     function has(key){
       return hasOwnProperty.call(fields, key) || hasOwnProperty.call(this.facade, key) || key in this.facade;
@@ -88,7 +88,7 @@ function BitfieldType(opts){
     },
     function getOwnPropertyDescriptor(key){
       if (hasOwnProperty.call(fields, key)) {
-        reuseDesc.value = getter(this, key);
+        reuseDesc.enumerable = reuseDesc.value = getter(this, key);
         return reuseDesc;
       } else {
         var desc = Object.getOwnPropertyDescriptor(this.facade, key);

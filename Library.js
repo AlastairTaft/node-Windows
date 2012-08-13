@@ -17,9 +17,19 @@ function Library(libname, functions){
   });
 
   Object.keys(Object(functions)).forEach(function(name){
-    this.addFunction(name, functions[name][0], functions[name][1], functions[name][2]);
+    this.addLazyFunction(name, functions[name][0], functions[name][1], functions[name][2]);
   }, this);
 }
+
+Library.prototype.addLazyFunction = function addLazyFunction(name, returnType, options, params){
+  return Object.defineProperty(this, name, {
+    configurable: true,
+    enumerable: true,
+    get: function(){
+      return this.addFunction(name, returnType, options, params);
+    }
+  });
+};
 
 Library.prototype.addFunction = function addFunction(name, returnType, options, params){
   if (!params) {
@@ -36,11 +46,17 @@ Library.prototype.addFunction = function addFunction(name, returnType, options, 
   }
 
   if (options.varargs) {
-    this[name] = new VariadicForeignFunction(fnPtr, returnType, paramTypes, options.abi);
+    var func = new VariadicForeignFunction(fnPtr, returnType, paramTypes, options.abi);
   } else {
     var ff = new ForeignFunction(fnPtr, returnType, paramTypes, options.abi);
-    this[name] = options.async ? ff.async : ff;
+    var func = options.async ? ff.async : ff;
   }
+  Object.defineProperty(this, name, {
+    configurable: true,
+    enumerable: true,
+    writable: false,
+    value: func
+  });
   return this[name];
 };
 

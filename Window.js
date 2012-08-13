@@ -4,7 +4,15 @@ var ReferenceType = require('./ReferenceType'),
 var windows = new WeakMap,
     handles = {};
 
-var user32 = require('bindings').user32;
+var bindings = require('./bindings'),
+    NULL = bindings.NULL;
+
+var user32 = bindings('user32'),
+    WNDENUMPROC = bindings('WNDENUMPROC'),
+    TITLEBARINFO = bindings('TITLEBARINFO'),
+    GA = bindings('GA'),
+    RECT = bindings('RECT'),
+    STATE_SYSTEM = bindings('STATE_SYSTEM');
 
 
 
@@ -17,39 +25,46 @@ function Window(hwnd){
   return window;
 }
 
+Window.prototype.isAltTabWindow = function isAltTabWindow(hwnd){
+  var hwnd = ReferenceType.unwrap(this)._handle;
+  if (!user32.IsWindowVisible(hwnd)) {
+    return false;
+  }
+  var hwndWalk = NULL;
+  var hwndTry = user32.GetAncestor(hwnd, GA.ROOT_OWNER);
+
+  while (hwndTry != hwndWalk) {
+    hwndWalk = hwndTry;
+    hwndTry = user32.GetLastActivePopup(hwndWalk);
+    if (user32.IsWindowVisible(hwndTry)) {
+      break;
+    }
+  }
+  if (hwndWalk != hwnd) {
+    return false;
+  }
+  return true;
+
+  var ti = new TITLEBARINFO;
+  ti.size = TITLEBARINFO.size;
+  user32.GetTitleBarInfo(hwnd, ti.ref());
+  return !(ti.state & STATE_SYSTEM.INVISIBLE);
+};
+
 
 
 var GWL_STYLE = -16,
     GWL_EXSTYLE = -20;
 
-function getStyle(hwnd, index){
-  return user32.GetWindowLong(hwnd, GWL_STYLE, index);
-}
-
-function setStyle(hwnd, index, value){
-  user32.SetWindowLong(hwnd, GWL_STYLE, index, value);
-}
-
-function getExStyle(hwnd, index){
-  return user32.GetWindowLong(hwnd, GWL_EXSTYLE, index);
-}
-
-function setExStyle(hwnd, index, value){
-  user32.SetWindowLong(hwnd, GWL_EXSTYLE, index, value);
-}
-
-function getTitle(hwnd, buffer){
-  buffer = Buffer.isBuffer(buffer) ? buffer : new Buffer(160);
-  buffer.fill();
-  user32.GetWindowTextA(hwnd, buffer, 160);
-  return buffer.readCString();
-}
-
 
 
 var Styles = new BitfieldType({
-  get: getWindowStyle,
-  set: setWindowStyle,
+  get: function(hwnd){
+    return user32.GetWindowLongA(hwnd, GWL_STYLE);
+  },
+  set: function(hwnd, value){
+    user32.SetWindowLongA(hwnd, GWL_STYLE, value);
+  },
   cooldown: 1000,
   fields: {
     overlapped       : 0x00000000,
@@ -76,8 +91,12 @@ var Styles = new BitfieldType({
 });
 
 var ExtendedStyles = new BitfieldType({
-  get: getWindowExStyle,
-  set: setWindowExStyle,
+  get: function(hwnd){
+    return user32.GetWindowLongA(hwnd, GWL_EXSTYLE);
+  },
+  set: function(hwnd, value){
+    user32.SetWindowLongA(hwnd, GWL_EXSTYLE, value);
+  },
   cooldown: 1000,
   fields: {
     left             : 0x00000000,
@@ -106,6 +125,24 @@ var ExtendedStyles = new BitfieldType({
   }
 });
 
+  //GetClientRect:        [ BOOL, { hWnd: HWND, lpRect: LPRECT }],
+  //GetWindowRect:        [ BOOL, { hWnd: HWND, lpRect: LPRECT }],
+  //AdjustWindowRect:     [ BOOL, { lpRect: LPRECT, dwStyle: DWORD, bMenu: BOOL }],
+  //AdjustWindowRectEx:   [ BOOL, { lpRect: LPRECT, dwStyle: DWORD, bMenu: BOOL, dwExStyle: DWORD }],
+
+
+
+
+function Rect(rect){
+  rect = rect || new RECT;
+  return new RectReference(rect);
+}
+var RectReference = new ReferenceType('Rect', ReferenceType.listAccessors(RECT.prototype));
+
+RectReference.prototype = Rect.prototype;
+
+var titleBuffer = new Buffer(160);
+
 
 function WindowHandle(hwnd){
   if (hwnd in handles) {
@@ -121,17 +158,27 @@ function WindowHandle(hwnd){
 WindowHandle.prototype = {
   constructor: WindowHandle,
   get title(){
-    return bindings.getWindowTitle(this._handle);
+    titleBuffer.fill();
+    user32.GetWindowTextA(this._handle, titleBuffer, 160);
+    return titleBuffer.readCString();
   },
   set title(title){
-    return bindings.setWindowTitle(this._handle, title);
+    titleBuffer.writeCString(title);
+    user32.SetWindowTextA(this._handle, titleBuffer);
   },
-  get filename(){
-    return bindings.getModuleFilename(this._handle);
-  }
+  get rect(){
+    if (!this._rect) {
+      var rect = new RECT;
+      this._rect = new Rect(rect);
+      this._rectPtr = rect.ref();
+    }
+    user32.GetWindowRect(this._handle, this._rectPtr);
+    return this._rect;
+  },
+  // get filename(){
+  //   return bindings.getModuleFilename(this._handle);
+  // }
 };
-
-
 
 
 var WindowReference = new ReferenceType('Window', ReferenceType.listAccessors(WindowHandle.prototype));
@@ -139,48 +186,17 @@ var WindowReference = new ReferenceType('Window', ReferenceType.listAccessors(Wi
 WindowReference.prototype = Window.prototype;
 
 
+Window.enumerate = function enumerate(){
+  var out = [];
 
-
-
-
-function enumerateWindows(){
-  var out = [],
-      buff = new Buffer(160);
-
-  user32.EnumWindows(WindowEnumProc(function(hwnd, lparam){
-    if (isAltTabWindow(hwnd)) {
-      user32.GetWindowTextA(hwnd, buff, 160);
-      out.push({ hwnd: hwnd, title: buff.readCString() });
+  user32.EnumWindows(WNDENUMPROC(function(hwnd, lparam){
+    var window = new Window(hwnd);
+    if (window.title && window.isAltTabWindow()) {
+      out.push(window);
     }
     return 1;
   }), NULL);
 
   return out;
-}
-
-
-
-function isAltTabWindow(hwnd){
-  if (!user32.IsWindowVisible(hwnd)) {
-    return false;
-  }
-  var hwndWalk = NULL;
-  var hwndTry = user32.GetAncestor(hwnd, GA.ROOT_OWNER);
-
-  while (hwndTry != hwndWalk) {
-    hwndWalk = hwndTry;
-    hwndTry = user32.GetLastActivePopup(hwndWalk);
-    if (user32.IsWindowVisible(hwndTry)) {
-      break;
-    }
-  }
-  if (hwndWalk != hwnd) {
-    return false;
-  }
-
-  var ti = new TITLEBARINFO;
-  ti.size = TITLEBARINFO.size;
-  user32.GetTitleBarInfo(hwnd, ti.ref());
-  return !(ti.state & STATE_SYSTEM.INVISIBLE);
 }
 
