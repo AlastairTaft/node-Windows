@@ -112,15 +112,23 @@ decorate(ReferenceType.prototype, [
     return true;
   },
   function getOwnPropertyDescriptor(key){
+    var desc;
     if (key in this.refKeys) {
-      var desc = Object.getOwnPropertyDescriptor(this.reference, this.refKeys[key]);
+      desc = Object.getOwnPropertyDescriptor(this.reference, this.refKeys[key]) || {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        value: this.reference[this.refKeys[key]]
+      };
     } else if (key in this.accessors) {
-      return {
-        enumerable: true, configurable: true, writable: true,
+      desc = {
+        configurable: true,
+        enumerable: true,
+        writable: true,
         value: this.accessors[key].get.call(this.reference)
       };
     } else {
-      var desc = Object.getOwnPropertyDescriptor(this.target, key);
+      desc = Object.getOwnPropertyDescriptor(this.target, key);
     }
     desc && (desc.configurable = true);
     return desc;
