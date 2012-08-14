@@ -1,6 +1,7 @@
 var bindings = require('./bindings'),
     ReferenceType = require('./ReferenceType'),
     BitfieldType = require('./BitfieldType'),
+    kernel32 = bindings('kernel32'),
     path = require('path');
 
 var files = new WeakMap,
@@ -20,11 +21,17 @@ function File(filepath){
   this.attributes = new FileAttributes(filepath);
 }
 
+var pathBuffer = new Buffer(260);
 
-
-var FileAttributes = module.exports.FileAttributes = new BitfieldType({
-  get: bindings.getFileAttributes,
-  set: bindings.setFileAttributes,
+var FileAttributes = new BitfieldType({
+  get: function(path){
+    pathBuffer.writeCString(path);
+    return kernel32.GetFileAttributesA(pathBuffer);
+  },
+  set: function(path, value){
+    pathBuffer.writeCString(path);
+    kernel32.SetFileAttributesA(pathBuffer, value);
+  },
   cooldown: 10000,
   fields: {
     readonly           : 0x00001,
@@ -48,7 +55,7 @@ var FileAttributes = module.exports.FileAttributes = new BitfieldType({
   }
 });
 
-
+console.log(new File('..'))
 /*
 createReadStream
 createWriteStream
