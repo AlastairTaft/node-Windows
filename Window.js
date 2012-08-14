@@ -1,5 +1,7 @@
 var ReferenceType = require('./ReferenceType'),
-    BitfieldType = require('./BitfieldType');
+    BitfieldType = require('./BitfieldType'),
+    decorate = require('./utils').decorate,
+    ref = require('ref');
 
 var windows = new WeakMap,
     handles = {};
@@ -8,11 +10,50 @@ var bindings = require('./bindings'),
     NULL = bindings.NULL;
 
 var user32 = bindings('user32'),
+    dwmapi = bindings('dwmapi'),
     WNDENUMPROC = bindings('WNDENUMPROC'),
     TITLEBARINFO = bindings('TITLEBARINFO'),
-    GA = bindings('GA'),
-    RECT = bindings('RECT'),
-    STATE_SYSTEM = bindings('STATE_SYSTEM');
+    DWM_BLURBEHIND = bindings('DWM_BLURBEHIND'),
+    MARGINS = bindings('MARGINS'),
+    uchar = bindings('uchar'),
+    RECT = bindings('RECT');
+
+var CloseWindow = bindings('CloseWindow'),
+    EnumWindows = bindings('EnumWindows'),
+    GetAncestor = bindings('GetAncestor'),
+    GetLastActivePopup = bindings('GetLastActivePopup'),
+    GetLayeredWindowAttributes = bindings('GetLayeredWindowAttributes'),
+    GetSystemMetrics = bindings('GetSystemMetrics'),
+    GetTitleBarInfo = bindings('GetTitleBarInfo'),
+    GetWindowLong = bindings('GetWindowLongA'),
+    GetWindowRect = bindings('GetWindowRect'),
+    GetWindowText = bindings('GetWindowTextA'),
+    IsWindowVisible = bindings('IsWindowVisible'),
+    IsWindowVisible = bindings('IsWindowVisible'),
+    ReleaseCapture = bindings('ReleaseCapture'),
+    SendMessage = bindings('SendMessage'),
+    SetLayeredWindowAttributes = bindings('SetLayeredWindowAttributes'),
+    SetWindowLong = bindings('SetWindowLongA'),
+    SetWindowPos = bindings('SetWindowPos'),
+    SetWindowText = bindings('SetWindowTextA'),
+    ShowWindow = bindings('ShowWindow');
+
+var DwmExtendFrameIntoClientArea = bindings('DwmExtendFrameIntoClientArea'),
+    DwmEnableBlurBehindWindow = bindings('DwmEnableBlurBehindWindow');
+
+
+var GA = bindings('GA'),
+    GWL = bindings('GWL'),
+    HT = bindings('HT'),
+    HWND_Z = bindings('HWND_Z'),
+    LWA = bindings('LWA'),
+    STATE_SYSTEM = bindings('STATE_SYSTEM'),
+    SW = bindings('SW'),
+    SWP = bindings('SWP'),
+    WM = bindings('WM'),
+    WS = bindings('WS'),
+    WS_EX = bindings('WS_EX');
+
 
 
 
@@ -20,124 +61,94 @@ module.exports = Window;
 
 function Window(hwnd){
   var window = new WindowReference(new WindowHandle(hwnd));
-  window.styles = new Styles(hwnd);
-  window.exStyles = new ExtendedStyles(hwnd);
   return window;
 }
 
-Window.prototype.isAltTabWindow = function isAltTabWindow(hwnd){
-  var hwnd = ReferenceType.unwrap(this)._handle;
-  if (!user32.IsWindowVisible(hwnd)) {
-    return false;
-  }
-  var hwndWalk = NULL;
-  var hwndTry = user32.GetAncestor(hwnd, GA.ROOT_OWNER);
+function _(o){
+  return ReferenceType.unwrap(o)._handle;
+}
 
-  while (hwndTry != hwndWalk) {
-    hwndWalk = hwndTry;
-    hwndTry = user32.GetLastActivePopup(hwndWalk);
-    if (user32.IsWindowVisible(hwndTry)) {
-      break;
+decorate(Window.prototype, [
+  function setNCWidth(left, top, right, bottom){
+    switch (arguments.length) {
+      case 0: left = 0;
+      case 1: top = left;
+      case 2: right = left;
+      case 3: bottom = top;
     }
-  }
-  if (hwndWalk != hwnd) {
-    return false;
-  }
-  return true;
-
-  var ti = new TITLEBARINFO;
-  ti.size = TITLEBARINFO.size;
-  user32.GetTitleBarInfo(hwnd, ti.ref());
-  return !(ti.state & STATE_SYSTEM.INVISIBLE);
-};
-
-
-
-var GWL_STYLE = -16,
-    GWL_EXSTYLE = -20;
-
-
-
-var Styles = new BitfieldType({
-  get: function(hwnd){
-    return user32.GetWindowLongA(hwnd, GWL_STYLE);
+    var margins = new MARGINS({
+      left: left,
+      top: top,
+      right: right,
+      bottom: bottom,
+    });
+    DwmExtendFrameIntoClientArea(_(this), margins.ref());
   },
-  set: function(hwnd, value){
-    user32.SetWindowLongA(hwnd, GWL_STYLE, value);
+  function minimize(){
+    ShowWindow(_(this), SW.MINIMIZE);
   },
-  cooldown: 1000,
-  fields: {
-    overlapped       : 0x00000000,
-    maximizeBox      : 0x00010000,
-    minimizeBox      : 0x00020000,
-    sizeBox          : 0x00040000,
-    sysMenu          : 0x00080000,
-    hScroll          : 0x00100000,
-    vScroll          : 0x00200000,
-    dlgFrame         : 0x00400000,
-    border           : 0x00800000,
-    caption          : 0x00C00000,
-    maximize         : 0x01000000,
-    clipChildren     : 0x02000000,
-    clipSiblings     : 0x04000000,
-    disabled         : 0x08000000,
-    visible          : 0x10000000,
-    minimize         : 0x20000000,
-    child            : 0x40000000,
-    popup            : 0x80000000,
-    overlappedWindow : 0x00CF0000,
-    popupWindow      : 0x80880000
+  function maximize(){
+    ShowWindow(_(this), SW.MAXIMIZE);
+  },
+  function restore(){
+    ShowWindow(_(this), SW.RESTORE);
+  },
+  function show(){
+    ShowWindow(_(this), SW.SHOWNORMAL);
+    //forceToForeground(hwnd);
+  },
+  function hide(){
+    ShowWindow(_(this), SW.HIDE);
+  },
+  function destroy(){
+    CloseWindow(_(this));
+  },
+  function drag(){
+    ReleaseCapture();
+    SendMessage(_(this), WM.NCLBUTTONDOWN, HT.CAPTION, 0);
+  },
+  function move(left, top, width, height){
+    if (arguments.length === 3) {
+      width = height = NULL;
+    }
+    SetWindowPos(_(this), NULL, left, top, width, height, NULL);
+  },
+  function resize(width, height){
+    SetWindowPos(_(this), NULL, NULL, NULL, width, height, SWP.NOMOVE);
+  },
+  function isAltTabWindow(hwnd){
+    var hwnd = _(this);
+    if (!IsWindowVisible(hwnd)) {
+      return false;
+    }
+    var hwndWalk = NULL;
+    var hwndTry = GetAncestor(hwnd, GA.ROOT_OWNER);
+
+    while (hwndTry != hwndWalk) {
+      hwndWalk = hwndTry;
+      hwndTry = GetLastActivePopup(hwndWalk);
+      if (IsWindowVisible(hwndTry)) {
+        break;
+      }
+    }
+    if (hwndWalk != hwnd) {
+      return false;
+    }
+    return true;
+
+    var ti = new TITLEBARINFO;
+    ti.size = TITLEBARINFO.size;
+    GetTitleBarInfo(hwnd, ti.ref());
+    return !(ti.state & STATE_SYSTEM.INVISIBLE);
   }
-});
-
-var ExtendedStyles = new BitfieldType({
-  get: function(hwnd){
-    return user32.GetWindowLongA(hwnd, GWL_EXSTYLE);
-  },
-  set: function(hwnd, value){
-    user32.SetWindowLongA(hwnd, GWL_EXSTYLE, value);
-  },
-  cooldown: 1000,
-  fields: {
-    left             : 0x00000000,
-    dlgModalFrame    : 0x00000001,
-    noParentNotify   : 0x00000004,
-    topMost          : 0x00000008,
-    acceptFiles      : 0x00000010,
-    transparent      : 0x00000020,
-    mdiChild         : 0x00000040,
-    toolWindow       : 0x00000080,
-    windowEdge       : 0x00000100,
-    clientEdge       : 0x00000200,
-    overlappedWindow : 0x00000300,
-    contextHelp      : 0x00000400,
-    rightScrollbar   : 0x00001000,
-    rtlReading       : 0x00002000,
-    controlParent    : 0x00010000,
-    staticEdge       : 0x00020000,
-    appWindow        : 0x00040000,
-    layered          : 0x00080000,
-    noInheritLayout  : 0x00100000,
-    layoutRtl        : 0x00400000,
-    composited       : 0x02000000,
-    noActivate       : 0x08000000,
-    paletteWindow    : 0x00000188
-  }
-});
-
-  //GetClientRect:        [ BOOL, { hWnd: HWND, lpRect: LPRECT }],
-  //GetWindowRect:        [ BOOL, { hWnd: HWND, lpRect: LPRECT }],
-  //AdjustWindowRect:     [ BOOL, { lpRect: LPRECT, dwStyle: DWORD, bMenu: BOOL }],
-  //AdjustWindowRectEx:   [ BOOL, { lpRect: LPRECT, dwStyle: DWORD, bMenu: BOOL, dwExStyle: DWORD }],
-
-
+]);
 
 
 function Rect(rect){
   rect = rect || new RECT;
   return new RectReference(rect);
 }
-var RectReference = new ReferenceType('Rect', ReferenceType.listAccessors(RECT.prototype));
+var RectReference = new ReferenceType('Rect', ['top', 'left', 'right', 'bottom']);
 
 RectReference.prototype = Rect.prototype;
 
@@ -153,35 +164,104 @@ function WindowHandle(hwnd){
   Object.defineProperty(this, '_handle', {
     value: hwnd
   });
+  //this.styles = new Styles(hwnd);
+  //this.exStyles = new ExtendedStyles(hwnd);
 }
 
-WindowHandle.prototype = {
-  constructor: WindowHandle,
+decorate(WindowHandle.prototype, [
+  function _getStyle(type){
+    return GetWindowLong(this._handle, type);
+  },
+  function _hasStyle(type, value){
+    return (GetWindowLong(this._handle, type) & value) > 0;
+  },
+  function _updateStyle(type, value){
+    var style = GetWindowLong(this._handle, type);
+    SetWindowLong(this._handle, type, value < 0 ? style & value : style | value);
+    SetWindowPos(this._handle, NULL, 0, 0, 0, 0, SWP.ONLYFRAME);
+  },
+  function _overwriteStyle(type, value){
+    SetWindowLong(this._handle, type, value);
+    SetWindowPos(this._handle, NULL, 0, 0, 0, 0, SWP.ONLYFRAME);
+  },
+  function _pos(loc){
+    if (!this._rect) {
+      this._rect = new RECT;
+      this._rectPtr = this._rect.ref();
+      this._rect.last = Date.now() - 10000;
+    }
+    if (Date.now() - this._rect.last > 100) {
+      GetWindowRect(this._handle, this._rectPtr);
+    }
+    return this._rect[loc];
+  }
+]);
+
+var bb = new DWM_BLURBEHIND;
+bb.hRgnBlur = NULL;
+bb.dwFlags = 1;
+
+var WindowReference = new ReferenceType('Window', [], {
   get title(){
     titleBuffer.fill();
-    user32.GetWindowTextA(this._handle, titleBuffer, 160);
+    GetWindowText(this._handle, titleBuffer, 160);
     return titleBuffer.readCString();
   },
-  set title(title){
-    titleBuffer.writeCString(title);
-    user32.SetWindowTextA(this._handle, titleBuffer);
+  set title(v){
+    titleBuffer.writeCString(v);
+    SetWindowText(this._handle, titleBuffer);
   },
-  get rect(){
-    if (!this._rect) {
-      var rect = new RECT;
-      this._rect = new Rect(rect);
-      this._rectPtr = rect.ref();
-    }
-    user32.GetWindowRect(this._handle, this._rectPtr);
-    return this._rect;
+  set resizable(v){
+    this._updateStyle(GWL.STYLE, v ? WS.CONTROLS : ~WS.CONTROLS);
+  },
+  get resizable(){
+    return this._hasStyle(GWL.STYLE, WS.SIZEBOX);
+  },
+  set caption(v){
+    this._updateStyle(GWL.STYLE, v ? WS.CAPTION : ~WS.CAPTION);
+  },
+  get caption(){
+    return this._hasStyle(GWL.STYLE, WS.CAPTION);
+  },
+  set blur(v){
+    this._blur = !!v;
+    bb.fEnable = this._blur;
+    DwmEnableBlurBehindWindow(this._handle, bb.ref());
+  },
+  get blur(){
+    return this._blur || false;
+  },
+  set topmost(v){
+    this._updateStyle(GWL.EXSTYLE, v ? WS_EX.TOPMOST : ~WS_EX.TOPMOST);
+    SetWindowPos(this._handle, v ? HWND_Z.TOPMOST : HWND_Z.NOTOPMOST, 0, 0, 0, 0, SWP.NOSIZE | SWP.NOMOVE);
+  },
+  get topmost(){
+    return this._hasStyle(GWL.EXSTYLE, WS_EX.TOPMOST);
+  },
+  set opacity(v) {
+    this._opacity = v * 255 + .5 | 0;
+    this._updateStyle(GWL.EXSTYLE, v < 1 ? WS_EX.LAYERED : ~WS_EX.LAYERED);
+    SetLayeredWindowAttributes(this._handle, NULL, this._opacity, LWA.ALPHA);
+  },
+  get opacity(){
+    return this._opacity === undefined ? 1 : this._opacity / 255;
+  },
+  get top(){
+    return this._pos('top');
+  },
+  get left(){
+    return this._pos('left');
+  },
+  get right(){
+    return this._pos('right');
+  },
+  get bottom(){
+    return this._pos('bottom');
   },
   // get filename(){
   //   return bindings.getModuleFilename(this._handle);
   // }
-};
-
-
-var WindowReference = new ReferenceType('Window', ReferenceType.listAccessors(WindowHandle.prototype));
+});
 
 WindowReference.prototype = Window.prototype;
 
@@ -189,7 +269,7 @@ WindowReference.prototype = Window.prototype;
 Window.enumerate = function enumerate(){
   var out = [];
 
-  user32.EnumWindows(WNDENUMPROC(function(hwnd, lparam){
+  EnumWindows(WNDENUMPROC(function(hwnd, lparam){
     var window = new Window(hwnd);
     if (window.title && window.isAltTabWindow()) {
       out.push(window);
@@ -199,4 +279,104 @@ Window.enumerate = function enumerate(){
 
   return out;
 }
+
+Window.screen = function screen(){
+  return {
+    width: GetSystemMetrics(0),
+    height: GetSystemMetrics(1)
+  };
+}
+
+
+
+
+
+
+
+
+// var Styles = new BitfieldType({
+//   get: function(hwnd){
+//     return GetWindowLongA(hwnd, GWL.STYLE);
+//   },
+//   set: function(hwnd, value){
+//     SetWindowLongA(hwnd, GWL.STYLE, value);
+//   },
+//   cooldown: 1000,
+//   fields: {
+//     overlapped       : 0x00000000,
+//     maximizeBox      : 0x00010000,
+//     minimizeBox      : 0x00020000,
+//     sizeBox          : 0x00040000,
+//     sysMenu          : 0x00080000,
+//     hScroll          : 0x00100000,
+//     vScroll          : 0x00200000,
+//     dlgFrame         : 0x00400000,
+//     border           : 0x00800000,
+//     caption          : 0x00C00000,
+//     maximize         : 0x01000000,
+//     clipChildren     : 0x02000000,
+//     clipSiblings     : 0x04000000,
+//     disabled         : 0x08000000,
+//     visible          : 0x10000000,
+//     minimize         : 0x20000000,
+//     child            : 0x40000000,
+//     popup            : 0x80000000,
+//     overlappedWindow : 0x00CF0000,
+//     popupWindow      : 0x80880000
+//   }
+// });
+
+// var ExtendedStyles = new BitfieldType({
+//   get: function(hwnd){
+//     return GetWindowLongA(hwnd, GWL.EXSTYLE);
+//   },
+//   set: function(hwnd, value){
+//     SetWindowLongA(hwnd, GWL.EXSTYLE, value);
+//   },
+//   cooldown: 1000,
+//   fields: {
+//     left             : 0x00000000,
+//     dlgModalFrame    : 0x00000001,
+//     noParentNotify   : 0x00000004,
+//     topMost          : 0x00000008,
+//     acceptFiles      : 0x00000010,
+//     transparent      : 0x00000020,
+//     mdiChild         : 0x00000040,
+//     toolWindow       : 0x00000080,
+//     windowEdge       : 0x00000100,
+//     clientEdge       : 0x00000200,
+//     contextHelp      : 0x00000400,
+//     rightScrollbar   : 0x00001000,
+//     rtlReading       : 0x00002000,
+//     controlParent    : 0x00010000,
+//     staticEdge       : 0x00020000,
+//     appWindow        : 0x00040000,
+//     layered          : 0x00080000,
+//     noInheritLayout  : 0x00100000,
+//     layoutRtl        : 0x00400000,
+//     composited       : 0x02000000,
+//     noActivate       : 0x08000000,
+//   }
+// });
+
+
+// function forceToForeground(hwnd){
+//   var lockTime = new DWORD(0);
+//   var localTID = kernel32.GetCurrentThreadId();
+//   var activeTID = kernel32.GetWindowThreadProcessId(user32.GetForegroundWindow(), 0);
+
+//   if (localTID != activeTID) {
+//     user32.AttachThreadInput(localTID, activeTID, true);
+//     user32.SystemParametersInfo(SPI.GETFOREGROUNDLOCKTIMEOUT, 0, lockTime.ref(), 0);
+//     user32.SystemParametersInfo(SPI.SETFOREGROUNDLOCKTIMEOUT, 0, 0, SPIF.SENDWININICHANGE | SPIF.UPDATEINIFILE);
+//     user32.AllowSetForegroundWindow(ASFW_ANY);
+//   }
+
+//   kernel32.SetForegroundWindow(hwnd);
+
+//   if (localTID != activeTID) {
+//     user32.SystemParametersInfo(SPI.SETFOREGROUNDLOCKTIMEOUT, 0, lockTime.ref(), SPIF.SENDWININICHANGE | SPIF.UPDATEINIFILE);
+//     kernel32.AttachThreadInput(localTID, activeTID, false);
+//   }
+// }
 
