@@ -7,3 +7,6 @@
 [submodule "node_modules/ffi"]
 	path = node_modules/ffi
 	url = https://github.com/Benvie/ffi
+[submodule "node_modules/winreg"]
+	path = node_modules/winreg
+	url = git://github.com/Benvie/node-winreg.git
