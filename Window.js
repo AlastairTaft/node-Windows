@@ -105,7 +105,21 @@ decorate(Window.prototype, [
   },
   function drag(){
     ReleaseCapture();
+    SendMessage(_(this), WM.NCLBUTTONDOWN, HT.TOP, 0);
+  },
+  function resizeTop(){
+    ReleaseCapture();
     SendMessage(_(this), WM.NCLBUTTONDOWN, HT.CAPTION, 0);
+  },
+  function nonClientClick(target){
+    if (typeof target === 'string') {
+      target = target.toUpperCase();
+    }
+    var val = HT.toValue(target);
+    if (val != null) {
+      ReleaseCapture();
+      SendMessage(_(this), WM.NCLBUTTONDOWN, val, 0);
+    }
   },
   function move(left, top, width, height){
     if (arguments.length === 3) {
@@ -164,8 +178,8 @@ function WindowHandle(hwnd){
   Object.defineProperty(this, '_handle', {
     value: hwnd
   });
-  //this.styles = new Styles(hwnd);
-  //this.exStyles = new ExtendedStyles(hwnd);
+  this.styles = new Styles(hwnd);
+  this.exStyles = new ExtendedStyles(hwnd);
 }
 
 decorate(WindowHandle.prototype, [
@@ -187,18 +201,17 @@ decorate(WindowHandle.prototype, [
   function _pos(loc){
     if (!this._rect) {
       this._rect = new RECT;
-      this._rectPtr = this._rect.ref();
       this._rect.last = Date.now() - 10000;
     }
     if (Date.now() - this._rect.last > 100) {
-      GetWindowRect(this._handle, this._rectPtr);
+      GetWindowRect(this._handle, this._rect);
     }
     return this._rect[loc];
   }
 ]);
 
 var bb = new DWM_BLURBEHIND;
-bb.hRgnBlur = NULL;
+bb.hRgnBlur = 0;
 bb.dwFlags = 1;
 
 var WindowReference = new ReferenceType('Window', [], {
@@ -258,9 +271,6 @@ var WindowReference = new ReferenceType('Window', [], {
   get bottom(){
     return this._pos('bottom');
   },
-  // get filename(){
-  //   return bindings.getModuleFilename(this._handle);
-  // }
 });
 
 WindowReference.prototype = Window.prototype;
@@ -288,76 +298,70 @@ Window.screen = function screen(){
 }
 
 
+var Styles = new BitfieldType({
+  get: function(hwnd){
+    return GetWindowLong(hwnd, GWL.STYLE);
+  },
+  set: function(hwnd, value){
+    SetWindowLong(hwnd, GWL.STYLE, value);
+  },
+  cooldown: 1000,
+  fields: {
+    overlapped       : 0x00000000,
+    maximizeBox      : 0x00010000,
+    minimizeBox      : 0x00020000,
+    sizeBox          : 0x00040000,
+    sysMenu          : 0x00080000,
+    hScroll          : 0x00100000,
+    vScroll          : 0x00200000,
+    dlgFrame         : 0x00400000,
+    border           : 0x00800000,
+    caption          : 0x00C00000,
+    maximize         : 0x01000000,
+    clipChildren     : 0x02000000,
+    clipSiblings     : 0x04000000,
+    disabled         : 0x08000000,
+    visible          : 0x10000000,
+    minimize         : 0x20000000,
+    child            : 0x40000000,
+    popup            : 0x80000000,
+    overlappedWindow : 0x00CF0000,
+    popupWindow      : 0x80880000
+  }
+});
 
-
-
-
-
-
-// var Styles = new BitfieldType({
-//   get: function(hwnd){
-//     return GetWindowLongA(hwnd, GWL.STYLE);
-//   },
-//   set: function(hwnd, value){
-//     SetWindowLongA(hwnd, GWL.STYLE, value);
-//   },
-//   cooldown: 1000,
-//   fields: {
-//     overlapped       : 0x00000000,
-//     maximizeBox      : 0x00010000,
-//     minimizeBox      : 0x00020000,
-//     sizeBox          : 0x00040000,
-//     sysMenu          : 0x00080000,
-//     hScroll          : 0x00100000,
-//     vScroll          : 0x00200000,
-//     dlgFrame         : 0x00400000,
-//     border           : 0x00800000,
-//     caption          : 0x00C00000,
-//     maximize         : 0x01000000,
-//     clipChildren     : 0x02000000,
-//     clipSiblings     : 0x04000000,
-//     disabled         : 0x08000000,
-//     visible          : 0x10000000,
-//     minimize         : 0x20000000,
-//     child            : 0x40000000,
-//     popup            : 0x80000000,
-//     overlappedWindow : 0x00CF0000,
-//     popupWindow      : 0x80880000
-//   }
-// });
-
-// var ExtendedStyles = new BitfieldType({
-//   get: function(hwnd){
-//     return GetWindowLongA(hwnd, GWL.EXSTYLE);
-//   },
-//   set: function(hwnd, value){
-//     SetWindowLongA(hwnd, GWL.EXSTYLE, value);
-//   },
-//   cooldown: 1000,
-//   fields: {
-//     left             : 0x00000000,
-//     dlgModalFrame    : 0x00000001,
-//     noParentNotify   : 0x00000004,
-//     topMost          : 0x00000008,
-//     acceptFiles      : 0x00000010,
-//     transparent      : 0x00000020,
-//     mdiChild         : 0x00000040,
-//     toolWindow       : 0x00000080,
-//     windowEdge       : 0x00000100,
-//     clientEdge       : 0x00000200,
-//     contextHelp      : 0x00000400,
-//     rightScrollbar   : 0x00001000,
-//     rtlReading       : 0x00002000,
-//     controlParent    : 0x00010000,
-//     staticEdge       : 0x00020000,
-//     appWindow        : 0x00040000,
-//     layered          : 0x00080000,
-//     noInheritLayout  : 0x00100000,
-//     layoutRtl        : 0x00400000,
-//     composited       : 0x02000000,
-//     noActivate       : 0x08000000,
-//   }
-// });
+var ExtendedStyles = new BitfieldType({
+  get: function(hwnd){
+    return GetWindowLong(hwnd, GWL.EXSTYLE);
+  },
+  set: function(hwnd, value){
+    SetWindowLong(hwnd, GWL.EXSTYLE, value);
+  },
+  cooldown: 1000,
+  fields: {
+    left             : 0x00000000,
+    dlgModalFrame    : 0x00000001,
+    noParentNotify   : 0x00000004,
+    topMost          : 0x00000008,
+    acceptFiles      : 0x00000010,
+    transparent      : 0x00000020,
+    mdiChild         : 0x00000040,
+    toolWindow       : 0x00000080,
+    windowEdge       : 0x00000100,
+    clientEdge       : 0x00000200,
+    contextHelp      : 0x00000400,
+    rightScrollbar   : 0x00001000,
+    rtlReading       : 0x00002000,
+    controlParent    : 0x00010000,
+    staticEdge       : 0x00020000,
+    appWindow        : 0x00040000,
+    layered          : 0x00080000,
+    noInheritLayout  : 0x00100000,
+    layoutRtl        : 0x00400000,
+    composited       : 0x02000000,
+    noActivate       : 0x08000000,
+  }
+});
 
 
 // function forceToForeground(hwnd){
@@ -379,4 +383,22 @@ Window.screen = function screen(){
 //     kernel32.AttachThreadInput(localTID, activeTID, false);
 //   }
 // }
+
+var CR = ClientRectangle, VB = VIRTUALBORDER;
+
+function Rect(left, top, width, height){
+
+}
+
+
+
+R1 = new RECT(CR.X, CR.Y, VB, VB);
+R2 = new RECT(CR.X + R1.Width, CR.Y, CR.Width - R1.Width * 2, R1.Height);
+R3 = new RECT(CR.X + R1.Width + R2.Width, CR.Y, VB, VB);
+R4 = new RECT(CR.X, CR.Y + R1.Height, R1.Width, CR.Height - R1.Width * 2);
+R5 = new RECT(CR.X + R4.Width, CR.Y + R1.Height, R2.Width, R4.Height);
+R6 = new RECT(CR.X + R4.Width + R5.Width, CR.Y + R1.Height, R3.Width, R4.Height);
+R7 = new RECT(CR.X, CR.Y + R1.Height + R4.Height, VB, VB);
+R8 = new RECT(CR.X + R7.Width, CR.Y + R1.Height + R4.Height, CR.Width - R7.Width * 2, R7.Height);
+R9 = new RECT(CR.X + R7.Width + R8.Width,
 
