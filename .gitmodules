@@ -1,0 +1,6 @@
+[submodule "node_modules/ref-struct"]
+	path = node_modules/ref-struct
+	url = git@github.com:Benvie/ref-struct.git
+[submodule "node_modules/ref"]
+	path = node_modules/ref
+	url = git@github.com:Benvie/ref.git
