@@ -1,13 +1,14 @@
 var ffi = require('ffi'),
     ref = require('ref'),
     Struct = require('ref-struct'),
-    Library = require('./Library'),
+    ReferenceType = require('./ReferenceType'),
+    BitfieldType = require('./BitfieldType');
+
+var Library = ffi.Library,
     Type = ref.Type,
     NULL = ref.NULL,
     isNull = ref.isNull;
 
-var ReferenceType = require('./ReferenceType'),
-    BitfieldType = require('./BitfieldType');
 
 
 var groups = ['libs', 'types', 'structs', 'callbacks', 'enums'];
@@ -33,6 +34,7 @@ function lookup(name){
     }
   }
 }
+
 
 lookup.NULL = ref.NULL;
 lookup.isNull = ref.isNull;
@@ -1732,7 +1734,7 @@ var APPBARDATA = STRUCT('APPBARDATA', {
  hWnd: HWND,
  uCallbackMessage: UINT,
  uEdge: UINT,
- rc: RECT,
+ rc: RECT,F
  lParam: LPARAM
 });
 

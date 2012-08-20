@@ -1,4 +1,4 @@
-var bindings       = require('./bindings'),
+var bindings       = require('./api'),
     decorate       = require('./utils').decorate,
     ref            = require('ref');
 
