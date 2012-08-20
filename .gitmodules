@@ -10,3 +10,6 @@
 [submodule "node_modules/winreg"]
 	path = node_modules/winreg
 	url = git://github.com/Benvie/node-winreg.git
+[submodule "node_modules/weak"]
+	path = node_modules/weak
+	url = git@github.com:Benvie/node-weak.git
