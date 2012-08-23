@@ -1,5 +1,6 @@
 module.exports = {
-  decorate: decorate
+  decorate: decorate,
+  inherit: inherit
 };
 
 var isArray = Array.isArray,
@@ -69,6 +70,15 @@ function decorate(o){
     }
   }
   return o;
+}
+
+function inherit(Ctor, Super, props){
+  Ctor.prototype = Object.create(Super.prototype);
+  decorate(Ctor.prototype, true, props);
+  decorate(Ctor.prototype, true, {
+    constructor: Ctor
+  });
+  return Ctor;
 }
 
 
