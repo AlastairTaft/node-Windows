@@ -13,3 +13,6 @@
 [submodule "node_modules/weak"]
 	path = node_modules/weak
 	url = git@github.com:Benvie/node-weak.git
+[submodule "clang"]
+	path = clang
+	url = git@github.com:Benvie/node-clang.git
