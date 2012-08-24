@@ -16,3 +16,6 @@
 [submodule "clang"]
 	path = clang
 	url = git@github.com:Benvie/node-clang.git
+[submodule "node_modules/clang"]
+	path = node_modules/clang
+	url = git@github.com:Benvie/node-clang.git
