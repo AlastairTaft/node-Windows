@@ -1,13 +1,14 @@
 var ffi = require('ffi'),
     ref = require('ref'),
+    StructT = require('ref-struct'),
     BitfieldT = require('./BitfieldType');
 
 var decorate = require('./utils').decorate,
     inherit = require('./utils').inherit;
 
 var Library = ffi.Library,
-    StructT = ffi.StructT,
     Type = ref.Type,
+    VoidT = ref.types.VoidT,
     NULL = ref.NULL;
 
 
@@ -24,7 +25,9 @@ groups.forEach(function(name){
 
 var types = data.types = ref.types;
 
-
+Library.on('create', function(lib){
+  data.libs[lib.name] = lib;
+});
 
 
 function ArrayT(type, length){
@@ -32,7 +35,7 @@ function ArrayT(type, length){
   Array.apply(null, new Array(length)).forEach(function(x, i){
     fields[i] = type;
   });
-  return new StructT(data.name+'x'+length, fields);
+  return new StructT(type.name+'x'+length, fields);
 }
 
 function _(){}
@@ -44,44 +47,65 @@ _.prototype = Object.create(null);
 // #############
 
 function EnumT(name, values){
-  decorate(this, true, {
+  var self = EnumT.typedef(name);
+  data.enums[name] = self;
+
+  decorate(self, true, {
     name: name,
-    _ : new _,
-    _k: new Map,
-    _v: new Map
+    keys: new _,
+    vals: new _,
   });
-  var vals = [], keys = [];
-  this._v.set(this._v, vals);
-  this._k.set(this._k, keys);
 
   Object.keys(values).forEach(function(key){
-    var val = values[key];
-    keys.push(keys);
-    vals.push(val);
-    this[key] = val;
-    this._[val] = key;
-    this._k.set(key, val);
-    this._v.set(val, key);
-  }, this);
-}
+    self.keys[key] = values[key];
+    self.vals[values[key]] = key;
+  });
 
-decorate(EnumT.prototype, false, {
-  _type: types.int32,
-}, [
+  return self;
+}
+var int = types.int;
+
+EnumT.__proto__ = int;
+
+decorate(EnumT, true, [
+  function initialize(instance, offset, value){
+    if (arguments.length === 1) {
+      return int.initialize(instance, 0, 0);
+    } else if (arguments.length === 2) {
+      value = offset;
+      offset = 0;
+    }
+    if (value in this.keys) {
+      return int.initialize(instance, offset, this.keys[value]);
+    } else if (value in this.vals) {
+      return int.initialize(instance, offset, value);
+    } else {
+      throw new Error('Invalid arguments for enum "'+this.name+'"" type: '+ JSON.stringify(value));
+    }
+  },
+  function get(buf, offset){
+    var val = int.get(buf, offset);
+    return val in this.vals ? this.vals[val] : val;
+  },
+  function set(buf, offset, val){
+    if (val in this.keys) {
+      val = this.keys[val];
+    }
+    return int.set(buf, offset, val);
+  },
   function toKey(v){
-    return this._k.has(v) ? v : this._v.get(v);
+    return v in this.keys ? v : this.vals[v];
   },
   function toValue(v){
-    return this._v.has(v) ? v : this._k.get(v);
-  },
-  function getKeys(){
-    return this._k.get(this._k);
-  },
-  function getValues(){
-    return this._v.get(this._v);
+    return v in this.vals ? v : this.keys[v];
   },
 ]);
 
+inherit(EnumT, int, [
+  function inspect(){
+    return '<'+this._type.name+'@0x'+this.address().toString(16)+' '+this.lval()+'>';
+  }
+]);
 
 
 
@@ -125,6 +149,9 @@ decorate(CallbackT.prototype, {
 ]);
 
 function lookup(name){
+  if (name === '___') {
+    return data;
+  }
   if (name == null || name.toLowerCase() === 'null') {
     return NULL;
   }
