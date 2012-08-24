@@ -1,67 +1,45 @@
-var ffi = require('ffi');
+var api = require('windows/api');
 
 var
- voi\u0064 = ffi.types.voi\u0064,
- _void = ffi.types.void,
- int8 = ffi.types.int8,
- uint8 = ffi.types.uint8,
- int16 = ffi.types.int16,
- uint16 = ffi.types.uint16,
- int32 = ffi.types.int32,
- uint32 = ffi.types.uint32,
- int64 = ffi.types.int64,
- uint64 = ffi.types.uint64,
- float = ffi.types.float,
- double = ffi.types.double,
- CString = ffi.types.CString,
- WString = ffi.types.WString,
- bool = ffi.types.bool,
- byte = ffi.types.byte,
- char = ffi.types.char,
- uchar = ffi.types.uchar,
- short = ffi.types.short,
- ushort = ffi.types.ushort,
- int = ffi.types.int,
- uint = ffi.types.uint,
- long = ffi.types.long,
- ulong = ffi.types.ulong,
- longlong = ffi.types.longlong,
- ulonglong = ffi.types.ulonglong,
- size_t = ffi.types.size_t,
- charΔ = ffi.types.charΔ,
- wchar = ffi.types.wchar,
- wcharΔ = ffi.types.wcharΔ,
- voidΔ = ffi.types.voidΔ,
- FFI_TYPEΔ = ffi.types.FFI_TYPEΔ,
- intΔ = ffi.types.intΔ,
- CStringΔ = ffi.types.CStringΔ;
+ CallbackT = api.CallbackT,
+ StructT = api.StructT,
+ Library = api.Library,
+ ArrayT = api.ArrayT,
+ EnumT = api.EnumT,
+ NULL = api.NULL
 
-
-
-data.enums = {};
-data.callbacks = {};
-data.structs = {};
-data.functions = {};
-
-
-function ENUM(name, def){
- return data.enums[name] = new Enum(name, def);
-}
-
-function CallbackT(ret, params){}
-
-function STRUCT(name, def){
- return data.structs[name] = new Struct(name, def);
-}
-
-function FUNCTION(name, ret, params){
- return exports.functions[name] = new ffi.ForeignFunction(name, 'windows', ret, params);
-}
-
-
-function DEF(name, ffiType, type){
-  return ffiType;
-}
+var
+ _void     = api('void'),
+ int8      = api('int8'),
+ uint8     = api('uint8'),
+ int16     = api('int16'),
+ uint16    = api('uint16'),
+ int32     = api('int32'),
+ uint32    = api('uint32'),
+ int64     = api('int64'),
+ uint64    = api('uint64'),
+ float     = api('float'),
+ double    = api('double'),
+ CString   = api('CString'),
+ WString   = api('WString'),
+ bool      = api('bool'),
+ byte      = api('byte'),
+ char      = api('char'),
+ uchar     = api('uchar'),
+ short     = api('short'),
+ ushort    = api('ushort'),
+ int       = api('int'),
+ uint      = api('uint'),
+ long      = api('long'),
+ ulong     = api('ulong'),
+ longlong  = api('longlong'),
+ ulonglong = api('ulonglong'),
+ size_t    = api('size_t'),
+ charΔ     = api('charΔ'),
+ voidΔ     = api('voidΔ'),
+ intΔ      = api('intΔ'),
+ NULL      = api('NULL'),
+ VoidT     = api('VoidT');
 
 var
  uintptr_t = uint.typedef('uintptr_t'),
@@ -141,7 +119,7 @@ var
  LPCSTR = char.Δ.typedef('LPCSTR'),
  PCNZCH = char.Δ.typedef('PCNZCH'),
  PLONG = long.Δ.typedef('PLONG'),
- HANDLE = _void.Δ.typedef('HANDLE'),
+ HANDLE = ulong.typedef('HANDLE'),
  HRESULT = long.typedef('HRESULT'),
  CCHAR = char.typedef('CCHAR'),
  LCID = ulong.typedef('LCID'),
@@ -275,6 +253,37 @@ var
  PROPVAR_PAD2 = ushort.typedef('PROPVAR_PAD2'),
  PROPVAR_PAD3 = ushort.typedef('PROPVAR_PAD3'),
  SC_LOCK = _void.Δ.typedef('SC_LOCK');
+
+var
+ HWND = HANDLE.typedef('HWND'),
+ HHOOK = HANDLE.typedef('HHOOK'),
+ HKEY = HANDLE.typedef('HKEY'),
+ HACCEL = HANDLE.typedef('HACCEL'),
+ HBITMAP = HANDLE.typedef('HBITMAP'),
+ HBRUSH = HANDLE.typedef('HBRUSH'),
+ HCOLORSPACE = HANDLE.typedef('HCOLORSPACE'),
+ HDC = HANDLE.typedef('HDC'),
+ HGLRC = HANDLE.typedef('HGLRC'),
+ HDESK = HANDLE.typedef('HDESK'),
+ HENHMETAFILE = HANDLE.typedef('HENHMETAFILE'),
+ HFONT = HANDLE.typedef('HFONT'),
+ HICON = HANDLE.typedef('HICON'),
+ HMENU = HANDLE.typedef('HMENU'),
+ HMETAFILE = HANDLE.typedef('HMETAFILE'),
+ HINSTANCE = HANDLE.typedef('HINSTANCE'),
+ HPALETTE = HANDLE.typedef('HPALETTE'),
+ HPEN = HANDLE.typedef('HPEN'),
+ HRGN = HANDLE.typedef('HRGN'),
+ HRSRC = HANDLE.typedef('HRSRC'),
+ HSPRITE = HANDLE.typedef('HSPRITE'),
+ HLSURF = HANDLE.typedef('HLSURF'),
+ HSTR = HANDLE.typedef('HSTR'),
+ HTASK = HANDLE.typedef('HTASK'),
+ HWINSTA = HANDLE.typedef('HWINSTA'),
+ HKL = HANDLE.typedef('HKL'),
+ HWINEVENTHOOK = HANDLE.typedef('HWINEVENTHOOK'),
+ HMONITOR = HANDLE.typedef('HMONITOR'),
+ HUMPD = HANDLE.typedef('HUMPD');
 
 var EXCEPTION_DISPOSITION = new EnumT('EXCEPTION_DISPOSITION', {
  ContinueExecution: 0,
@@ -2843,7 +2852,7 @@ var SC_ENUM_TYPE = new EnumT('SC_ENUM_TYPE', {
   PFN_EXPORT_PRIV_KEY_FUNC = new CallbackT('PFN_EXPORT_PRIV_KEY_FUNC', int, [ulong, ulong, char.Δ, ulong, _void.Δ, _CRYPT_PRIVATE_KEY_INFO.Δ, ulong.Δ]),
   PFN_CRYPT_GET_SIGNER_CERTIFICATE = new CallbackT('PFN_CRYPT_GET_SIGNER_CERTIFICATE', _CERT_CONTEXT.Δ, [_void.Δ, ulong, _CERT_INFO.Δ, _void.Δ]),
   PFN_CRYPT_ASYNC_PARAM_FREE_FUNC = new CallbackT('PFN_CRYPT_ASYNC_PARAM_FREE_FUNC', _void, [char.Δ, _void.Δ]),
-  PFN_FREE_ENCODED_OBJECT_FUNC = new CallbackT('PFN_FREE_ENCODED_OBJECT_FUNC', _void, [char.Δ, _CRYPT_BLOB_ARRAY.Δ, _void.Δ]),
+  PFN_FREE_ENCODED_OBJECT_FUNC = new CallbackT('PFN_FREE_ENCODED_OBJECT_FUNC', _void, [char.Δ, _CRYPT_BLOB_new ArrayT.Δ, _void.Δ]),
   PFN_CRYPT_CANCEL_RETRIEVAL = new CallbackT('PFN_CRYPT_CANCEL_RETRIEVAL', int, [ulong, _void.Δ]),
   PFN_CRYPT_ASYNC_RETRIEVAL_COMPLETION_FUNC = new CallbackT('PFN_CRYPT_ASYNC_RETRIEVAL_COMPLETION_FUNC', _void, [_void.Δ, ulong, char.Δ, char.Δ, _void.Δ]),
   PFN_CANCEL_ASYNC_RETRIEVAL_FUNC = new CallbackT('PFN_CANCEL_ASYNC_RETRIEVAL_FUNC', int, [_void.Δ]),
@@ -2901,9 +2910,9 @@ var threadlocinfo = new StructT('threadlocinfo', {
  refcount: int,
  lc_codepage: uint,
  lc_collate_cp: uint,
- lc_handle: ARRAY(undefined, 6),
- lc_id: ARRAY(LC_ID, 6),
- lc_category: ARRAY(undefined, 6),
+ lc_handle: new ArrayT(undefined, 6),
+ lc_id: new ArrayT(LC_ID, 6),
+ lc_category: new ArrayT(undefined, 6),
  lc_clike: int,
  mb_cur_max: int,
  lconv_intl_refcount: int.Δ,
@@ -2945,7 +2954,7 @@ var EXCEPTION_RECORD = new StructT('EXCEPTION_RECORD', {
  ExceptionRecord: _EXCEPTION_RECORD.Δ,
  ExceptionAddress: PVOID,
  NumberParameters: DWORD,
- ExceptionInformation: ARRAY(ULONG_PTR, EXCEPTION_MAXIMUM_PARAMETERS)
+ ExceptionInformation: new ArrayT(ULONG_PTR, EXCEPTION_MAXIMUM_PARAMETERS)
 });
 
 var CONTEXT = new StructT('CONTEXT', {
@@ -2973,7 +2982,7 @@ var CONTEXT = new StructT('CONTEXT', {
  EFlags: DWORD,
  Esp: DWORD,
  SegSs: DWORD,
- ExtendedRegisters: ARRAY(BYTE, MAXIMUM_SUPPORTED_EXTENSION)
+ ExtendedRegisters: new ArrayT(BYTE, MAXIMUM_SUPPORTED_EXTENSION)
 });
 
 var PROCESSOR_NUMBER = new StructT('PROCESSOR_NUMBER', {
@@ -2985,7 +2994,7 @@ var PROCESSOR_NUMBER = new StructT('PROCESSOR_NUMBER', {
 var GROUP_AFFINITY = new StructT('GROUP_AFFINITY', {
  Mask: KAFFINITY,
  Group: WORD,
- Reserved: ARRAY(WORD, 3)
+ Reserved: new ArrayT(WORD, 3)
 });
 
 var FLOAT128 = new StructT('FLOAT128', {
@@ -3041,8 +3050,16 @@ var UUID = new StructT('UUID', {
  Data1: ulong,
  Data2: ushort,
  Data3: ushort,
- Data4: ARRAY(undefined,  8 )
+ Data4: new Array(CHAR, 8)
 });
+
+var GUID = new StructT('GUID', {
+ Data1: ulong,
+ Data2: ushort,
+ Data3: ushort,
+ Data4: new Array(CHAR, 8)
+});
+
 
 var OBJECTID = new StructT('OBJECTID', {
  Lineage: GUID,
@@ -3068,16 +3085,16 @@ var XSAVE_FORMAT = new StructT('XSAVE_FORMAT', {
  Reserved3: WORD,
  MxCsr: DWORD,
  MxCsr_Mask: DWORD,
- FloatRegisters: ARRAY(M128A, 8),
- XmmRegisters: ARRAY(M128A, 8),
- Reserved4: ARRAY(BYTE, 192),
- StackControl: ARRAY(DWORD, 7),
+ FloatRegisters: new ArrayT(M128A, 8),
+ XmmRegisters: new ArrayT(M128A, 8),
+ Reserved4: new ArrayT(BYTE, 192),
+ StackControl: new ArrayT(DWORD, 7),
  Cr0NpxState: DWORD
 });
 
 var XSAVE_AREA_HEADER = new StructT('XSAVE_AREA_HEADER', {
  Mask: DWORD64,
- Reserved: ARRAY(DWORD64, 7)
+ Reserved: new ArrayT(DWORD64, 7)
 });
 
 var XSAVE_AREA = new StructT('XSAVE_AREA', {
@@ -3114,7 +3131,7 @@ var FLOATING_SAVE_AREA = new StructT('FLOATING_SAVE_AREA', {
  ErrorSelector: DWORD,
  DataOffset: DWORD,
  DataSelector: DWORD,
- RegisterArea: ARRAY(BYTE, SIZE_OF_80387_REGISTERS),
+ RegisterArea: new ArrayT(BYTE, SIZE_OF_80387_REGISTERS),
  Cr0NpxState: DWORD
 });
 
@@ -3152,7 +3169,7 @@ var WOW64_FLOATING_SAVE_AREA = new StructT('WOW64_FLOATING_SAVE_AREA', {
  ErrorSelector: DWORD,
  DataOffset: DWORD,
  DataSelector: DWORD,
- RegisterArea: ARRAY(BYTE, WOW64_SIZE_OF_80387_REGISTERS),
+ RegisterArea: new ArrayT(BYTE, WOW64_SIZE_OF_80387_REGISTERS),
  Cr0NpxState: DWORD
 });
 
@@ -3181,7 +3198,7 @@ var WOW64_CONTEXT = new StructT('WOW64_CONTEXT', {
  EFlags: DWORD,
  Esp: DWORD,
  SegSs: DWORD,
- ExtendedRegisters: ARRAY(BYTE, WOW64_MAXIMUM_SUPPORTED_EXTENSION)
+ ExtendedRegisters: new ArrayT(BYTE, WOW64_MAXIMUM_SUPPORTED_EXTENSION)
 });
 
 var WOW64_LDT_ENTRY = new StructT('WOW64_LDT_ENTRY', {
@@ -3221,7 +3238,7 @@ var EXCEPTION_RECORD32 = new StructT('EXCEPTION_RECORD32', {
  ExceptionRecord: DWORD,
  ExceptionAddress: DWORD,
  NumberParameters: DWORD,
- ExceptionInformation: ARRAY(DWORD, EXCEPTION_MAXIMUM_PARAMETERS)
+ ExceptionInformation: new ArrayT(DWORD, EXCEPTION_MAXIMUM_PARAMETERS)
 });
 
 var EXCEPTION_RECORD64 = new StructT('EXCEPTION_RECORD64', {
@@ -3231,7 +3248,7 @@ var EXCEPTION_RECORD64 = new StructT('EXCEPTION_RECORD64', {
  ExceptionAddress: DWORD64,
  NumberParameters: DWORD,
  __unusedAlignment: DWORD,
- ExceptionInformation: ARRAY(DWORD64, EXCEPTION_MAXIMUM_PARAMETERS)
+ ExceptionInformation: new ArrayT(DWORD64, EXCEPTION_MAXIMUM_PARAMETERS)
 });
 
 var EXCEPTION_POINTERS = new StructT('EXCEPTION_POINTERS', {
@@ -3252,14 +3269,14 @@ var LUID_AND_ATTRIBUTES = new StructT('LUID_AND_ATTRIBUTES', {
 });
 
 var SID_IDENTIFIER_AUTHORITY = new StructT('SID_IDENTIFIER_AUTHORITY', {
- Value: ARRAY(BYTE, 6)
+ Value: new ArrayT(BYTE, 6)
 });
 
 var SID = new StructT('SID', {
  Revision: BYTE,
  SubAuthorityCount: BYTE,
  IdentifierAuthority: SID_IDENTIFIER_AUTHORITY,
- SubAuthority: ARRAY(DWORD, ANYSIZE_ARRAY)
+ SubAuthority: new ArrayT(DWORD, ANYSIZE_new ArrayT)
 });
 
 var SID_AND_ATTRIBUTES = new StructT('SID_AND_ATTRIBUTES', {
@@ -3270,7 +3287,7 @@ var SID_AND_ATTRIBUTES = new StructT('SID_AND_ATTRIBUTES', {
 var SID_AND_ATTRIBUTES_HASH = new StructT('SID_AND_ATTRIBUTES_HASH', {
  SidCount: DWORD,
  SidAttr: PSID_AND_ATTRIBUTES,
- Hash: ARRAY(SID_HASH_ENTRY, SID_HASH_SIZE)
+ Hash: new ArrayT(SID_HASH_ENTRY, SID_HASH_SIZE)
 });
 
 var ACL = new StructT('ACL', {
@@ -3452,11 +3469,11 @@ var OBJECT_TYPE_LIST = new StructT('OBJECT_TYPE_LIST', {
 var PRIVILEGE_SET = new StructT('PRIVILEGE_SET', {
  PrivilegeCount: DWORD,
  Control: DWORD,
- Privilege: ARRAY(LUID_AND_ATTRIBUTES, ANYSIZE_ARRAY)
+ Privilege: new ArrayT(LUID_AND_ATTRIBUTES, ANYSIZE_new ArrayT)
 });
 
 var ACCESS_REASONS = new StructT('ACCESS_REASONS', {
- Data: ARRAY(ACCESS_REASON, 32)
+ Data: new ArrayT(ACCESS_REASON, 32)
 });
 
 var SE_SECURITY_DESCRIPTOR = new StructT('SE_SECURITY_DESCRIPTOR', {
@@ -3491,12 +3508,12 @@ var TOKEN_USER = new StructT('TOKEN_USER', {
 
 var TOKEN_GROUPS = new StructT('TOKEN_GROUPS', {
  GroupCount: DWORD,
- Groups: ARRAY(SID_AND_ATTRIBUTES, ANYSIZE_ARRAY)
+ Groups: new ArrayT(SID_AND_ATTRIBUTES, ANYSIZE_new ArrayT)
 });
 
 var TOKEN_PRIVILEGES = new StructT('TOKEN_PRIVILEGES', {
  PrivilegeCount: DWORD,
- Privileges: ARRAY(LUID_AND_ATTRIBUTES, ANYSIZE_ARRAY)
+ Privileges: new ArrayT(LUID_AND_ATTRIBUTES, ANYSIZE_new ArrayT)
 });
 
 var TOKEN_OWNER = new StructT('TOKEN_OWNER', {
@@ -3552,11 +3569,11 @@ var TOKEN_ACCESS_INFORMATION = new StructT('TOKEN_ACCESS_INFORMATION', {
 });
 
 var TOKEN_AUDIT_POLICY = new StructT('TOKEN_AUDIT_POLICY', {
- PerUserPolicy: ARRAY(BYTE, undefined)
+ PerUserPolicy: new ArrayT(BYTE, undefined)
 });
 
 var TOKEN_SOURCE = new StructT('TOKEN_SOURCE', {
- SourceName: ARRAY(CHAR, TOKEN_SOURCE_LENGTH),
+ SourceName: new ArrayT(CHAR, TOKEN_SOURCE_LENGTH),
  SourceIdentifier: LUID
 });
 
@@ -3598,7 +3615,7 @@ var SE_IMPERSONATION_STATE = new StructT('SE_IMPERSONATION_STATE', {
  Level: SECURITY_IMPERSONATION_LEVEL
 });
 
-var JOB_SET_ARRAY = new StructT('JOB_SET_ARRAY', {
+var JOB_SET_new ArrayT = new StructT('JOB_SET_new ArrayT', {
  JobHandle: HANDLE,
  MemberLevel: DWORD,
  Flags: DWORD
@@ -3711,7 +3728,7 @@ var JOBOBJECT_EXTENDED_LIMIT_INFORMATION = new StructT('JOBOBJECT_EXTENDED_LIMIT
 var JOBOBJECT_BASIC_PROCESS_ID_LIST = new StructT('JOBOBJECT_BASIC_PROCESS_ID_LIST', {
  NumberOfAssignedProcesses: DWORD,
  NumberOfProcessIdsInList: DWORD,
- ProcessIdList: ARRAY(ULONG_PTR, 1)
+ ProcessIdList: new ArrayT(ULONG_PTR, 1)
 });
 
 var JOBOBJECT_BASIC_UI_RESTRICTIONS = new StructT('JOBOBJECT_BASIC_UI_RESTRICTIONS', {
@@ -3767,14 +3784,14 @@ var undefined = new StructT('undefined', {
 
 var PROCESSOR_RELATIONSHIP = new StructT('PROCESSOR_RELATIONSHIP', {
  Flags: BYTE,
- Reserved: ARRAY(BYTE, 21),
+ Reserved: new ArrayT(BYTE, 21),
  GroupCount: WORD,
- GroupMask: ARRAY(GROUP_AFFINITY, ANYSIZE_ARRAY)
+ GroupMask: new ArrayT(GROUP_AFFINITY, ANYSIZE_new ArrayT)
 });
 
 var NUMA_NODE_RELATIONSHIP = new StructT('NUMA_NODE_RELATIONSHIP', {
  NodeNumber: DWORD,
- Reserved: ARRAY(BYTE, 20),
+ Reserved: new ArrayT(BYTE, 20),
  GroupMask: GROUP_AFFINITY
 });
 
@@ -3784,22 +3801,22 @@ var CACHE_RELATIONSHIP = new StructT('CACHE_RELATIONSHIP', {
  LineSize: WORD,
  CacheSize: DWORD,
  Type: PROCESSOR_CACHE_TYPE,
- Reserved: ARRAY(BYTE, 20),
+ Reserved: new ArrayT(BYTE, 20),
  GroupMask: GROUP_AFFINITY
 });
 
 var PROCESSOR_GROUP_INFO = new StructT('PROCESSOR_GROUP_INFO', {
  MaximumProcessorCount: BYTE,
  ActiveProcessorCount: BYTE,
- Reserved: ARRAY(BYTE, 38),
+ Reserved: new ArrayT(BYTE, 38),
  ActiveProcessorMask: KAFFINITY
 });
 
 var GROUP_RELATIONSHIP = new StructT('GROUP_RELATIONSHIP', {
  MaximumGroupCount: WORD,
  ActiveGroupCount: WORD,
- Reserved: ARRAY(BYTE, 20),
- GroupInfo: ARRAY(PROCESSOR_GROUP_INFO, ANYSIZE_ARRAY)
+ Reserved: new ArrayT(BYTE, 20),
+ GroupInfo: new ArrayT(PROCESSOR_GROUP_INFO, ANYSIZE_new ArrayT)
 });
 
 var SYSTEM_LOGICAL_PROCESSOR_INFORMATION_EX = new StructT('SYSTEM_LOGICAL_PROCESSOR_INFORMATION_EX', {
@@ -3820,7 +3837,7 @@ var XSTATE_CONFIGURATION = new StructT('XSTATE_CONFIGURATION', {
  EnabledFeatures: DWORD64,
  Size: DWORD,
  OptimizedSave: DWORD,
- Features: ARRAY(XSTATE_FEATURE, MAXIMUM_XSTATE_FEATURES)
+ Features: new ArrayT(XSTATE_FEATURE, MAXIMUM_XSTATE_FEATURES)
 });
 
 var MEMORY_BASIC_INFORMATION = new StructT('MEMORY_BASIC_INFORMATION', {
@@ -3859,7 +3876,7 @@ var FILE_NOTIFY_INFORMATION = new StructT('FILE_NOTIFY_INFORMATION', {
  NextEntryOffset: DWORD,
  Action: DWORD,
  FileNameLength: DWORD,
- FileName: ARRAY(WCHAR, 1)
+ FileName: new ArrayT(WCHAR, 1)
 });
 
 var REPARSE_GUID_DATA_BUFFER = new StructT('REPARSE_GUID_DATA_BUFFER', {
@@ -3867,11 +3884,11 @@ var REPARSE_GUID_DATA_BUFFER = new StructT('REPARSE_GUID_DATA_BUFFER', {
  ReparseDataLength: WORD,
  Reserved: WORD,
  ReparseGuid: GUID,
- GenericReparseBuffer: 
+ GenericReparseBuffer:
 });
 
 var undefined = new StructT('undefined', {
- DataBuffer: ARRAY(BYTE, 1)
+ DataBuffer: new ArrayT(BYTE, 1)
 });
 
 var CM_POWER_DATA = new StructT('CM_POWER_DATA', {
@@ -3881,7 +3898,7 @@ var CM_POWER_DATA = new StructT('CM_POWER_DATA', {
  PD_D1Latency: DWORD,
  PD_D2Latency: DWORD,
  PD_D3Latency: DWORD,
- PD_PowerStateMapping: ARRAY(DEVICE_POWER_STATE, POWER_SYSTEM_MAXIMUM),
+ PD_PowerStateMapping: new ArrayT(DEVICE_POWER_STATE, POWER_SYSTEM_MAXIMUM),
  PD_DeepestSystemWake: SYSTEM_POWER_STATE
 });
 
@@ -3890,7 +3907,7 @@ var SET_POWER_SETTING_VALUE = new StructT('SET_POWER_SETTING_VALUE', {
  Guid: GUID,
  PowerCondition: SYSTEM_POWER_CONDITION,
  DataLength: DWORD,
- Data: ARRAY(BYTE, ANYSIZE_ARRAY)
+ Data: new ArrayT(BYTE, ANYSIZE_new ArrayT)
 });
 
 var NOTIFY_USER_POWER_SETTING = new StructT('NOTIFY_USER_POWER_SETTING', {
@@ -3934,7 +3951,7 @@ var PPM_WMI_IDLE_STATES = new StructT('PPM_WMI_IDLE_STATES', {
  TargetState: DWORD,
  OldState: DWORD,
  TargetProcessors: DWORD64,
- State: ARRAY(PPM_WMI_IDLE_STATE, ANYSIZE_ARRAY)
+ State: new ArrayT(PPM_WMI_IDLE_STATE, ANYSIZE_new ArrayT)
 });
 
 var PPM_WMI_IDLE_STATES_EX = new StructT('PPM_WMI_IDLE_STATES_EX', {
@@ -3943,7 +3960,7 @@ var PPM_WMI_IDLE_STATES_EX = new StructT('PPM_WMI_IDLE_STATES_EX', {
  TargetState: DWORD,
  OldState: DWORD,
  TargetProcessors: PVOID,
- State: ARRAY(PPM_WMI_IDLE_STATE, ANYSIZE_ARRAY)
+ State: new ArrayT(PPM_WMI_IDLE_STATE, ANYSIZE_new ArrayT)
 });
 
 var PPM_WMI_PERF_STATE = new StructT('PPM_WMI_PERF_STATE', {
@@ -3984,7 +4001,7 @@ var PPM_WMI_PERF_STATES = new StructT('PPM_WMI_PERF_STATES', {
  FeedbackHandler: DWORD,
  Reserved1: DWORD,
  Reserved2: DWORD64,
- State: ARRAY(PPM_WMI_PERF_STATE, ANYSIZE_ARRAY)
+ State: new ArrayT(PPM_WMI_PERF_STATE, ANYSIZE_new ArrayT)
 });
 
 var PPM_WMI_PERF_STATES_EX = new StructT('PPM_WMI_PERF_STATES_EX', {
@@ -4008,7 +4025,7 @@ var PPM_WMI_PERF_STATES_EX = new StructT('PPM_WMI_PERF_STATES_EX', {
  FeedbackHandler: DWORD,
  Reserved1: DWORD,
  Reserved2: DWORD64,
- State: ARRAY(PPM_WMI_PERF_STATE, ANYSIZE_ARRAY)
+ State: new ArrayT(PPM_WMI_PERF_STATE, ANYSIZE_new ArrayT)
 });
 
 var PPM_IDLE_STATE_ACCOUNTING = new StructT('PPM_IDLE_STATE_ACCOUNTING', {
@@ -4016,7 +4033,7 @@ var PPM_IDLE_STATE_ACCOUNTING = new StructT('PPM_IDLE_STATE_ACCOUNTING', {
  FailedTransitions: DWORD,
  InvalidBucketIndex: DWORD,
  TotalTime: DWORD64,
- IdleTimeBuckets: ARRAY(DWORD, PROC_IDLE_BUCKET_COUNT)
+ IdleTimeBuckets: new ArrayT(DWORD, PROC_IDLE_BUCKET_COUNT)
 });
 
 var PPM_IDLE_ACCOUNTING = new StructT('PPM_IDLE_ACCOUNTING', {
@@ -4024,7 +4041,7 @@ var PPM_IDLE_ACCOUNTING = new StructT('PPM_IDLE_ACCOUNTING', {
  TotalTransitions: DWORD,
  ResetCount: DWORD,
  StartTime: DWORD64,
- State: ARRAY(PPM_IDLE_STATE_ACCOUNTING, ANYSIZE_ARRAY)
+ State: new ArrayT(PPM_IDLE_STATE_ACCOUNTING, ANYSIZE_new ArrayT)
 });
 
 var PPM_IDLE_STATE_BUCKET_EX = new StructT('PPM_IDLE_STATE_BUCKET_EX', {
@@ -4041,7 +4058,7 @@ var PPM_IDLE_STATE_ACCOUNTING_EX = new StructT('PPM_IDLE_STATE_ACCOUNTING_EX', {
  InvalidBucketIndex: DWORD,
  MinTimeUs: DWORD,
  MaxTimeUs: DWORD,
- IdleTimeBuckets: ARRAY(PPM_IDLE_STATE_BUCKET_EX, PROC_IDLE_BUCKET_COUNT_EX)
+ IdleTimeBuckets: new ArrayT(PPM_IDLE_STATE_BUCKET_EX, PROC_IDLE_BUCKET_COUNT_EX)
 });
 
 var PPM_IDLE_ACCOUNTING_EX = new StructT('PPM_IDLE_ACCOUNTING_EX', {
@@ -4049,7 +4066,7 @@ var PPM_IDLE_ACCOUNTING_EX = new StructT('PPM_IDLE_ACCOUNTING_EX', {
  TotalTransitions: DWORD,
  ResetCount: DWORD,
  StartTime: DWORD64,
- State: ARRAY(PPM_IDLE_STATE_ACCOUNTING_EX, ANYSIZE_ARRAY)
+ State: new ArrayT(PPM_IDLE_STATE_ACCOUNTING_EX, ANYSIZE_new ArrayT)
 });
 
 var PPM_PERFSTATE_EVENT = new StructT('PPM_PERFSTATE_EVENT', {
@@ -4091,7 +4108,7 @@ var POWER_ACTION_POLICY = new StructT('POWER_ACTION_POLICY', {
 
 var SYSTEM_POWER_LEVEL = new StructT('SYSTEM_POWER_LEVEL', {
  Enable: BOOLEAN,
- Spare: ARRAY(BYTE, 3),
+ Spare: new ArrayT(BYTE, 3),
  BatteryLevel: DWORD,
  PowerPolicy: POWER_ACTION_POLICY,
  MinSystemState: SYSTEM_POWER_STATE
@@ -4108,7 +4125,7 @@ var SYSTEM_POWER_POLICY = new StructT('SYSTEM_POWER_POLICY', {
  IdleTimeout: DWORD,
  IdleSensitivity: BYTE,
  DynamicThrottle: BYTE,
- Spare2: ARRAY(BYTE, 2),
+ Spare2: new ArrayT(BYTE, 2),
  MinSleep: SYSTEM_POWER_STATE,
  MaxSleep: SYSTEM_POWER_STATE,
  ReducedLatencySleep: SYSTEM_POWER_STATE,
@@ -4116,10 +4133,10 @@ var SYSTEM_POWER_POLICY = new StructT('SYSTEM_POWER_POLICY', {
  Spare3: DWORD,
  DozeS4Timeout: DWORD,
  BroadcastCapacityResolution: DWORD,
- DischargePolicy: ARRAY(SYSTEM_POWER_LEVEL, NUM_DISCHARGE_POLICIES),
+ DischargePolicy: new ArrayT(SYSTEM_POWER_LEVEL, NUM_DISCHARGE_POLICIES),
  VideoTimeout: DWORD,
  VideoDimDisplay: BOOLEAN,
- VideoReserved: ARRAY(DWORD, 3),
+ VideoReserved: new ArrayT(DWORD, 3),
  SpindownTimeout: DWORD,
  OptimizeForPower: BOOLEAN,
  FanThrottleTolerance: BYTE,
@@ -4132,14 +4149,14 @@ var PROCESSOR_IDLESTATE_INFO = new StructT('PROCESSOR_IDLESTATE_INFO', {
  TimeCheck: DWORD,
  DemotePercent: BYTE,
  PromotePercent: BYTE,
- Spare: ARRAY(BYTE, 2)
+ Spare: new ArrayT(BYTE, 2)
 });
 
 var PROCESSOR_IDLESTATE_POLICY = new StructT('PROCESSOR_IDLESTATE_POLICY', {
  Revision: WORD,
  Flags: c:winnt.h@338317@SA@PROCESSOR_IDLESTATE_POLICY@Ua,
  PolicyCount: DWORD,
- Policy: ARRAY(PROCESSOR_IDLESTATE_INFO, PROCESSOR_IDLESTATE_POLICY_COUNT)
+ Policy: new ArrayT(PROCESSOR_IDLESTATE_INFO, PROCESSOR_IDLESTATE_POLICY_COUNT)
 });
 
 var undefined = new StructT('undefined', {
@@ -4154,7 +4171,7 @@ var PROCESSOR_POWER_POLICY_INFO = new StructT('PROCESSOR_POWER_POLICY_INFO', {
  PromoteLimit: DWORD,
  DemotePercent: BYTE,
  PromotePercent: BYTE,
- Spare: ARRAY(BYTE, 2),
+ Spare: new ArrayT(BYTE, 2),
  AllowDemotion: DWORD,
  AllowPromotion: DWORD,
  Reserved: DWORD
@@ -4163,11 +4180,11 @@ var PROCESSOR_POWER_POLICY_INFO = new StructT('PROCESSOR_POWER_POLICY_INFO', {
 var PROCESSOR_POWER_POLICY = new StructT('PROCESSOR_POWER_POLICY', {
  Revision: DWORD,
  DynamicThrottle: BYTE,
- Spare: ARRAY(BYTE, 3),
+ Spare: new ArrayT(BYTE, 3),
  DisableCStates: DWORD,
  Reserved: DWORD,
  PolicyCount: DWORD,
- Policy: ARRAY(PROCESSOR_POWER_POLICY_INFO, 3)
+ Policy: new ArrayT(PROCESSOR_POWER_POLICY_INFO, 3)
 });
 
 var PROCESSOR_PERFSTATE_POLICY = new StructT('PROCESSOR_PERFSTATE_POLICY', {
@@ -4217,12 +4234,12 @@ var SYSTEM_POWER_CAPABILITIES = new StructT('SYSTEM_POWER_CAPABILITIES', {
  ProcessorMinThrottle: BYTE,
  ProcessorMaxThrottle: BYTE,
  FastSystemS4: BOOLEAN,
- spare2: ARRAY(BYTE, 3),
+ spare2: new ArrayT(BYTE, 3),
  DiskSpinDown: BOOLEAN,
- spare3: ARRAY(BYTE, 8),
+ spare3: new ArrayT(BYTE, 8),
  SystemBatteriesPresent: BOOLEAN,
  BatteriesAreShortTerm: BOOLEAN,
- BatteryScale: ARRAY(BATTERY_REPORTING_SCALE, 3),
+ BatteryScale: new ArrayT(BATTERY_REPORTING_SCALE, 3),
  AcOnLineWake: SYSTEM_POWER_STATE,
  SoftLidWake: SYSTEM_POWER_STATE,
  RtcWake: SYSTEM_POWER_STATE,
@@ -4235,7 +4252,7 @@ var SYSTEM_BATTERY_STATE = new StructT('SYSTEM_BATTERY_STATE', {
  BatteryPresent: BOOLEAN,
  Charging: BOOLEAN,
  Discharging: BOOLEAN,
- Spare1: ARRAY(BOOLEAN, 4),
+ Spare1: new ArrayT(BOOLEAN, 4),
  MaxCapacity: DWORD,
  RemainingCapacity: DWORD,
  Rate: DWORD,
@@ -4259,10 +4276,10 @@ var IMAGE_DOS_HEADER = new StructT('IMAGE_DOS_HEADER', {
  e_cs: WORD,
  e_lfarlc: WORD,
  e_ovno: WORD,
- e_res: ARRAY(WORD, 4),
+ e_res: new ArrayT(WORD, 4),
  e_oemid: WORD,
  e_oeminfo: WORD,
- e_res2: ARRAY(WORD, 10),
+ e_res2: new ArrayT(WORD, 10),
  e_lfanew: LONG
 });
 
@@ -4346,7 +4363,7 @@ var IMAGE_VXD_HEADER = new StructT('IMAGE_VXD_HEADER', {
  e32_instpreload: DWORD,
  e32_instdemand: DWORD,
  e32_heapsize: DWORD,
- e32_res3: ARRAY(BYTE, 12),
+ e32_res3: new ArrayT(BYTE, 12),
  e32_winresoff: DWORD,
  e32_winreslen: DWORD,
  e32_devid: WORD,
@@ -4399,7 +4416,7 @@ var IMAGE_OPTIONAL_HEADER = new StructT('IMAGE_OPTIONAL_HEADER', {
  SizeOfHeapCommit: DWORD,
  LoaderFlags: DWORD,
  NumberOfRvaAndSizes: DWORD,
- DataDirectory: ARRAY(IMAGE_DATA_DIRECTORY, IMAGE_NUMBEROF_DIRECTORY_ENTRIES)
+ DataDirectory: new ArrayT(IMAGE_DATA_DIRECTORY, IMAGE_NUMBEROF_DIRECTORY_ENTRIES)
 });
 
 var IMAGE_ROM_OPTIONAL_HEADER = new StructT('IMAGE_ROM_OPTIONAL_HEADER', {
@@ -4414,7 +4431,7 @@ var IMAGE_ROM_OPTIONAL_HEADER = new StructT('IMAGE_ROM_OPTIONAL_HEADER', {
  BaseOfData: DWORD,
  BaseOfBss: DWORD,
  GprMask: DWORD,
- CprMask: ARRAY(DWORD, 4),
+ CprMask: new ArrayT(DWORD, 4),
  GpValue: DWORD
 });
 
@@ -4448,7 +4465,7 @@ var IMAGE_OPTIONAL_HEADER64 = new StructT('IMAGE_OPTIONAL_HEADER64', {
  SizeOfHeapCommit: ULONGLONG,
  LoaderFlags: DWORD,
  NumberOfRvaAndSizes: DWORD,
- DataDirectory: ARRAY(IMAGE_DATA_DIRECTORY, IMAGE_NUMBEROF_DIRECTORY_ENTRIES)
+ DataDirectory: new ArrayT(IMAGE_DATA_DIRECTORY, IMAGE_NUMBEROF_DIRECTORY_ENTRIES)
 });
 
 var IMAGE_NT_HEADERS64 = new StructT('IMAGE_NT_HEADERS64', {
@@ -4508,7 +4525,7 @@ var ANON_OBJECT_HEADER_BIGOBJ = new StructT('ANON_OBJECT_HEADER_BIGOBJ', {
 });
 
 var IMAGE_SECTION_HEADER = new StructT('IMAGE_SECTION_HEADER', {
- Name: ARRAY(BYTE, IMAGE_SIZEOF_SHORT_NAME),
+ Name: new ArrayT(BYTE, IMAGE_SIZEOF_SHORT_NAME),
  Misc: c:winnt.h@366160@S@_IMAGE_SECTION_HEADER@Ua,
  VirtualAddress: DWORD,
  SizeOfRawData: DWORD,
@@ -4552,7 +4569,7 @@ var IMAGE_AUX_SYMBOL_TOKEN_DEF = new StructT('IMAGE_AUX_SYMBOL_TOKEN_DEF', {
  bAuxType: BYTE,
  bReserved: BYTE,
  SymbolTableIndex: DWORD,
- rgbReserved: ARRAY(BYTE, 12)
+ rgbReserved: new ArrayT(BYTE, 12)
 });
 
 var undefined = new StructT('undefined', {
@@ -4573,11 +4590,11 @@ var undefined = new StructT('undefined', {
 });
 
 var undefined = new StructT('undefined', {
- Dimension: ARRAY(WORD, 4)
+ Dimension: new ArrayT(WORD, 4)
 });
 
 var undefined = new StructT('undefined', {
- Name: ARRAY(BYTE, IMAGE_SIZEOF_SYMBOL)
+ Name: new ArrayT(BYTE, IMAGE_SIZEOF_SYMBOL)
 });
 
 var undefined = new StructT('undefined', {
@@ -4593,17 +4610,17 @@ var undefined = new StructT('undefined', {
 
 var undefined = new StructT('undefined', {
  crc: DWORD,
- rgbReserved: ARRAY(BYTE, 14)
+ rgbReserved: new ArrayT(BYTE, 14)
 });
 
 var undefined = new StructT('undefined', {
  WeakDefaultSymIndex: DWORD,
  WeakSearchType: DWORD,
- rgbReserved: ARRAY(BYTE, 12)
+ rgbReserved: new ArrayT(BYTE, 12)
 });
 
 var undefined = new StructT('undefined', {
- Name: ARRAY(BYTE, undefined)
+ Name: new ArrayT(BYTE, undefined)
 });
 
 var undefined = new StructT('undefined', {
@@ -4615,17 +4632,17 @@ var undefined = new StructT('undefined', {
  Selection: BYTE,
  bReserved: BYTE,
  HighNumber: SHORT,
- rgbReserved: ARRAY(BYTE, 2)
+ rgbReserved: new ArrayT(BYTE, 2)
 });
 
 var undefined = new StructT('undefined', {
  TokenDef: IMAGE_AUX_SYMBOL_TOKEN_DEF,
- rgbReserved: ARRAY(BYTE, 2)
+ rgbReserved: new ArrayT(BYTE, 2)
 });
 
 var undefined = new StructT('undefined', {
  crc: DWORD,
- rgbReserved: ARRAY(BYTE, 16)
+ rgbReserved: new ArrayT(BYTE, 16)
 });
 
 var IMAGE_RELOCATION = new StructT('IMAGE_RELOCATION', {
@@ -4644,13 +4661,13 @@ var IMAGE_BASE_RELOCATION = new StructT('IMAGE_BASE_RELOCATION', {
 });
 
 var IMAGE_ARCHIVE_MEMBER_HEADER = new StructT('IMAGE_ARCHIVE_MEMBER_HEADER', {
- Name: ARRAY(BYTE, 16),
- Date: ARRAY(BYTE, 12),
- UserID: ARRAY(BYTE, 6),
- GroupID: ARRAY(BYTE, 6),
- Mode: ARRAY(BYTE, 8),
- Size: ARRAY(BYTE, 10),
- EndHeader: ARRAY(BYTE, 2)
+ Name: new ArrayT(BYTE, 16),
+ Date: new ArrayT(BYTE, 12),
+ UserID: new ArrayT(BYTE, 6),
+ GroupID: new ArrayT(BYTE, 6),
+ Mode: new ArrayT(BYTE, 8),
+ Size: new ArrayT(BYTE, 10),
+ EndHeader: new ArrayT(BYTE, 2)
 });
 
 var IMAGE_EXPORT_DIRECTORY = new StructT('IMAGE_EXPORT_DIRECTORY', {
@@ -4669,7 +4686,7 @@ var IMAGE_EXPORT_DIRECTORY = new StructT('IMAGE_EXPORT_DIRECTORY', {
 
 var IMAGE_IMPORT_BY_NAME = new StructT('IMAGE_IMPORT_BY_NAME', {
  Hint: WORD,
- Name: ARRAY(BYTE, 1)
+ Name: new ArrayT(BYTE, 1)
 });
 
 var IMAGE_THUNK_DATA64 = new StructT('IMAGE_THUNK_DATA64', {
@@ -4739,12 +4756,12 @@ var undefined = new StructT('undefined', {
 
 var IMAGE_RESOURCE_DIRECTORY_STRING = new StructT('IMAGE_RESOURCE_DIRECTORY_STRING', {
  Length: WORD,
- NameString: ARRAY(CHAR,  1 )
+ NameString: new ArrayT(CHAR,  1 )
 });
 
 var IMAGE_RESOURCE_DIR_STRING_U = new StructT('IMAGE_RESOURCE_DIR_STRING_U', {
  Length: WORD,
- NameString: ARRAY(WCHAR,  1 )
+ NameString: new ArrayT(WCHAR,  1 )
 });
 
 var IMAGE_RESOURCE_DATA_ENTRY = new StructT('IMAGE_RESOURCE_DATA_ENTRY', {
@@ -4869,8 +4886,8 @@ var IMAGE_DEBUG_MISC = new StructT('IMAGE_DEBUG_MISC', {
  DataType: DWORD,
  Length: DWORD,
  Unicode: BOOLEAN,
- Reserved: ARRAY(BYTE,  3 ),
- Data: ARRAY(BYTE,  1 )
+ Reserved: new ArrayT(BYTE,  3 ),
+ Data: new ArrayT(BYTE,  1 )
 });
 
 var IMAGE_FUNCTION_ENTRY = new StructT('IMAGE_FUNCTION_ENTRY', {
@@ -4897,7 +4914,7 @@ var IMAGE_SEPARATE_DEBUG_HEADER = new StructT('IMAGE_SEPARATE_DEBUG_HEADER', {
  ExportedNamesSize: DWORD,
  DebugDirectorySize: DWORD,
  SectionAlignment: DWORD,
- Reserved: ARRAY(DWORD, 2)
+ Reserved: new ArrayT(DWORD, 2)
 });
 
 var NON_PAGED_DEBUG_INFO = new StructT('NON_PAGED_DEBUG_INFO', {
@@ -4959,7 +4976,7 @@ var undefined = new StructT('undefined', {
 var MESSAGE_RESOURCE_ENTRY = new StructT('MESSAGE_RESOURCE_ENTRY', {
  Length: WORD,
  Flags: WORD,
- Text: ARRAY(BYTE,  1 )
+ Text: new ArrayT(BYTE,  1 )
 });
 
 var MESSAGE_RESOURCE_BLOCK = new StructT('MESSAGE_RESOURCE_BLOCK', {
@@ -4970,7 +4987,7 @@ var MESSAGE_RESOURCE_BLOCK = new StructT('MESSAGE_RESOURCE_BLOCK', {
 
 var MESSAGE_RESOURCE_DATA = new StructT('MESSAGE_RESOURCE_DATA', {
  NumberOfBlocks: DWORD,
- Blocks: ARRAY(MESSAGE_RESOURCE_BLOCK,  1 )
+ Blocks: new ArrayT(MESSAGE_RESOURCE_BLOCK,  1 )
 });
 
 var OSVERSIONINFO = new StructT('OSVERSIONINFO', {
@@ -4979,7 +4996,7 @@ var OSVERSIONINFO = new StructT('OSVERSIONINFO', {
  dwMinorVersion: DWORD,
  dwBuildNumber: DWORD,
  dwPlatformId: DWORD,
- szCSDVersion: ARRAY(CHAR,  128 )
+ szCSDVersion: new ArrayT(CHAR,  128 )
 });
 
 var RTL_OSVERSIONINFOW = new StructT('RTL_OSVERSIONINFOW', {
@@ -4988,7 +5005,7 @@ var RTL_OSVERSIONINFOW = new StructT('RTL_OSVERSIONINFOW', {
  dwMinorVersion: DWORD,
  dwBuildNumber: DWORD,
  dwPlatformId: DWORD,
- szCSDVersion: ARRAY(WCHAR,  128 )
+ szCSDVersion: new ArrayT(WCHAR,  128 )
 });
 
 var OSVERSIONINFOEX = new StructT('OSVERSIONINFOEX', {
@@ -4997,7 +5014,7 @@ var OSVERSIONINFOEX = new StructT('OSVERSIONINFOEX', {
  dwMinorVersion: DWORD,
  dwBuildNumber: DWORD,
  dwPlatformId: DWORD,
- szCSDVersion: ARRAY(CHAR,  128 ),
+ szCSDVersion: new ArrayT(CHAR,  128 ),
  wServicePackMajor: WORD,
  wServicePackMinor: WORD,
  wSuiteMask: WORD,
@@ -5011,7 +5028,7 @@ var RTL_OSVERSIONINFOEXW = new StructT('RTL_OSVERSIONINFOEXW', {
  dwMinorVersion: DWORD,
  dwBuildNumber: DWORD,
  dwPlatformId: DWORD,
- szCSDVersion: ARRAY(WCHAR,  128 ),
+ szCSDVersion: new ArrayT(WCHAR,  128 ),
  wServicePackMajor: WORD,
  wServicePackMinor: WORD,
  wSuiteMask: WORD,
@@ -5102,7 +5119,7 @@ var ACTIVATION_CONTEXT_COMPATIBILITY_INFORMATION = new StructT('ACTIVATION_CONTE
 var SUPPORTED_OS_INFO = new StructT('SUPPORTED_OS_INFO', {
  OsCount: WORD,
  MitigationExist: WORD,
- OsList: ARRAY(WORD, undefined)
+ OsList: new ArrayT(WORD, undefined)
 });
 
 var ACTIVATION_CONTEXT_DETAILED_INFORMATION = new StructT('ACTIVATION_CONTEXT_DETAILED_INFORMATION', {
@@ -5135,7 +5152,7 @@ var PERFORMANCE_DATA = new StructT('PERFORMANCE_DATA', {
  CycleTime: DWORD64,
  RetryCount: DWORD,
  Reserved: DWORD,
- HwCounters: ARRAY(HARDWARE_COUNTER_DATA, MAX_HW_COUNTERS)
+ HwCounters: new ArrayT(HARDWARE_COUNTER_DATA, MAX_HW_COUNTERS)
 });
 
 var EVENTLOGRECORD = new StructT('EVENTLOGRECORD', {
@@ -5159,7 +5176,7 @@ var EVENTLOGRECORD = new StructT('EVENTLOGRECORD', {
 
 var _EVENTSFORLOGFILE = new StructT('_EVENTSFORLOGFILE', {
  ulSize: DWORD,
- szLogicalLogFile: ARRAY(WCHAR, MAXLOGICALLOGNAMESIZE),
+ szLogicalLogFile: new ArrayT(WCHAR, MAXLOGICALLOGNAMESIZE),
  ulNumRecords: DWORD,
  pEventLogRecords: UNEXPOSED
 });
@@ -5291,7 +5308,7 @@ var KCRM_TRANSACTION_BLOB = new StructT('KCRM_TRANSACTION_BLOB', {
  IsolationLevel: ULONG,
  IsolationFlags: ULONG,
  Timeout: ULONG,
- Description: ARRAY(WCHAR, MAX_TRANSACTION_DESCRIPTION_LENGTH)
+ Description: new ArrayT(WCHAR, MAX_TRANSACTION_DESCRIPTION_LENGTH)
 });
 
 var KCRM_PROTOCOL_BLOB = new StructT('KCRM_PROTOCOL_BLOB', {
@@ -5319,7 +5336,7 @@ var TRANSACTIONMANAGER_LOG_INFORMATION = new StructT('TRANSACTIONMANAGER_LOG_INF
 
 var TRANSACTIONMANAGER_LOGPATH_INFORMATION = new StructT('TRANSACTIONMANAGER_LOGPATH_INFORMATION', {
  LogPathLength: DWORD,
- LogPath: ARRAY(WCHAR, 1)
+ LogPath: new ArrayT(WCHAR, 1)
 });
 
 var TRANSACTIONMANAGER_RECOVERY_INFORMATION = new StructT('TRANSACTIONMANAGER_RECOVERY_INFORMATION', {
@@ -5336,7 +5353,7 @@ var TRANSACTION_PROPERTIES_INFORMATION = new StructT('TRANSACTION_PROPERTIES_INF
  Timeout: LARGE_INTEGER,
  Outcome: DWORD,
  DescriptionLength: DWORD,
- Description: ARRAY(WCHAR, 1)
+ Description: new ArrayT(WCHAR, 1)
 });
 
 var TRANSACTION_BIND_INFORMATION = new StructT('TRANSACTION_BIND_INFORMATION', {
@@ -5350,7 +5367,7 @@ var TRANSACTION_ENLISTMENT_PAIR = new StructT('TRANSACTION_ENLISTMENT_PAIR', {
 
 var TRANSACTION_ENLISTMENTS_INFORMATION = new StructT('TRANSACTION_ENLISTMENTS_INFORMATION', {
  NumberOfEnlistments: DWORD,
- EnlistmentPair: ARRAY(TRANSACTION_ENLISTMENT_PAIR, 1)
+ EnlistmentPair: new ArrayT(TRANSACTION_ENLISTMENT_PAIR, 1)
 });
 
 var TRANSACTION_SUPERIOR_ENLISTMENT_INFORMATION = new StructT('TRANSACTION_SUPERIOR_ENLISTMENT_INFORMATION', {
@@ -5360,7 +5377,7 @@ var TRANSACTION_SUPERIOR_ENLISTMENT_INFORMATION = new StructT('TRANSACTION_SUPER
 var RESOURCEMANAGER_BASIC_INFORMATION = new StructT('RESOURCEMANAGER_BASIC_INFORMATION', {
  ResourceManagerId: GUID,
  DescriptionLength: DWORD,
- Description: ARRAY(WCHAR, 1)
+ Description: new ArrayT(WCHAR, 1)
 });
 
 var RESOURCEMANAGER_COMPLETION_INFORMATION = new StructT('RESOURCEMANAGER_COMPLETION_INFORMATION', {
@@ -5386,13 +5403,13 @@ var TRANSACTION_LIST_ENTRY = new StructT('TRANSACTION_LIST_ENTRY', {
 
 var TRANSACTION_LIST_INFORMATION = new StructT('TRANSACTION_LIST_INFORMATION', {
  NumberOfTransactions: DWORD,
- TransactionInformation: ARRAY(TRANSACTION_LIST_ENTRY, 1)
+ TransactionInformation: new ArrayT(TRANSACTION_LIST_ENTRY, 1)
 });
 
 var KTMOBJECT_CURSOR = new StructT('KTMOBJECT_CURSOR', {
  LastQuery: GUID,
  ObjectIdCount: DWORD,
- ObjectIds: ARRAY(GUID, 1)
+ ObjectIds: new ArrayT(GUID, 1)
 });
 
 
@@ -5426,122 +5443,6 @@ var undefined = new StructT('undefined', {
 
 
 
-
-var HWND__ = new StructT('HWND__', {
- unused: int
-});
-
-var HHOOK__ = new StructT('HHOOK__', {
- unused: int
-});
-
-var HKEY__ = new StructT('HKEY__', {
- unused: int
-});
-
-var HACCEL__ = new StructT('HACCEL__', {
- unused: int
-});
-
-var HBITMAP__ = new StructT('HBITMAP__', {
- unused: int
-});
-
-var HBRUSH__ = new StructT('HBRUSH__', {
- unused: int
-});
-
-var HCOLORSPACE__ = new StructT('HCOLORSPACE__', {
- unused: int
-});
-
-var HDC__ = new StructT('HDC__', {
- unused: int
-});
-
-var HGLRC__ = new StructT('HGLRC__', {
- unused: int
-});
-
-var HDESK__ = new StructT('HDESK__', {
- unused: int
-});
-
-var HENHMETAFILE__ = new StructT('HENHMETAFILE__', {
- unused: int
-});
-
-var HFONT__ = new StructT('HFONT__', {
- unused: int
-});
-
-var HICON__ = new StructT('HICON__', {
- unused: int
-});
-
-var HMENU__ = new StructT('HMENU__', {
- unused: int
-});
-
-var HMETAFILE__ = new StructT('HMETAFILE__', {
- unused: int
-});
-
-var HINSTANCE__ = new StructT('HINSTANCE__', {
- unused: int
-});
-
-var HPALETTE__ = new StructT('HPALETTE__', {
- unused: int
-});
-
-var HPEN__ = new StructT('HPEN__', {
- unused: int
-});
-
-var HRGN__ = new StructT('HRGN__', {
- unused: int
-});
-
-var HRSRC__ = new StructT('HRSRC__', {
- unused: int
-});
-
-var HSPRITE__ = new StructT('HSPRITE__', {
- unused: int
-});
-
-var HLSURF__ = new StructT('HLSURF__', {
- unused: int
-});
-
-var HSTR__ = new StructT('HSTR__', {
- unused: int
-});
-
-var HTASK__ = new StructT('HTASK__', {
- unused: int
-});
-
-var HWINSTA__ = new StructT('HWINSTA__', {
- unused: int
-});
-
-var HKL__ = new StructT('HKL__', {
- unused: int
-});
-
-var HWINEVENTHOOK__ = new StructT('HWINEVENTHOOK__', {
- unused: int
-});
-
-var HMONITOR__ = new StructT('HMONITOR__', {
- unused: int
-});
-
-var HUMPD__ = new StructT('HUMPD__', {
- unused: int
-});
 
 var BORDERWIDTHS = new StructT('BORDERWIDTHS', {
  left: LONG,
@@ -5642,7 +5543,7 @@ var COMMPROP = new StructT('COMMPROP', {
  dwCurrentRxQueue: DWORD,
  dwProvSpec1: DWORD,
  dwProvSpec2: DWORD,
- wcProvChar: ARRAY(WCHAR, 1)
+ wcProvChar: new ArrayT(WCHAR, 1)
 });
 
 var COMSTAT = new StructT('COMSTAT', {
@@ -5705,7 +5606,7 @@ var COMMCONFIG = new StructT('COMMCONFIG', {
  dwProviderSubType: DWORD,
  dwProviderOffset: DWORD,
  dwProviderSize: DWORD,
- wcProviderData: ARRAY(WCHAR, 1)
+ wcProviderData: new ArrayT(WCHAR, 1)
 });
 
 var SYSTEM_INFO = new StructT('SYSTEM_INFO', {
@@ -5815,7 +5716,7 @@ var OFSTRUCT = new StructT('OFSTRUCT', {
  nErrCode: WORD,
  Reserved1: WORD,
  Reserved2: WORD,
- szPathName: ARRAY(CHAR, OFS_MAXPATHNAME)
+ szPathName: new ArrayT(CHAR, OFS_MAXPATHNAME)
 });
 
 var MEMORYSTATUSEX = new StructT('MEMORYSTATUSEX', {
@@ -5840,7 +5741,7 @@ var PROCESS_HEAP_ENTRY = new StructT('PROCESS_HEAP_ENTRY', {
 
 var undefined = new StructT('undefined', {
  hMem: HANDLE,
- dwReserved: ARRAY(DWORD,  3 )
+ dwReserved: new ArrayT(DWORD,  3 )
 });
 
 var undefined = new StructT('undefined', {
@@ -5886,23 +5787,23 @@ var BY_HANDLE_FILE_INFORMATION = new StructT('BY_HANDLE_FILE_INFORMATION', {
 
 var TIME_ZONE_INFORMATION = new StructT('TIME_ZONE_INFORMATION', {
  Bias: LONG,
- StandardName: ARRAY(WCHAR,  32 ),
+ StandardName: new ArrayT(WCHAR,  32 ),
  StandardDate: SYSTEMTIME,
  StandardBias: LONG,
- DaylightName: ARRAY(WCHAR,  32 ),
+ DaylightName: new ArrayT(WCHAR,  32 ),
  DaylightDate: SYSTEMTIME,
  DaylightBias: LONG
 });
 
 var DYNAMIC_TIME_ZONE_INFORMATION = new StructT('DYNAMIC_TIME_ZONE_INFORMATION', {
  Bias: LONG,
- StandardName: ARRAY(WCHAR,  32 ),
+ StandardName: new ArrayT(WCHAR,  32 ),
  StandardDate: SYSTEMTIME,
  StandardBias: LONG,
- DaylightName: ARRAY(WCHAR,  32 ),
+ DaylightName: new ArrayT(WCHAR,  32 ),
  DaylightDate: SYSTEMTIME,
  DaylightBias: LONG,
- TimeZoneKeyName: ARRAY(WCHAR,  128 ),
+ TimeZoneKeyName: new ArrayT(WCHAR,  128 ),
  DynamicDaylightTimeDisabled: BOOLEAN
 });
 
@@ -5911,7 +5812,7 @@ var WIN32_STREAM_ID = new StructT('WIN32_STREAM_ID', {
  dwStreamAttributes: DWORD,
  Size: LARGE_INTEGER,
  dwStreamNameSize: DWORD,
- cStreamName: ARRAY(WCHAR,  ANYSIZE_ARRAY )
+ cStreamName: new ArrayT(WCHAR,  ANYSIZE_new ArrayT )
 });
 
 var STARTUPINFO = new StructT('STARTUPINFO', {
@@ -5975,8 +5876,8 @@ var WIN32_FIND_DATA = new StructT('WIN32_FIND_DATA', {
  nFileSizeLow: DWORD,
  dwReserved0: DWORD,
  dwReserved1: DWORD,
- cFileName: ARRAY(CHAR,  MAX_PATH ),
- cAlternateFileName: ARRAY(CHAR,  14 )
+ cFileName: new ArrayT(CHAR,  MAX_PATH ),
+ cAlternateFileName: new ArrayT(CHAR,  14 )
 });
 
 var WIN32_FIND_DATAW = new StructT('WIN32_FIND_DATAW', {
@@ -5988,8 +5889,8 @@ var WIN32_FIND_DATAW = new StructT('WIN32_FIND_DATAW', {
  nFileSizeLow: DWORD,
  dwReserved0: DWORD,
  dwReserved1: DWORD,
- cFileName: ARRAY(WCHAR,  MAX_PATH ),
- cAlternateFileName: ARRAY(WCHAR,  14 )
+ cFileName: new ArrayT(WCHAR,  MAX_PATH ),
+ cAlternateFileName: new ArrayT(WCHAR,  14 )
 });
 
 var WIN32_FILE_ATTRIBUTE_DATA = new StructT('WIN32_FILE_ATTRIBUTE_DATA', {
@@ -6003,7 +5904,7 @@ var WIN32_FILE_ATTRIBUTE_DATA = new StructT('WIN32_FILE_ATTRIBUTE_DATA', {
 
 var WIN32_FIND_STREAM_DATA = new StructT('WIN32_FIND_STREAM_DATA', {
  StreamSize: LARGE_INTEGER,
- cStreamName: ARRAY(WCHAR, undefined)
+ cStreamName: new ArrayT(WCHAR, undefined)
 });
 
 var EVENTLOG_FULL_INFORMATION = new StructT('EVENTLOG_FULL_INFORMATION', {
@@ -6012,14 +5913,14 @@ var EVENTLOG_FULL_INFORMATION = new StructT('EVENTLOG_FULL_INFORMATION', {
 
 var HW_PROFILE_INFO = new StructT('HW_PROFILE_INFO', {
  dwDockInfo: DWORD,
- szHwProfileGuid: ARRAY(CHAR, HW_PROFILE_GUIDLEN),
- szHwProfileName: ARRAY(CHAR, MAX_PROFILE_LEN)
+ szHwProfileGuid: new ArrayT(CHAR, HW_PROFILE_GUIDLEN),
+ szHwProfileName: new ArrayT(CHAR, MAX_PROFILE_LEN)
 });
 
 var HW_PROFILE_INFOW = new StructT('HW_PROFILE_INFOW', {
  dwDockInfo: DWORD,
- szHwProfileGuid: ARRAY(WCHAR, HW_PROFILE_GUIDLEN),
- szHwProfileName: ARRAY(WCHAR, MAX_PROFILE_LEN)
+ szHwProfileGuid: new ArrayT(WCHAR, HW_PROFILE_GUIDLEN),
+ szHwProfileName: new ArrayT(WCHAR, MAX_PROFILE_LEN)
 });
 
 var SYSTEM_POWER_STATUS = new StructT('SYSTEM_POWER_STATUS', {
@@ -6114,14 +6015,14 @@ var FILE_STANDARD_INFO = new StructT('FILE_STANDARD_INFO', {
 
 var FILE_NAME_INFO = new StructT('FILE_NAME_INFO', {
  FileNameLength: DWORD,
- FileName: ARRAY(WCHAR, 1)
+ FileName: new ArrayT(WCHAR, 1)
 });
 
 var FILE_RENAME_INFO = new StructT('FILE_RENAME_INFO', {
  ReplaceIfExists: BOOLEAN,
  RootDirectory: HANDLE,
  FileNameLength: DWORD,
- FileName: ARRAY(WCHAR, 1)
+ FileName: new ArrayT(WCHAR, 1)
 });
 
 var FILE_ALLOCATION_INFO = new StructT('FILE_ALLOCATION_INFO', {
@@ -6137,7 +6038,7 @@ var FILE_STREAM_INFO = new StructT('FILE_STREAM_INFO', {
  StreamNameLength: DWORD,
  StreamSize: LARGE_INTEGER,
  StreamAllocationSize: LARGE_INTEGER,
- StreamName: ARRAY(WCHAR, 1)
+ StreamName: new ArrayT(WCHAR, 1)
 });
 
 var FILE_COMPRESSION_INFO = new StructT('FILE_COMPRESSION_INFO', {
@@ -6146,7 +6047,7 @@ var FILE_COMPRESSION_INFO = new StructT('FILE_COMPRESSION_INFO', {
  CompressionUnitShift: UCHAR,
  ChunkShift: UCHAR,
  ClusterShift: UCHAR,
- Reserved: ARRAY(UCHAR, 3)
+ Reserved: new ArrayT(UCHAR, 3)
 });
 
 var FILE_ATTRIBUTE_TAG_INFO = new StructT('FILE_ATTRIBUTE_TAG_INFO', {
@@ -6171,9 +6072,9 @@ var FILE_ID_BOTH_DIR_INFO = new StructT('FILE_ID_BOTH_DIR_INFO', {
  FileNameLength: DWORD,
  EaSize: DWORD,
  ShortNameLength: CCHAR,
- ShortName: ARRAY(WCHAR, 12),
+ ShortName: new ArrayT(WCHAR, 12),
  FileId: LARGE_INTEGER,
- FileName: ARRAY(WCHAR, 1)
+ FileName: new ArrayT(WCHAR, 1)
 });
 
 var FILE_IO_PRIORITY_HINT_INFO = new StructT('FILE_IO_PRIORITY_HINT_INFO', {
@@ -6190,15 +6091,15 @@ var FILE_REMOTE_PROTOCOL_INFO = new StructT('FILE_REMOTE_PROTOCOL_INFO', {
  Reserved: USHORT,
  Flags: DWORD,
  GenericReserved: ,
- ProtocolSpecificReserved: 
+ ProtocolSpecificReserved:
 });
 
 var undefined = new StructT('undefined', {
- Reserved: ARRAY(DWORD, 8)
+ Reserved: new ArrayT(DWORD, 8)
 });
 
 var undefined = new StructT('undefined', {
- Reserved: ARRAY(DWORD, 16)
+ Reserved: new ArrayT(DWORD, 16)
 });
 
 var FILE_ID_DESCRIPTOR = new StructT('FILE_ID_DESCRIPTOR', {
@@ -6286,7 +6187,7 @@ var LOGCOLORSPACE = new StructT('LOGCOLORSPACE', {
  lcsGammaRed: DWORD,
  lcsGammaGreen: DWORD,
  lcsGammaBlue: DWORD,
- lcsFilename: ARRAY(CHAR, MAX_PATH)
+ lcsFilename: new ArrayT(CHAR, MAX_PATH)
 });
 
 var LOGCOLORSPACEW = new StructT('LOGCOLORSPACEW', {
@@ -6299,7 +6200,7 @@ var LOGCOLORSPACEW = new StructT('LOGCOLORSPACEW', {
  lcsGammaRed: DWORD,
  lcsGammaGreen: DWORD,
  lcsGammaBlue: DWORD,
- lcsFilename: ARRAY(WCHAR, MAX_PATH)
+ lcsFilename: new ArrayT(WCHAR, MAX_PATH)
 });
 
 var BITMAPCOREHEADER = new StructT('BITMAPCOREHEADER', {
@@ -6376,12 +6277,12 @@ var BITMAPV5HEADER = new StructT('BITMAPV5HEADER', {
 
 var BITMAPINFO = new StructT('BITMAPINFO', {
  bmiHeader: BITMAPINFOHEADER,
- bmiColors: ARRAY(RGBQUAD, 1)
+ bmiColors: new ArrayT(RGBQUAD, 1)
 });
 
 var BITMAPCOREINFO = new StructT('BITMAPCOREINFO', {
  bmciHeader: BITMAPCOREHEADER,
- bmciColors: ARRAY(RGBTRIPLE, 1)
+ bmciColors: new ArrayT(RGBTRIPLE, 1)
 });
 
 var BITMAPFILEHEADER = new StructT('BITMAPFILEHEADER', {
@@ -6393,8 +6294,8 @@ var BITMAPFILEHEADER = new StructT('BITMAPFILEHEADER', {
 });
 
 var FONTSIGNATURE = new StructT('FONTSIGNATURE', {
- fsUsb: ARRAY(DWORD, 4),
- fsCsb: ARRAY(DWORD, 2)
+ fsUsb: new ArrayT(DWORD, 4),
+ fsCsb: new ArrayT(DWORD, 2)
 });
 
 var CHARSETINFO = new StructT('CHARSETINFO', {
@@ -6404,19 +6305,19 @@ var CHARSETINFO = new StructT('CHARSETINFO', {
 });
 
 var LOCALESIGNATURE = new StructT('LOCALESIGNATURE', {
- lsUsb: ARRAY(DWORD, 4),
- lsCsbDefault: ARRAY(DWORD, 2),
- lsCsbSupported: ARRAY(DWORD, 2)
+ lsUsb: new ArrayT(DWORD, 4),
+ lsCsbDefault: new ArrayT(DWORD, 2),
+ lsCsbSupported: new ArrayT(DWORD, 2)
 });
 
 var HANDLETABLE = new StructT('HANDLETABLE', {
- objectHandle: ARRAY(HGDIOBJ, 1)
+ objectHandle: new ArrayT(HGDIOBJ, 1)
 });
 
 var METARECORD = new StructT('METARECORD', {
  rdSize: DWORD,
  rdFunction: WORD,
- rdParm: ARRAY(WORD, 1)
+ rdParm: new ArrayT(WORD, 1)
 });
 
 var METAFILEPICT = new StructT('METAFILEPICT', {
@@ -6439,7 +6340,7 @@ var METAHEADER = new StructT('METAHEADER', {
 var ENHMETARECORD = new StructT('ENHMETARECORD', {
  iType: DWORD,
  nSize: DWORD,
- dParm: ARRAY(DWORD, 1)
+ dParm: new ArrayT(DWORD, 1)
 });
 
 var ENHMETAHEADER = new StructT('ENHMETAHEADER', {
@@ -6574,7 +6475,7 @@ var NEWTEXTMETRICEXW = new StructT('NEWTEXTMETRICEXW', {
  ntmFontSig: FONTSIGNATURE
 });
 
-var PELARRAY = new StructT('PELARRAY', {
+var PELnew ArrayT = new StructT('PELnew ArrayT', {
  paXCount: LONG,
  paYCount: LONG,
  paXExt: LONG,
@@ -6607,7 +6508,7 @@ var EXTLOGPEN = new StructT('EXTLOGPEN', {
  elpColor: COLORREF,
  elpHatch: ULONG_PTR,
  elpNumEntries: DWORD,
- elpStyleEntry: ARRAY(DWORD, 1)
+ elpStyleEntry: new ArrayT(DWORD, 1)
 });
 
 var EXTLOGPEN32 = new StructT('EXTLOGPEN32', {
@@ -6617,7 +6518,7 @@ var EXTLOGPEN32 = new StructT('EXTLOGPEN32', {
  elpColor: COLORREF,
  elpHatch: ULONG,
  elpNumEntries: DWORD,
- elpStyleEntry: ARRAY(DWORD, 1)
+ elpStyleEntry: new ArrayT(DWORD, 1)
 });
 
 var PALETTEENTRY = new StructT('PALETTEENTRY', {
@@ -6630,7 +6531,7 @@ var PALETTEENTRY = new StructT('PALETTEENTRY', {
 var LOGPALETTE = new StructT('LOGPALETTE', {
  palVersion: WORD,
  palNumEntries: WORD,
- palPalEntry: ARRAY(PALETTEENTRY, 1)
+ palPalEntry: new ArrayT(PALETTEENTRY, 1)
 });
 
 var LOGFONT = new StructT('LOGFONT', {
@@ -6647,7 +6548,7 @@ var LOGFONT = new StructT('LOGFONT', {
  lfClipPrecision: BYTE,
  lfQuality: BYTE,
  lfPitchAndFamily: BYTE,
- lfFaceName: ARRAY(CHAR, LF_FACESIZE)
+ lfFaceName: new ArrayT(CHAR, LF_FACESIZE)
 });
 
 var LOGFONTW = new StructT('LOGFONTW', {
@@ -6664,33 +6565,33 @@ var LOGFONTW = new StructT('LOGFONTW', {
  lfClipPrecision: BYTE,
  lfQuality: BYTE,
  lfPitchAndFamily: BYTE,
- lfFaceName: ARRAY(WCHAR, LF_FACESIZE)
+ lfFaceName: new ArrayT(WCHAR, LF_FACESIZE)
 });
 
 var ENUMLOGFONT = new StructT('ENUMLOGFONT', {
  elfLogFont: LOGFONTA,
- elfFullName: ARRAY(BYTE, LF_FULLFACESIZE),
- elfStyle: ARRAY(BYTE, LF_FACESIZE)
+ elfFullName: new ArrayT(BYTE, LF_FULLFACESIZE),
+ elfStyle: new ArrayT(BYTE, LF_FACESIZE)
 });
 
 var ENUMLOGFONTW = new StructT('ENUMLOGFONTW', {
  elfLogFont: LOGFONTW,
- elfFullName: ARRAY(WCHAR, LF_FULLFACESIZE),
- elfStyle: ARRAY(WCHAR, LF_FACESIZE)
+ elfFullName: new ArrayT(WCHAR, LF_FULLFACESIZE),
+ elfStyle: new ArrayT(WCHAR, LF_FACESIZE)
 });
 
 var ENUMLOGFONTEX = new StructT('ENUMLOGFONTEX', {
  elfLogFont: LOGFONTA,
- elfFullName: ARRAY(BYTE, LF_FULLFACESIZE),
- elfStyle: ARRAY(BYTE, LF_FACESIZE),
- elfScript: ARRAY(BYTE, LF_FACESIZE)
+ elfFullName: new ArrayT(BYTE, LF_FULLFACESIZE),
+ elfStyle: new ArrayT(BYTE, LF_FACESIZE),
+ elfScript: new ArrayT(BYTE, LF_FACESIZE)
 });
 
 var ENUMLOGFONTEXW = new StructT('ENUMLOGFONTEXW', {
  elfLogFont: LOGFONTW,
- elfFullName: ARRAY(WCHAR, LF_FULLFACESIZE),
- elfStyle: ARRAY(WCHAR, LF_FACESIZE),
- elfScript: ARRAY(WCHAR, LF_FACESIZE)
+ elfFullName: new ArrayT(WCHAR, LF_FULLFACESIZE),
+ elfStyle: new ArrayT(WCHAR, LF_FACESIZE),
+ elfScript: new ArrayT(WCHAR, LF_FACESIZE)
 });
 
 var PANOSE = new StructT('PANOSE', {
@@ -6708,32 +6609,32 @@ var PANOSE = new StructT('PANOSE', {
 
 var EXTLOGFONT = new StructT('EXTLOGFONT', {
  elfLogFont: LOGFONTA,
- elfFullName: ARRAY(BYTE, LF_FULLFACESIZE),
- elfStyle: ARRAY(BYTE, LF_FACESIZE),
+ elfFullName: new ArrayT(BYTE, LF_FULLFACESIZE),
+ elfStyle: new ArrayT(BYTE, LF_FACESIZE),
  elfVersion: DWORD,
  elfStyleSize: DWORD,
  elfMatch: DWORD,
  elfReserved: DWORD,
- elfVendorId: ARRAY(BYTE, ELF_VENDOR_SIZE),
+ elfVendorId: new ArrayT(BYTE, ELF_VENDOR_SIZE),
  elfCulture: DWORD,
  elfPanose: PANOSE
 });
 
 var EXTLOGFONTW = new StructT('EXTLOGFONTW', {
  elfLogFont: LOGFONTW,
- elfFullName: ARRAY(WCHAR, LF_FULLFACESIZE),
- elfStyle: ARRAY(WCHAR, LF_FACESIZE),
+ elfFullName: new ArrayT(WCHAR, LF_FULLFACESIZE),
+ elfStyle: new ArrayT(WCHAR, LF_FACESIZE),
  elfVersion: DWORD,
  elfStyleSize: DWORD,
  elfMatch: DWORD,
  elfReserved: DWORD,
- elfVendorId: ARRAY(BYTE, ELF_VENDOR_SIZE),
+ elfVendorId: new ArrayT(BYTE, ELF_VENDOR_SIZE),
  elfCulture: DWORD,
  elfPanose: PANOSE
 });
 
 var DEVMODE = new StructT('DEVMODE', {
- dmDeviceName: ARRAY(BYTE, CCHDEVICENAME),
+ dmDeviceName: new ArrayT(BYTE, CCHDEVICENAME),
  dmSpecVersion: WORD,
  dmDriverVersion: WORD,
  dmSize: WORD,
@@ -6744,7 +6645,7 @@ var DEVMODE = new StructT('DEVMODE', {
  dmYResolution: short,
  dmTTOption: short,
  dmCollate: short,
- dmFormName: ARRAY(BYTE, CCHFORMNAME),
+ dmFormName: new ArrayT(BYTE, CCHFORMNAME),
  dmLogPixels: WORD,
  dmBitsPerPel: DWORD,
  dmPelsWidth: DWORD,
@@ -6778,7 +6679,7 @@ var undefined = new StructT('undefined', {
 });
 
 var DEVMODEW = new StructT('DEVMODEW', {
- dmDeviceName: ARRAY(WCHAR, CCHDEVICENAME),
+ dmDeviceName: new ArrayT(WCHAR, CCHDEVICENAME),
  dmSpecVersion: WORD,
  dmDriverVersion: WORD,
  dmSize: WORD,
@@ -6789,7 +6690,7 @@ var DEVMODEW = new StructT('DEVMODEW', {
  dmYResolution: short,
  dmTTOption: short,
  dmCollate: short,
- dmFormName: ARRAY(WCHAR, CCHFORMNAME),
+ dmFormName: new ArrayT(WCHAR, CCHFORMNAME),
  dmLogPixels: WORD,
  dmBitsPerPel: DWORD,
  dmPelsWidth: DWORD,
@@ -6824,20 +6725,20 @@ var undefined = new StructT('undefined', {
 
 var DISPLAY_DEVICE = new StructT('DISPLAY_DEVICE', {
  cb: DWORD,
- DeviceName: ARRAY(CHAR, 32),
- DeviceString: ARRAY(CHAR, 128),
+ DeviceName: new ArrayT(CHAR, 32),
+ DeviceString: new ArrayT(CHAR, 128),
  StateFlags: DWORD,
- DeviceID: ARRAY(CHAR, 128),
- DeviceKey: ARRAY(CHAR, 128)
+ DeviceID: new ArrayT(CHAR, 128),
+ DeviceKey: new ArrayT(CHAR, 128)
 });
 
 var DISPLAY_DEVICEW = new StructT('DISPLAY_DEVICEW', {
  cb: DWORD,
- DeviceName: ARRAY(WCHAR, 32),
- DeviceString: ARRAY(WCHAR, 128),
+ DeviceName: new ArrayT(WCHAR, 32),
+ DeviceString: new ArrayT(WCHAR, 128),
  StateFlags: DWORD,
- DeviceID: ARRAY(WCHAR, 128),
- DeviceKey: ARRAY(WCHAR, 128)
+ DeviceID: new ArrayT(WCHAR, 128),
+ DeviceKey: new ArrayT(WCHAR, 128)
 });
 
 var DISPLAYCONFIG_RATIONAL = new StructT('DISPLAYCONFIG_RATIONAL', {
@@ -6912,7 +6813,7 @@ var DISPLAYCONFIG_DEVICE_INFO_HEADER = new StructT('DISPLAYCONFIG_DEVICE_INFO_HE
 
 var DISPLAYCONFIG_SOURCE_DEVICE_NAME = new StructT('DISPLAYCONFIG_SOURCE_DEVICE_NAME', {
  header: DISPLAYCONFIG_DEVICE_INFO_HEADER,
- viewGdiDeviceName: ARRAY(WCHAR, CCHDEVICENAME)
+ viewGdiDeviceName: new ArrayT(WCHAR, CCHDEVICENAME)
 });
 
 
@@ -6930,8 +6831,8 @@ var DISPLAYCONFIG_TARGET_DEVICE_NAME = new StructT('DISPLAYCONFIG_TARGET_DEVICE_
  edidManufactureId: UINT16,
  edidProductCodeId: UINT16,
  connectorInstance: UINT32,
- monitorFriendlyDeviceName: ARRAY(WCHAR, 64),
- monitorDevicePath: ARRAY(WCHAR, 128)
+ monitorFriendlyDeviceName: new ArrayT(WCHAR, 64),
+ monitorDevicePath: new ArrayT(WCHAR, 128)
 });
 
 var DISPLAYCONFIG_TARGET_PREFERRED_MODE = new StructT('DISPLAYCONFIG_TARGET_PREFERRED_MODE', {
@@ -6943,7 +6844,7 @@ var DISPLAYCONFIG_TARGET_PREFERRED_MODE = new StructT('DISPLAYCONFIG_TARGET_PREF
 
 var DISPLAYCONFIG_ADAPTER_NAME = new StructT('DISPLAYCONFIG_ADAPTER_NAME', {
  header: DISPLAYCONFIG_DEVICE_INFO_HEADER,
- adapterDevicePath: ARRAY(WCHAR, 128)
+ adapterDevicePath: new ArrayT(WCHAR, 128)
 });
 
 var DISPLAYCONFIG_SET_TARGET_PERSISTENCE = new StructT('DISPLAYCONFIG_SET_TARGET_PERSISTENCE', {
@@ -6965,7 +6866,7 @@ var RGNDATAHEADER = new StructT('RGNDATAHEADER', {
 
 var RGNDATA = new StructT('RGNDATA', {
  rdh: RGNDATAHEADER,
- Buffer: ARRAY(undefined, 1)
+ Buffer: new ArrayT(undefined, 1)
 });
 
 var ABC = new StructT('ABC', {
@@ -7098,7 +6999,7 @@ var POINTFX = new StructT('POINTFX', {
 var TTPOLYCURVE = new StructT('TTPOLYCURVE', {
  wType: WORD,
  cpfx: WORD,
- apfx: ARRAY(POINTFX, 1)
+ apfx: new ArrayT(POINTFX, 1)
 });
 
 var TTPOLYGONHEADER = new StructT('TTPOLYGONHEADER', {
@@ -7176,37 +7077,37 @@ var GLYPHSET = new StructT('GLYPHSET', {
  flAccel: DWORD,
  cGlyphsSupported: DWORD,
  cRanges: DWORD,
- ranges: ARRAY(WCRANGE, 1)
+ ranges: new ArrayT(WCRANGE, 1)
 });
 
 var DESIGNVECTOR = new StructT('DESIGNVECTOR', {
  dvReserved: DWORD,
  dvNumAxes: DWORD,
- dvValues: ARRAY(LONG, MM_MAX_NUMAXES)
+ dvValues: new ArrayT(LONG, MM_MAX_NUMAXES)
 });
 
 var AXISINFO = new StructT('AXISINFO', {
  axMinValue: LONG,
  axMaxValue: LONG,
- axAxisName: ARRAY(BYTE, MM_MAX_AXES_NAMELEN)
+ axAxisName: new ArrayT(BYTE, MM_MAX_AXES_NAMELEN)
 });
 
 var AXISINFOW = new StructT('AXISINFOW', {
  axMinValue: LONG,
  axMaxValue: LONG,
- axAxisName: ARRAY(WCHAR, MM_MAX_AXES_NAMELEN)
+ axAxisName: new ArrayT(WCHAR, MM_MAX_AXES_NAMELEN)
 });
 
 var AXESLIST = new StructT('AXESLIST', {
  axlReserved: DWORD,
  axlNumAxes: DWORD,
- axlAxisInfo: ARRAY(AXISINFOA, MM_MAX_NUMAXES)
+ axlAxisInfo: new ArrayT(AXISINFOA, MM_MAX_NUMAXES)
 });
 
 var AXESLISTW = new StructT('AXESLISTW', {
  axlReserved: DWORD,
  axlNumAxes: DWORD,
- axlAxisInfo: ARRAY(AXISINFOW, MM_MAX_NUMAXES)
+ axlAxisInfo: new ArrayT(AXISINFOW, MM_MAX_NUMAXES)
 });
 
 var ENUMLOGFONTEXDV = new StructT('ENUMLOGFONTEXDV', {
@@ -7259,7 +7160,7 @@ var BLENDFUNCTION = new StructT('BLENDFUNCTION', {
 var DIBSECTION = new StructT('DIBSECTION', {
  dsBm: BITMAP,
  dsBmih: BITMAPINFOHEADER,
- dsBitfields: ARRAY(DWORD, 3),
+ dsBitfields: new ArrayT(DWORD, 3),
  dshSection: HANDLE,
  dsOffset: DWORD
 });
@@ -7370,7 +7271,7 @@ var EMRSETPALETTEENTRIES = new StructT('EMRSETPALETTEENTRIES', {
  ihPal: DWORD,
  iStart: DWORD,
  cEntries: DWORD,
- aPalEntries: ARRAY(PALETTEENTRY, 1)
+ aPalEntries: new ArrayT(PALETTEENTRY, 1)
 });
 
 var EMRSETCOLORADJUSTMENT = new StructT('EMRSETCOLORADJUSTMENT', {
@@ -7381,7 +7282,7 @@ var EMRSETCOLORADJUSTMENT = new StructT('EMRSETCOLORADJUSTMENT', {
 var EMRGDICOMMENT = new StructT('EMRGDICOMMENT', {
  emr: EMR,
  cbData: DWORD,
- Data: ARRAY(BYTE, 1)
+ Data: new ArrayT(BYTE, 1)
 });
 
 var EMREOF = new StructT('EMREOF', {
@@ -7483,30 +7384,30 @@ var EMRPOLYLINETO = new StructT('EMRPOLYLINETO', {
  emr: EMR,
  rclBounds: RECTL,
  cptl: DWORD,
- aptl: ARRAY(POINTL, 1)
+ aptl: new ArrayT(POINTL, 1)
 });
 
 var EMRPOLYLINETO16 = new StructT('EMRPOLYLINETO16', {
  emr: EMR,
  rclBounds: RECTL,
  cpts: DWORD,
- apts: ARRAY(POINTS, 1)
+ apts: new ArrayT(POINTS, 1)
 });
 
 var EMRPOLYDRAW = new StructT('EMRPOLYDRAW', {
  emr: EMR,
  rclBounds: RECTL,
  cptl: DWORD,
- aptl: ARRAY(POINTL, 1),
- abTypes: ARRAY(BYTE, 1)
+ aptl: new ArrayT(POINTL, 1),
+ abTypes: new ArrayT(BYTE, 1)
 });
 
 var EMRPOLYDRAW16 = new StructT('EMRPOLYDRAW16', {
  emr: EMR,
  rclBounds: RECTL,
  cpts: DWORD,
- apts: ARRAY(POINTS, 1),
- abTypes: ARRAY(BYTE, 1)
+ apts: new ArrayT(POINTS, 1),
+ abTypes: new ArrayT(BYTE, 1)
 });
 
 var EMRPOLYPOLYGON = new StructT('EMRPOLYPOLYGON', {
@@ -7514,8 +7415,8 @@ var EMRPOLYPOLYGON = new StructT('EMRPOLYPOLYGON', {
  rclBounds: RECTL,
  nPolys: DWORD,
  cptl: DWORD,
- aPolyCounts: ARRAY(DWORD, 1),
- aptl: ARRAY(POINTL, 1)
+ aPolyCounts: new ArrayT(DWORD, 1),
+ aptl: new ArrayT(POINTL, 1)
 });
 
 var EMRPOLYPOLYGON16 = new StructT('EMRPOLYPOLYGON16', {
@@ -7523,15 +7424,15 @@ var EMRPOLYPOLYGON16 = new StructT('EMRPOLYPOLYGON16', {
  rclBounds: RECTL,
  nPolys: DWORD,
  cpts: DWORD,
- aPolyCounts: ARRAY(DWORD, 1),
- apts: ARRAY(POINTS, 1)
+ aPolyCounts: new ArrayT(DWORD, 1),
+ apts: new ArrayT(POINTS, 1)
 });
 
 var EMRPAINTRGN = new StructT('EMRPAINTRGN', {
  emr: EMR,
  rclBounds: RECTL,
  cbRgnData: DWORD,
- RgnData: ARRAY(BYTE, 1)
+ RgnData: new ArrayT(BYTE, 1)
 });
 
 var EMRFILLRGN = new StructT('EMRFILLRGN', {
@@ -7539,7 +7440,7 @@ var EMRFILLRGN = new StructT('EMRFILLRGN', {
  rclBounds: RECTL,
  cbRgnData: DWORD,
  ihBrush: DWORD,
- RgnData: ARRAY(BYTE, 1)
+ RgnData: new ArrayT(BYTE, 1)
 });
 
 var EMRFRAMERGN = new StructT('EMRFRAMERGN', {
@@ -7548,14 +7449,14 @@ var EMRFRAMERGN = new StructT('EMRFRAMERGN', {
  cbRgnData: DWORD,
  ihBrush: DWORD,
  szlStroke: SIZEL,
- RgnData: ARRAY(BYTE, 1)
+ RgnData: new ArrayT(BYTE, 1)
 });
 
 var EMREXTSELECTCLIPRGN = new StructT('EMREXTSELECTCLIPRGN', {
  emr: EMR,
  cbRgnData: DWORD,
  iMode: DWORD,
- RgnData: ARRAY(BYTE, 1)
+ RgnData: new ArrayT(BYTE, 1)
 });
 
 var EMREXTTEXTOUTW = new StructT('EMREXTTEXTOUTW', {
@@ -7574,7 +7475,7 @@ var EMRPOLYTEXTOUTW = new StructT('EMRPOLYTEXTOUTW', {
  exScale: FLOAT,
  eyScale: FLOAT,
  cStrings: LONG,
- aemrtext: ARRAY(EMRTEXT, 1)
+ aemrtext: new ArrayT(EMRTEXT, 1)
 });
 
 var EMRBITBLT = new StructT('EMRBITBLT', {
@@ -7646,7 +7547,7 @@ var EMRMASKBLT = new StructT('EMRMASKBLT', {
 var EMRPLGBLT = new StructT('EMRPLGBLT', {
  emr: EMR,
  rclBounds: RECTL,
- aptlDest: ARRAY(POINTL, 3),
+ aptlDest: new ArrayT(POINTL, 3),
  xSrc: LONG,
  ySrc: LONG,
  cxSrc: LONG,
@@ -7768,14 +7669,14 @@ var EMRFORMAT = new StructT('EMRFORMAT', {
 var EMRGLSRECORD = new StructT('EMRGLSRECORD', {
  emr: EMR,
  cbData: DWORD,
- Data: ARRAY(BYTE, 1)
+ Data: new ArrayT(BYTE, 1)
 });
 
 var EMRGLSBOUNDEDRECORD = new StructT('EMRGLSBOUNDEDRECORD', {
  emr: EMR,
  rclBounds: RECTL,
  cbData: DWORD,
- Data: ARRAY(BYTE, 1)
+ Data: new ArrayT(BYTE, 1)
 });
 
 var EMRPIXELFORMAT = new StructT('EMRPIXELFORMAT', {
@@ -7798,7 +7699,7 @@ var EMRDRAWESCAPE = new StructT('EMRDRAWESCAPE', {
  emr: EMR,
  iEscape: INT,
  cbEscData: INT,
- EscData: ARRAY(BYTE, 1)
+ EscData: new ArrayT(BYTE, 1)
 });
 
 var EMRNAMEDESCAPE = new StructT('EMRNAMEDESCAPE', {
@@ -7806,7 +7707,7 @@ var EMRNAMEDESCAPE = new StructT('EMRNAMEDESCAPE', {
  iEscape: INT,
  cbDriver: INT,
  cbEscData: INT,
- EscData: ARRAY(BYTE, 1)
+ EscData: new ArrayT(BYTE, 1)
 });
 
 var EMRSETICMPROFILEW = new StructT('EMRSETICMPROFILEW', {
@@ -7814,7 +7715,7 @@ var EMRSETICMPROFILEW = new StructT('EMRSETICMPROFILEW', {
  dwFlags: DWORD,
  cbName: DWORD,
  cbData: DWORD,
- Data: ARRAY(BYTE, 1)
+ Data: new ArrayT(BYTE, 1)
 });
 
 var EMRCREATECOLORSPACEW = new StructT('EMRCREATECOLORSPACEW', {
@@ -7823,7 +7724,7 @@ var EMRCREATECOLORSPACEW = new StructT('EMRCREATECOLORSPACEW', {
  lcs: LOGCOLORSPACEW,
  dwFlags: DWORD,
  cbData: DWORD,
- Data: ARRAY(BYTE, 1)
+ Data: new ArrayT(BYTE, 1)
 });
 
 var EMRCOLORMATCHTOTARGET = new StructT('EMRCOLORMATCHTOTARGET', {
@@ -7832,7 +7733,7 @@ var EMRCOLORMATCHTOTARGET = new StructT('EMRCOLORMATCHTOTARGET', {
  dwFlags: DWORD,
  cbName: DWORD,
  cbData: DWORD,
- Data: ARRAY(BYTE, 1)
+ Data: new ArrayT(BYTE, 1)
 });
 
 var EMRCOLORCORRECTPALETTE = new StructT('EMRCOLORCORRECTPALETTE', {
@@ -7870,7 +7771,7 @@ var EMRGRADIENTFILL = new StructT('EMRGRADIENTFILL', {
  nVer: DWORD,
  nTri: DWORD,
  ulMode: ULONG,
- Ver: ARRAY(TRIVERTEX, 1)
+ Ver: new ArrayT(TRIVERTEX, 1)
 });
 
 var EMRTRANSPARENTBLT = new StructT('EMRTRANSPARENTBLT', {
@@ -8160,7 +8061,7 @@ var MDINEXTMENU = new StructT('MDINEXTMENU', {
 var POWERBROADCAST_SETTING = new StructT('POWERBROADCAST_SETTING', {
  PowerSetting: GUID,
  DataLength: DWORD,
- Data: ARRAY(UCHAR, 1)
+ Data: new ArrayT(UCHAR, 1)
 });
 
 var WINDOWPOS = new StructT('WINDOWPOS', {
@@ -8174,7 +8075,7 @@ var WINDOWPOS = new StructT('WINDOWPOS', {
 });
 
 var NCCALCSIZE_PARAMS = new StructT('NCCALCSIZE_PARAMS', {
- rgrc: ARRAY(RECT, 3),
+ rgrc: new ArrayT(RECT, 3),
  lppos: PWINDOWPOS
 });
 
@@ -8197,7 +8098,7 @@ var PAINTSTRUCT = new StructT('PAINTSTRUCT', {
  rcPaint: RECT,
  fRestore: BOOL,
  fIncUpdate: BOOL,
- rgbReserved: ARRAY(BYTE, 32)
+ rgbReserved: new ArrayT(BYTE, 32)
 });
 
 var WINDOWPLACEMENT = new StructT('WINDOWPLACEMENT', {
@@ -8470,7 +8371,7 @@ var MENUITEMTEMPLATEHEADER = new StructT('MENUITEMTEMPLATEHEADER', {
 var MENUITEMTEMPLATE = new StructT('MENUITEMTEMPLATE', {
  mtOption: WORD,
  mtID: WORD,
- mtString: ARRAY(WCHAR, 1)
+ mtString: new ArrayT(WCHAR, 1)
 });
 
 var ICONINFO = new StructT('ICONINFO', {
@@ -8499,8 +8400,8 @@ var ICONINFOEX = new StructT('ICONINFOEX', {
  hbmMask: HBITMAP,
  hbmColor: HBITMAP,
  wResID: WORD,
- szModName: ARRAY(CHAR, MAX_PATH),
- szResName: ARRAY(CHAR, MAX_PATH)
+ szModName: new ArrayT(CHAR, MAX_PATH),
+ szResName: new ArrayT(CHAR, MAX_PATH)
 });
 
 var ICONINFOEXW = new StructT('ICONINFOEXW', {
@@ -8511,8 +8412,8 @@ var ICONINFOEXW = new StructT('ICONINFOEXW', {
  hbmMask: HBITMAP,
  hbmColor: HBITMAP,
  wResID: WORD,
- szModName: ARRAY(WCHAR, MAX_PATH),
- szResName: ARRAY(WCHAR, MAX_PATH)
+ szModName: new ArrayT(WCHAR, MAX_PATH),
+ szResName: new ArrayT(WCHAR, MAX_PATH)
 });
 
 var SCROLLINFO = new StructT('SCROLLINFO', {
@@ -8557,13 +8458,13 @@ var CLIENTCREATESTRUCT = new StructT('CLIENTCREATESTRUCT', {
 var MULTIKEYHELP = new StructT('MULTIKEYHELP', {
  mkSize: DWORD,
  mkKeylist: CHAR,
- szKeyphrase: ARRAY(CHAR, 1)
+ szKeyphrase: new ArrayT(CHAR, 1)
 });
 
 var MULTIKEYHELPW = new StructT('MULTIKEYHELPW', {
  mkSize: DWORD,
  mkKeylist: WCHAR,
- szKeyphrase: ARRAY(WCHAR, 1)
+ szKeyphrase: new ArrayT(WCHAR, 1)
 });
 
 var HELPWININFO = new StructT('HELPWININFO', {
@@ -8573,7 +8474,7 @@ var HELPWININFO = new StructT('HELPWININFO', {
  dx: int,
  dy: int,
  wMax: int,
- rgchMember: ARRAY(CHAR, 2)
+ rgchMember: new ArrayT(CHAR, 2)
 });
 
 var HELPWININFOW = new StructT('HELPWININFOW', {
@@ -8583,7 +8484,7 @@ var HELPWININFOW = new StructT('HELPWININFOW', {
  dx: int,
  dy: int,
  wMax: int,
- rgchMember: ARRAY(WCHAR, 2)
+ rgchMember: new ArrayT(WCHAR, 2)
 });
 
 var NONCLIENTMETRICS = new StructT('NONCLIENTMETRICS', {
@@ -8708,7 +8609,7 @@ var VIDEOPARAMETERS = new StructT('VIDEOPARAMETERS', {
  dwCPStandard: ULONG,
  dwCPKey: ULONG,
  bCP_APSTriggerBits: ULONG,
- bOEMCopyProtection: ARRAY(UCHAR, 256)
+ bOEMCopyProtection: new ArrayT(UCHAR, 256)
 });
 
 var FILTERKEYS = new StructT('FILTERKEYS', {
@@ -8790,11 +8691,11 @@ var MONITORINFO = new StructT('MONITORINFO', {
 });
 
 var MONITORINFOEX = new StructT('MONITORINFOEX', {
- szDevice: ARRAY(CHAR, CCHDEVICENAME)
+ szDevice: new ArrayT(CHAR, CCHDEVICENAME)
 });
 
 var MONITORINFOEXW = new StructT('MONITORINFOEXW', {
- szDevice: ARRAY(WCHAR, CCHDEVICENAME)
+ szDevice: new ArrayT(WCHAR, CCHDEVICENAME)
 });
 
 var GUITHREADINFO = new StructT('GUITHREADINFO', {
@@ -8832,14 +8733,14 @@ var WINDOWINFO = new StructT('WINDOWINFO', {
 var TITLEBARINFO = new StructT('TITLEBARINFO', {
  cbSize: DWORD,
  rcTitleBar: RECT,
- rgstate: ARRAY(DWORD, undefined)
+ rgstate: new ArrayT(DWORD, undefined)
 });
 
 var TITLEBARINFOEX = new StructT('TITLEBARINFOEX', {
  cbSize: DWORD,
  rcTitleBar: RECT,
- rgstate: ARRAY(DWORD, undefined),
- rgrect: ARRAY(RECT, undefined)
+ rgstate: new ArrayT(DWORD, undefined),
+ rgrect: new ArrayT(RECT, undefined)
 });
 
 var MENUBARINFO = new StructT('MENUBARINFO', {
@@ -8858,7 +8759,7 @@ var SCROLLBARINFO = new StructT('SCROLLBARINFO', {
  xyThumbTop: int,
  xyThumbBottom: int,
  reserved: int,
- rgstate: ARRAY(DWORD, undefined)
+ rgstate: new ArrayT(DWORD, undefined)
 });
 
 var COMBOBOXINFO = new StructT('COMBOBOXINFO', {
@@ -8919,7 +8820,7 @@ var RAWKEYBOARD = new StructT('RAWKEYBOARD', {
 var RAWHID = new StructT('RAWHID', {
  dwSizeHid: DWORD,
  dwCount: DWORD,
- bRawData: ARRAY(BYTE, 1)
+ bRawData: new ArrayT(BYTE, 1)
 });
 
 var RAWINPUT = new StructT('RAWINPUT', {
@@ -9005,26 +8906,26 @@ var GESTURECONFIG = new StructT('GESTURECONFIG', {
 
 var CPINFO = new StructT('CPINFO', {
  MaxCharSize: UINT,
- DefaultChar: ARRAY(BYTE, MAX_DEFAULTCHAR),
- LeadByte: ARRAY(BYTE, MAX_LEADBYTES)
+ DefaultChar: new ArrayT(BYTE, MAX_DEFAULTCHAR),
+ LeadByte: new ArrayT(BYTE, MAX_LEADBYTES)
 });
 
 var CPINFOEX = new StructT('CPINFOEX', {
  MaxCharSize: UINT,
- DefaultChar: ARRAY(BYTE, MAX_DEFAULTCHAR),
- LeadByte: ARRAY(BYTE, MAX_LEADBYTES),
+ DefaultChar: new ArrayT(BYTE, MAX_DEFAULTCHAR),
+ LeadByte: new ArrayT(BYTE, MAX_LEADBYTES),
  UnicodeDefaultChar: WCHAR,
  CodePage: UINT,
- CodePageName: ARRAY(CHAR, MAX_PATH)
+ CodePageName: new ArrayT(CHAR, MAX_PATH)
 });
 
 var CPINFOEXW = new StructT('CPINFOEXW', {
  MaxCharSize: UINT,
- DefaultChar: ARRAY(BYTE, MAX_DEFAULTCHAR),
- LeadByte: ARRAY(BYTE, MAX_LEADBYTES),
+ DefaultChar: new ArrayT(BYTE, MAX_DEFAULTCHAR),
+ LeadByte: new ArrayT(BYTE, MAX_LEADBYTES),
  UnicodeDefaultChar: WCHAR,
  CodePage: UINT,
- CodePageName: ARRAY(WCHAR, MAX_PATH)
+ CodePageName: new ArrayT(WCHAR, MAX_PATH)
 });
 
 var NUMBERFMT = new StructT('NUMBERFMT', {
@@ -9085,8 +8986,8 @@ var FILEMUIINFO = new StructT('FILEMUIINFO', {
  dwSize: DWORD,
  dwVersion: DWORD,
  dwFileType: DWORD,
- pChecksum: ARRAY(BYTE, 16),
- pServiceChecksum: ARRAY(BYTE, 16),
+ pChecksum: new ArrayT(BYTE, 16),
+ pServiceChecksum: new ArrayT(BYTE, 16),
  dwLanguageNameOffset: DWORD,
  dwTypeIDMainSize: DWORD,
  dwTypeIDMainOffset: DWORD,
@@ -9094,12 +8995,19 @@ var FILEMUIINFO = new StructT('FILEMUIINFO', {
  dwTypeIDMUISize: DWORD,
  dwTypeIDMUIOffset: DWORD,
  dwTypeNameMUIOffset: DWORD,
- abBuffer: ARRAY(BYTE, 8)
+ abBuffer: new ArrayT(BYTE, 8)
 });
 
 var COORD = new StructT('COORD', {
  X: SHORT,
  Y: SHORT
+});
+
+var RECT = new StructT('RECT', {
+ Left: LONG,
+ Top: LONG,
+ Right: LONG,
+ Bottom: LONG
 });
 
 var SMALL_RECT = new StructT('SMALL_RECT', {
@@ -9164,7 +9072,7 @@ var CONSOLE_SCREEN_BUFFER_INFOEX = new StructT('CONSOLE_SCREEN_BUFFER_INFOEX', {
  dwMaximumWindowSize: COORD,
  wPopupAttributes: WORD,
  bFullscreenSupported: BOOL,
- ColorTable: ARRAY(COLORREF, 16)
+ ColorTable: new ArrayT(COLORREF, 16)
 });
 
 var CONSOLE_CURSOR_INFO = new StructT('CONSOLE_CURSOR_INFO', {
@@ -9183,7 +9091,7 @@ var CONSOLE_FONT_INFOEX = new StructT('CONSOLE_FONT_INFOEX', {
  dwFontSize: COORD,
  FontFamily: UINT,
  FontWeight: UINT,
- FaceName: ARRAY(WCHAR, LF_FACESIZE)
+ FaceName: new ArrayT(WCHAR, LF_FACESIZE)
 });
 
 var CONSOLE_HISTORY_INFO = new StructT('CONSOLE_HISTORY_INFO', {
@@ -9379,7 +9287,7 @@ var DDEDATA = new StructT('DDEDATA', {
  reserved: ushort,
  fAckReq: ushort,
  cfFormat: short,
- Value: ARRAY(BYTE, 1)
+ Value: new ArrayT(BYTE, 1)
 });
 
 var DDEPOKE = new StructT('DDEPOKE', {
@@ -9387,7 +9295,7 @@ var DDEPOKE = new StructT('DDEPOKE', {
  fRelease: ushort,
  fReserved: ushort,
  cfFormat: short,
- Value: ARRAY(BYTE, 1)
+ Value: new ArrayT(BYTE, 1)
 });
 
 var DDELN = new StructT('DDELN', {
@@ -9405,7 +9313,7 @@ var DDEUP = new StructT('DDEUP', {
  fReserved: ushort,
  fAckReq: ushort,
  cfFormat: short,
- rgb: ARRAY(BYTE, 1)
+ rgb: new ArrayT(BYTE, 1)
 });
 
 var HCONVLIST__ = new StructT('HCONVLIST__', {
@@ -9462,7 +9370,7 @@ var DDEML_MSG_HOOK_DATA = new StructT('DDEML_MSG_HOOK_DATA', {
  uiLo: UINT_PTR,
  uiHi: UINT_PTR,
  cbData: DWORD,
- Data: ARRAY(DWORD, 8)
+ Data: new ArrayT(DWORD, 8)
 });
 
 var MONMSGSTRUCT = new StructT('MONMSGSTRUCT', {
@@ -9491,7 +9399,7 @@ var MONCBSTRUCT = new StructT('MONCBSTRUCT', {
  dwData2: ULONG_PTR,
  cc: CONVCONTEXT,
  cbData: DWORD,
- Data: ARRAY(DWORD, 8)
+ Data: new ArrayT(DWORD, 8)
 });
 
 var MONHSZSTRUCT = new StructT('MONHSZSTRUCT', {
@@ -9500,7 +9408,7 @@ var MONHSZSTRUCT = new StructT('MONHSZSTRUCT', {
  dwTime: DWORD,
  hsz: HSZ,
  hTask: HANDLE,
- str: ARRAY(CHAR, 1)
+ str: new ArrayT(CHAR, 1)
 });
 
 var MONHSZSTRUCTW = new StructT('MONHSZSTRUCTW', {
@@ -9509,7 +9417,7 @@ var MONHSZSTRUCTW = new StructT('MONHSZSTRUCTW', {
  dwTime: DWORD,
  hsz: HSZ,
  hTask: HANDLE,
- str: ARRAY(WCHAR, 1)
+ str: new ArrayT(WCHAR, 1)
 });
 
 var MONERRSTRUCT = new StructT('MONERRSTRUCT', {
@@ -9564,7 +9472,7 @@ var undefined = new StructT('undefined', {
  frame: BYTE,
  fps: BYTE,
  dummy: BYTE,
- pad: ARRAY(BYTE, 2)
+ pad: new ArrayT(BYTE, 2)
 });
 
 var undefined = new StructT('undefined', {
@@ -9615,7 +9523,7 @@ var WAVEOUTCAPS = new StructT('WAVEOUTCAPS', {
  wMid: WORD,
  wPid: WORD,
  vDriverVersion: MMVERSION,
- szPname: ARRAY(CHAR, MAXPNAMELEN),
+ szPname: new ArrayT(CHAR, MAXPNAMELEN),
  dwFormats: DWORD,
  wChannels: WORD,
  wReserved1: WORD,
@@ -9626,7 +9534,7 @@ var WAVEOUTCAPSW = new StructT('WAVEOUTCAPSW', {
  wMid: WORD,
  wPid: WORD,
  vDriverVersion: MMVERSION,
- szPname: ARRAY(WCHAR, MAXPNAMELEN),
+ szPname: new ArrayT(WCHAR, MAXPNAMELEN),
  dwFormats: DWORD,
  wChannels: WORD,
  wReserved1: WORD,
@@ -9637,7 +9545,7 @@ var WAVEOUTCAPS2 = new StructT('WAVEOUTCAPS2', {
  wMid: WORD,
  wPid: WORD,
  vDriverVersion: MMVERSION,
- szPname: ARRAY(CHAR, MAXPNAMELEN),
+ szPname: new ArrayT(CHAR, MAXPNAMELEN),
  dwFormats: DWORD,
  wChannels: WORD,
  wReserved1: WORD,
@@ -9651,7 +9559,7 @@ var WAVEOUTCAPS2W = new StructT('WAVEOUTCAPS2W', {
  wMid: WORD,
  wPid: WORD,
  vDriverVersion: MMVERSION,
- szPname: ARRAY(WCHAR, MAXPNAMELEN),
+ szPname: new ArrayT(WCHAR, MAXPNAMELEN),
  dwFormats: DWORD,
  wChannels: WORD,
  wReserved1: WORD,
@@ -9665,7 +9573,7 @@ var WAVEINCAPS = new StructT('WAVEINCAPS', {
  wMid: WORD,
  wPid: WORD,
  vDriverVersion: MMVERSION,
- szPname: ARRAY(CHAR, MAXPNAMELEN),
+ szPname: new ArrayT(CHAR, MAXPNAMELEN),
  dwFormats: DWORD,
  wChannels: WORD,
  wReserved1: WORD
@@ -9675,7 +9583,7 @@ var WAVEINCAPSW = new StructT('WAVEINCAPSW', {
  wMid: WORD,
  wPid: WORD,
  vDriverVersion: MMVERSION,
- szPname: ARRAY(WCHAR, MAXPNAMELEN),
+ szPname: new ArrayT(WCHAR, MAXPNAMELEN),
  dwFormats: DWORD,
  wChannels: WORD,
  wReserved1: WORD
@@ -9685,7 +9593,7 @@ var WAVEINCAPS2 = new StructT('WAVEINCAPS2', {
  wMid: WORD,
  wPid: WORD,
  vDriverVersion: MMVERSION,
- szPname: ARRAY(CHAR, MAXPNAMELEN),
+ szPname: new ArrayT(CHAR, MAXPNAMELEN),
  dwFormats: DWORD,
  wChannels: WORD,
  wReserved1: WORD,
@@ -9698,7 +9606,7 @@ var WAVEINCAPS2W = new StructT('WAVEINCAPS2W', {
  wMid: WORD,
  wPid: WORD,
  vDriverVersion: MMVERSION,
- szPname: ARRAY(WCHAR, MAXPNAMELEN),
+ szPname: new ArrayT(WCHAR, MAXPNAMELEN),
  dwFormats: DWORD,
  wChannels: WORD,
  wReserved1: WORD,
@@ -9750,7 +9658,7 @@ var MIDIOUTCAPS = new StructT('MIDIOUTCAPS', {
  wMid: WORD,
  wPid: WORD,
  vDriverVersion: MMVERSION,
- szPname: ARRAY(CHAR, MAXPNAMELEN),
+ szPname: new ArrayT(CHAR, MAXPNAMELEN),
  wTechnology: WORD,
  wVoices: WORD,
  wNotes: WORD,
@@ -9762,7 +9670,7 @@ var MIDIOUTCAPSW = new StructT('MIDIOUTCAPSW', {
  wMid: WORD,
  wPid: WORD,
  vDriverVersion: MMVERSION,
- szPname: ARRAY(WCHAR, MAXPNAMELEN),
+ szPname: new ArrayT(WCHAR, MAXPNAMELEN),
  wTechnology: WORD,
  wVoices: WORD,
  wNotes: WORD,
@@ -9774,7 +9682,7 @@ var MIDIOUTCAPS2 = new StructT('MIDIOUTCAPS2', {
  wMid: WORD,
  wPid: WORD,
  vDriverVersion: MMVERSION,
- szPname: ARRAY(CHAR, MAXPNAMELEN),
+ szPname: new ArrayT(CHAR, MAXPNAMELEN),
  wTechnology: WORD,
  wVoices: WORD,
  wNotes: WORD,
@@ -9789,7 +9697,7 @@ var MIDIOUTCAPS2W = new StructT('MIDIOUTCAPS2W', {
  wMid: WORD,
  wPid: WORD,
  vDriverVersion: MMVERSION,
- szPname: ARRAY(WCHAR, MAXPNAMELEN),
+ szPname: new ArrayT(WCHAR, MAXPNAMELEN),
  wTechnology: WORD,
  wVoices: WORD,
  wNotes: WORD,
@@ -9804,7 +9712,7 @@ var MIDIINCAPS = new StructT('MIDIINCAPS', {
  wMid: WORD,
  wPid: WORD,
  vDriverVersion: MMVERSION,
- szPname: ARRAY(CHAR, MAXPNAMELEN),
+ szPname: new ArrayT(CHAR, MAXPNAMELEN),
  dwSupport: DWORD
 });
 
@@ -9812,7 +9720,7 @@ var MIDIINCAPSW = new StructT('MIDIINCAPSW', {
  wMid: WORD,
  wPid: WORD,
  vDriverVersion: MMVERSION,
- szPname: ARRAY(WCHAR, MAXPNAMELEN),
+ szPname: new ArrayT(WCHAR, MAXPNAMELEN),
  dwSupport: DWORD
 });
 
@@ -9820,7 +9728,7 @@ var MIDIINCAPS2 = new StructT('MIDIINCAPS2', {
  wMid: WORD,
  wPid: WORD,
  vDriverVersion: MMVERSION,
- szPname: ARRAY(CHAR, MAXPNAMELEN),
+ szPname: new ArrayT(CHAR, MAXPNAMELEN),
  dwSupport: DWORD,
  ManufacturerGuid: GUID,
  ProductGuid: GUID,
@@ -9831,7 +9739,7 @@ var MIDIINCAPS2W = new StructT('MIDIINCAPS2W', {
  wMid: WORD,
  wPid: WORD,
  vDriverVersion: MMVERSION,
- szPname: ARRAY(WCHAR, MAXPNAMELEN),
+ szPname: new ArrayT(WCHAR, MAXPNAMELEN),
  dwSupport: DWORD,
  ManufacturerGuid: GUID,
  ProductGuid: GUID,
@@ -9847,14 +9755,14 @@ var MIDIHDR = new StructT('MIDIHDR', {
  lpNext: midihdr_tag.Δ,
  reserved: DWORD_PTR,
  dwOffset: DWORD,
- dwReserved: ARRAY(DWORD_PTR, 8)
+ dwReserved: new ArrayT(DWORD_PTR, 8)
 });
 
 var MIDIEVENT = new StructT('MIDIEVENT', {
  dwDeltaTime: DWORD,
  dwStreamID: DWORD,
  dwEvent: DWORD,
- dwParms: ARRAY(DWORD, 1)
+ dwParms: new ArrayT(DWORD, 1)
 });
 
 var MIDISTRMBUFFVER = new StructT('MIDISTRMBUFFVER', {
@@ -9877,7 +9785,7 @@ var AUXCAPS = new StructT('AUXCAPS', {
  wMid: WORD,
  wPid: WORD,
  vDriverVersion: MMVERSION,
- szPname: ARRAY(CHAR, MAXPNAMELEN),
+ szPname: new ArrayT(CHAR, MAXPNAMELEN),
  wTechnology: WORD,
  wReserved1: WORD,
  dwSupport: DWORD
@@ -9887,7 +9795,7 @@ var AUXCAPSW = new StructT('AUXCAPSW', {
  wMid: WORD,
  wPid: WORD,
  vDriverVersion: MMVERSION,
- szPname: ARRAY(WCHAR, MAXPNAMELEN),
+ szPname: new ArrayT(WCHAR, MAXPNAMELEN),
  wTechnology: WORD,
  wReserved1: WORD,
  dwSupport: DWORD
@@ -9897,7 +9805,7 @@ var AUXCAPS2 = new StructT('AUXCAPS2', {
  wMid: WORD,
  wPid: WORD,
  vDriverVersion: MMVERSION,
- szPname: ARRAY(CHAR, MAXPNAMELEN),
+ szPname: new ArrayT(CHAR, MAXPNAMELEN),
  wTechnology: WORD,
  wReserved1: WORD,
  dwSupport: DWORD,
@@ -9910,7 +9818,7 @@ var AUXCAPS2W = new StructT('AUXCAPS2W', {
  wMid: WORD,
  wPid: WORD,
  vDriverVersion: MMVERSION,
- szPname: ARRAY(WCHAR, MAXPNAMELEN),
+ szPname: new ArrayT(WCHAR, MAXPNAMELEN),
  wTechnology: WORD,
  wReserved1: WORD,
  dwSupport: DWORD,
@@ -9931,7 +9839,7 @@ var MIXERCAPS = new StructT('MIXERCAPS', {
  wMid: WORD,
  wPid: WORD,
  vDriverVersion: MMVERSION,
- szPname: ARRAY(CHAR, MAXPNAMELEN),
+ szPname: new ArrayT(CHAR, MAXPNAMELEN),
  fdwSupport: DWORD,
  cDestinations: DWORD
 });
@@ -9940,7 +9848,7 @@ var MIXERCAPSW = new StructT('MIXERCAPSW', {
  wMid: WORD,
  wPid: WORD,
  vDriverVersion: MMVERSION,
- szPname: ARRAY(WCHAR, MAXPNAMELEN),
+ szPname: new ArrayT(WCHAR, MAXPNAMELEN),
  fdwSupport: DWORD,
  cDestinations: DWORD
 });
@@ -9949,7 +9857,7 @@ var MIXERCAPS2 = new StructT('MIXERCAPS2', {
  wMid: WORD,
  wPid: WORD,
  vDriverVersion: MMVERSION,
- szPname: ARRAY(CHAR, MAXPNAMELEN),
+ szPname: new ArrayT(CHAR, MAXPNAMELEN),
  fdwSupport: DWORD,
  cDestinations: DWORD,
  ManufacturerGuid: GUID,
@@ -9961,7 +9869,7 @@ var MIXERCAPS2W = new StructT('MIXERCAPS2W', {
  wMid: WORD,
  wPid: WORD,
  vDriverVersion: MMVERSION,
- szPname: ARRAY(WCHAR, MAXPNAMELEN),
+ szPname: new ArrayT(WCHAR, MAXPNAMELEN),
  fdwSupport: DWORD,
  cDestinations: DWORD,
  ManufacturerGuid: GUID,
@@ -9980,9 +9888,9 @@ var MIXERLINE = new StructT('MIXERLINE', {
  cChannels: DWORD,
  cConnections: DWORD,
  cControls: DWORD,
- szShortName: ARRAY(CHAR, MIXER_SHORT_NAME_CHARS),
- szName: ARRAY(CHAR, MIXER_LONG_NAME_CHARS),
- Target: 
+ szShortName: new ArrayT(CHAR, MIXER_SHORT_NAME_CHARS),
+ szName: new ArrayT(CHAR, MIXER_LONG_NAME_CHARS),
+ Target:
 });
 
 var undefined = new StructT('undefined', {
@@ -9991,7 +9899,7 @@ var undefined = new StructT('undefined', {
  wMid: WORD,
  wPid: WORD,
  vDriverVersion: MMVERSION,
- szPname: ARRAY(CHAR, MAXPNAMELEN)
+ szPname: new ArrayT(CHAR, MAXPNAMELEN)
 });
 
 var MIXERLINEW = new StructT('MIXERLINEW', {
@@ -10005,9 +9913,9 @@ var MIXERLINEW = new StructT('MIXERLINEW', {
  cChannels: DWORD,
  cConnections: DWORD,
  cControls: DWORD,
- szShortName: ARRAY(WCHAR, MIXER_SHORT_NAME_CHARS),
- szName: ARRAY(WCHAR, MIXER_LONG_NAME_CHARS),
- Target: 
+ szShortName: new ArrayT(WCHAR, MIXER_SHORT_NAME_CHARS),
+ szName: new ArrayT(WCHAR, MIXER_LONG_NAME_CHARS),
+ Target:
 });
 
 var undefined = new StructT('undefined', {
@@ -10016,7 +9924,7 @@ var undefined = new StructT('undefined', {
  wMid: WORD,
  wPid: WORD,
  vDriverVersion: MMVERSION,
- szPname: ARRAY(WCHAR, MAXPNAMELEN)
+ szPname: new ArrayT(WCHAR, MAXPNAMELEN)
 });
 
 var MIXERCONTROL = new StructT('MIXERCONTROL', {
@@ -10025,8 +9933,8 @@ var MIXERCONTROL = new StructT('MIXERCONTROL', {
  dwControlType: DWORD,
  fdwControl: DWORD,
  cMultipleItems: DWORD,
- szShortName: ARRAY(CHAR, MIXER_SHORT_NAME_CHARS),
- szName: ARRAY(CHAR, MIXER_LONG_NAME_CHARS),
+ szShortName: new ArrayT(CHAR, MIXER_SHORT_NAME_CHARS),
+ szName: new ArrayT(CHAR, MIXER_LONG_NAME_CHARS),
  Bounds: c:mmsystem.h@81017@S@tagMIXERCONTROLA@Ua,
  Metrics: c:mmsystem.h@81494@S@tagMIXERCONTROLA@Ua
 });
@@ -10047,8 +9955,8 @@ var MIXERCONTROLW = new StructT('MIXERCONTROLW', {
  dwControlType: DWORD,
  fdwControl: DWORD,
  cMultipleItems: DWORD,
- szShortName: ARRAY(WCHAR, MIXER_SHORT_NAME_CHARS),
- szName: ARRAY(WCHAR, MIXER_LONG_NAME_CHARS),
+ szShortName: new ArrayT(WCHAR, MIXER_SHORT_NAME_CHARS),
+ szName: new ArrayT(WCHAR, MIXER_LONG_NAME_CHARS),
  Bounds: c:mmsystem.h@82346@S@tagMIXERCONTROLW@Ua,
  Metrics: c:mmsystem.h@82823@S@tagMIXERCONTROLW@Ua
 });
@@ -10090,13 +9998,13 @@ var MIXERCONTROLDETAILS = new StructT('MIXERCONTROLDETAILS', {
 var MIXERCONTROLDETAILS_LISTTEXT = new StructT('MIXERCONTROLDETAILS_LISTTEXT', {
  dwParam1: DWORD,
  dwParam2: DWORD,
- szName: ARRAY(CHAR, MIXER_LONG_NAME_CHARS)
+ szName: new ArrayT(CHAR, MIXER_LONG_NAME_CHARS)
 });
 
 var MIXERCONTROLDETAILS_LISTTEXTW = new StructT('MIXERCONTROLDETAILS_LISTTEXTW', {
  dwParam1: DWORD,
  dwParam2: DWORD,
- szName: ARRAY(WCHAR, MIXER_LONG_NAME_CHARS)
+ szName: new ArrayT(WCHAR, MIXER_LONG_NAME_CHARS)
 });
 
 var MIXERCONTROLDETAILS_BOOLEAN = new StructT('MIXERCONTROLDETAILS_BOOLEAN', {
@@ -10119,7 +10027,7 @@ var TIMECAPS = new StructT('TIMECAPS', {
 var JOYCAPS = new StructT('JOYCAPS', {
  wMid: WORD,
  wPid: WORD,
- szPname: ARRAY(CHAR, MAXPNAMELEN),
+ szPname: new ArrayT(CHAR, MAXPNAMELEN),
  wXmin: UINT,
  wXmax: UINT,
  wYmin: UINT,
@@ -10139,14 +10047,14 @@ var JOYCAPS = new StructT('JOYCAPS', {
  wMaxAxes: UINT,
  wNumAxes: UINT,
  wMaxButtons: UINT,
- szRegKey: ARRAY(CHAR, MAXPNAMELEN),
- szOEMVxD: ARRAY(CHAR, MAX_JOYSTICKOEMVXDNAME)
+ szRegKey: new ArrayT(CHAR, MAXPNAMELEN),
+ szOEMVxD: new ArrayT(CHAR, MAX_JOYSTICKOEMVXDNAME)
 });
 
 var JOYCAPSW = new StructT('JOYCAPSW', {
  wMid: WORD,
  wPid: WORD,
- szPname: ARRAY(WCHAR, MAXPNAMELEN),
+ szPname: new ArrayT(WCHAR, MAXPNAMELEN),
  wXmin: UINT,
  wXmax: UINT,
  wYmin: UINT,
@@ -10166,14 +10074,14 @@ var JOYCAPSW = new StructT('JOYCAPSW', {
  wMaxAxes: UINT,
  wNumAxes: UINT,
  wMaxButtons: UINT,
- szRegKey: ARRAY(WCHAR, MAXPNAMELEN),
- szOEMVxD: ARRAY(WCHAR, MAX_JOYSTICKOEMVXDNAME)
+ szRegKey: new ArrayT(WCHAR, MAXPNAMELEN),
+ szOEMVxD: new ArrayT(WCHAR, MAX_JOYSTICKOEMVXDNAME)
 });
 
 var JOYCAPS2 = new StructT('JOYCAPS2', {
  wMid: WORD,
  wPid: WORD,
- szPname: ARRAY(CHAR, MAXPNAMELEN),
+ szPname: new ArrayT(CHAR, MAXPNAMELEN),
  wXmin: UINT,
  wXmax: UINT,
  wYmin: UINT,
@@ -10193,8 +10101,8 @@ var JOYCAPS2 = new StructT('JOYCAPS2', {
  wMaxAxes: UINT,
  wNumAxes: UINT,
  wMaxButtons: UINT,
- szRegKey: ARRAY(CHAR, MAXPNAMELEN),
- szOEMVxD: ARRAY(CHAR, MAX_JOYSTICKOEMVXDNAME),
+ szRegKey: new ArrayT(CHAR, MAXPNAMELEN),
+ szOEMVxD: new ArrayT(CHAR, MAX_JOYSTICKOEMVXDNAME),
  ManufacturerGuid: GUID,
  ProductGuid: GUID,
  NameGuid: GUID
@@ -10203,7 +10111,7 @@ var JOYCAPS2 = new StructT('JOYCAPS2', {
 var JOYCAPS2W = new StructT('JOYCAPS2W', {
  wMid: WORD,
  wPid: WORD,
- szPname: ARRAY(WCHAR, MAXPNAMELEN),
+ szPname: new ArrayT(WCHAR, MAXPNAMELEN),
  wXmin: UINT,
  wXmax: UINT,
  wYmin: UINT,
@@ -10223,8 +10131,8 @@ var JOYCAPS2W = new StructT('JOYCAPS2W', {
  wMaxAxes: UINT,
  wNumAxes: UINT,
  wMaxButtons: UINT,
- szRegKey: ARRAY(WCHAR, MAXPNAMELEN),
- szOEMVxD: ARRAY(WCHAR, MAX_JOYSTICKOEMVXDNAME),
+ szRegKey: new ArrayT(WCHAR, MAXPNAMELEN),
+ szOEMVxD: new ArrayT(WCHAR, MAX_JOYSTICKOEMVXDNAME),
  ManufacturerGuid: GUID,
  ProductGuid: GUID,
  NameGuid: GUID
@@ -10270,7 +10178,7 @@ var MMIOINFO = new StructT('MMIOINFO', {
  pchEndWrite: HPSTR,
  lBufOffset: LONG,
  lDiskOffset: LONG,
- adwInfo: ARRAY(DWORD, 3),
+ adwInfo: new ArrayT(DWORD, 3),
  dwReserved1: DWORD,
  dwReserved2: DWORD,
  hmmio: HMMIO
@@ -10596,19 +10504,19 @@ var NCB = new StructT('NCB', {
  ncb_num: UCHAR,
  ncb_buffer: PUCHAR,
  ncb_length: WORD,
- ncb_callname: ARRAY(UCHAR, NCBNAMSZ),
- ncb_name: ARRAY(UCHAR, NCBNAMSZ),
+ ncb_callname: new ArrayT(UCHAR, NCBNAMSZ),
+ ncb_name: new ArrayT(UCHAR, NCBNAMSZ),
  ncb_rto: UCHAR,
  ncb_sto: UCHAR,
  ncb_post: new CallbackT(_void, [_NCB.Δ]).Δ,
  ncb_lana_num: UCHAR,
  ncb_cmd_cplt: UCHAR,
- ncb_reserve: ARRAY(UCHAR, 10),
+ ncb_reserve: new ArrayT(UCHAR, 10),
  ncb_event: HANDLE
 });
 
 var ADAPTER_STATUS = new StructT('ADAPTER_STATUS', {
- adapter_address: ARRAY(UCHAR, 6),
+ adapter_address: new ArrayT(UCHAR, 6),
  rev_major: UCHAR,
  reserved0: UCHAR,
  adapter_type: UCHAR,
@@ -10638,7 +10546,7 @@ var ADAPTER_STATUS = new StructT('ADAPTER_STATUS', {
 });
 
 var NAME_BUFFER = new StructT('NAME_BUFFER', {
- name: ARRAY(UCHAR, NCBNAMSZ),
+ name: new ArrayT(UCHAR, NCBNAMSZ),
  name_num: UCHAR,
  name_flags: UCHAR
 });
@@ -10653,15 +10561,15 @@ var SESSION_HEADER = new StructT('SESSION_HEADER', {
 var SESSION_BUFFER = new StructT('SESSION_BUFFER', {
  lsn: UCHAR,
  state: UCHAR,
- local_name: ARRAY(UCHAR, NCBNAMSZ),
- remote_name: ARRAY(UCHAR, NCBNAMSZ),
+ local_name: new ArrayT(UCHAR, NCBNAMSZ),
+ remote_name: new ArrayT(UCHAR, NCBNAMSZ),
  rcvs_outstanding: UCHAR,
  sends_outstanding: UCHAR
 });
 
 var LANA_ENUM = new StructT('LANA_ENUM', {
  length: UCHAR,
- lana: ARRAY(UCHAR, undefined)
+ lana: new ArrayT(UCHAR, undefined)
 });
 
 var FIND_NAME_HEADER = new StructT('FIND_NAME_HEADER', {
@@ -10674,9 +10582,9 @@ var FIND_NAME_BUFFER = new StructT('FIND_NAME_BUFFER', {
  length: UCHAR,
  access_control: UCHAR,
  frame_control: UCHAR,
- destination_addr: ARRAY(UCHAR, 6),
- source_addr: ARRAY(UCHAR, 6),
- routing_info: ARRAY(UCHAR, 18)
+ destination_addr: new ArrayT(UCHAR, 6),
+ source_addr: new ArrayT(UCHAR, 6),
+ routing_info: new ArrayT(UCHAR, 18)
 });
 
 var ACTION_HEADER = new StructT('ACTION_HEADER', {
@@ -10687,12 +10595,12 @@ var ACTION_HEADER = new StructT('ACTION_HEADER', {
 
 var RPC_BINDING_VECTOR = new StructT('RPC_BINDING_VECTOR', {
  Count: ulong,
- BindingH: ARRAY(RPC_BINDING_HANDLE, 1)
+ BindingH: new ArrayT(RPC_BINDING_HANDLE, 1)
 });
 
 var UUID_VECTOR = new StructT('UUID_VECTOR', {
  Count: ulong,
- Uuid: ARRAY(UUID, 1)
+ Uuid: new ArrayT(UUID, 1)
 });
 
 var RPC_IF_ID = new StructT('RPC_IF_ID', {
@@ -10703,12 +10611,12 @@ var RPC_IF_ID = new StructT('RPC_IF_ID', {
 
 var RPC_PROTSEQ_VECTORA = new StructT('RPC_PROTSEQ_VECTORA', {
  Count: uint,
- Protseq: ARRAY(undefined, 1)
+ Protseq: new ArrayT(undefined, 1)
 });
 
 var RPC_PROTSEQ_VECTORW = new StructT('RPC_PROTSEQ_VECTORW', {
  Count: uint,
- Protseq: ARRAY(undefined, 1)
+ Protseq: new ArrayT(undefined, 1)
 });
 
 var RPC_POLICY = new StructT('RPC_POLICY', {
@@ -10719,12 +10627,12 @@ var RPC_POLICY = new StructT('RPC_POLICY', {
 
 var RPC_STATS_VECTOR = new StructT('RPC_STATS_VECTOR', {
  Count: uint,
- Stats: ARRAY(undefined, 1)
+ Stats: new ArrayT(undefined, 1)
 });
 
 var RPC_IF_ID_VECTOR = new StructT('RPC_IF_ID_VECTOR', {
  Count: ulong,
- IfId: ARRAY(RPC_IF_ID, 1)
+ IfId: new ArrayT(RPC_IF_ID, 1)
 });
 
 var RPC_SECURITY_QOS = new StructT('RPC_SECURITY_QOS', {
@@ -11042,7 +10950,7 @@ var RPC_ASYNC_STATE = new StructT('RPC_ASYNC_STATE', {
  Event: RPC_ASYNC_EVENT,
  NotificationType: RPC_NOTIFICATION_TYPES,
  u: RPC_ASYNC_NOTIFICATION_INFO,
- Reserved: ARRAY(LONG_PTR, 4)
+ Reserved: new ArrayT(LONG_PTR, 4)
 });
 
 var undefined = new StructT('undefined', {
@@ -11082,7 +10990,7 @@ var RPC_EXTENDED_ERROR_INFO = new StructT('RPC_EXTENDED_ERROR_INFO', {
  DetectionLocation: USHORT,
  Flags: USHORT,
  NumberOfParameters: int,
- Parameters: ARRAY(RPC_EE_INFO_PARAM, MaxNumberOfEEInfoParams)
+ Parameters: new ArrayT(RPC_EE_INFO_PARAM, MaxNumberOfEEInfoParams)
 });
 
 var RPC_ERROR_ENUM_HANDLE = new StructT('RPC_ERROR_ENUM_HANDLE', {
@@ -11298,11 +11206,11 @@ var NOTIFYICONDATA = new StructT('NOTIFYICONDATA', {
  uFlags: UINT,
  uCallbackMessage: UINT,
  hIcon: HICON,
- szTip: ARRAY(CHAR, 128),
+ szTip: new ArrayT(CHAR, 128),
  dwState: DWORD,
  dwStateMask: DWORD,
- szInfo: ARRAY(CHAR, 256),
- szInfoTitle: ARRAY(CHAR, 64),
+ szInfo: new ArrayT(CHAR, 256),
+ szInfoTitle: new ArrayT(CHAR, 64),
  dwInfoFlags: DWORD,
  guidItem: GUID,
  hBalloonIcon: HICON
@@ -11315,11 +11223,11 @@ var NOTIFYICONDATAW = new StructT('NOTIFYICONDATAW', {
  uFlags: UINT,
  uCallbackMessage: UINT,
  hIcon: HICON,
- szTip: ARRAY(WCHAR, 128),
+ szTip: new ArrayT(WCHAR, 128),
  dwState: DWORD,
  dwStateMask: DWORD,
- szInfo: ARRAY(WCHAR, 256),
- szInfoTitle: ARRAY(WCHAR, 64),
+ szInfo: new ArrayT(WCHAR, 256),
+ szInfoTitle: new ArrayT(WCHAR, 64),
  dwInfoFlags: DWORD,
  guidItem: GUID,
  hBalloonIcon: HICON
@@ -11336,16 +11244,16 @@ var SHFILEINFO = new StructT('SHFILEINFO', {
  hIcon: HICON,
  iIcon: int,
  dwAttributes: DWORD,
- szDisplayName: ARRAY(CHAR, MAX_PATH),
- szTypeName: ARRAY(CHAR, 80)
+ szDisplayName: new ArrayT(CHAR, MAX_PATH),
+ szTypeName: new ArrayT(CHAR, 80)
 });
 
 var SHFILEINFOW = new StructT('SHFILEINFOW', {
  hIcon: HICON,
  iIcon: int,
  dwAttributes: DWORD,
- szDisplayName: ARRAY(WCHAR, MAX_PATH),
- szTypeName: ARRAY(WCHAR, 80)
+ szDisplayName: new ArrayT(WCHAR, MAX_PATH),
+ szTypeName: new ArrayT(WCHAR, 80)
 });
 
 var SHSTOCKICONINFO = new StructT('SHSTOCKICONINFO', {
@@ -11353,7 +11261,7 @@ var SHSTOCKICONINFO = new StructT('SHSTOCKICONINFO', {
  hIcon: HICON,
  iSysImageIndex: int,
  iIcon: int,
- szPath: ARRAY(WCHAR, MAX_PATH)
+ szPath: new ArrayT(WCHAR, MAX_PATH)
 });
 
 var OPEN_PRINTER_PROPS_INFO = new StructT('OPEN_PRINTER_PROPS_INFO', {
@@ -11380,7 +11288,7 @@ var NC_ADDRESS = new StructT('NC_ADDRESS', {
 
 
 var PERF_DATA_BLOCK = new StructT('PERF_DATA_BLOCK', {
- Signature: ARRAY(WCHAR, 4),
+ Signature: new ArrayT(WCHAR, 4),
  LittleEndian: DWORD,
  Version: DWORD,
  Revision: DWORD,
@@ -11441,7 +11349,7 @@ var PERF_COUNTER_BLOCK = new StructT('PERF_COUNTER_BLOCK', {
 
 var FD_SET = new StructT('FD_SET', {
  fd_count: u_int,
- fd_array: ARRAY(SOCKET, FD_SETSIZE)
+ fd_array: new ArrayT(SOCKET, FD_SETSIZE)
 });
 
 var TIMEVAL = new StructT('TIMEVAL', {
@@ -11497,14 +11405,14 @@ var SOCKADDR_IN = new StructT('SOCKADDR_IN', {
  sin_family: short,
  sin_port: u_short,
  sin_addr: IN_ADDR,
- sin_zero: ARRAY(undefined, 8)
+ sin_zero: new ArrayT(undefined, 8)
 });
 
 var WSADATA = new StructT('WSADATA', {
  wVersion: WORD,
  wHighVersion: WORD,
- szDescription: ARRAY(undefined, undefined),
- szSystemStatus: ARRAY(undefined, undefined),
+ szDescription: new ArrayT(undefined, undefined),
+ szSystemStatus: new ArrayT(undefined, undefined),
  iMaxSockets: ushort,
  iMaxUdpDg: ushort,
  lpVendorInfo: char.Δ
@@ -11517,7 +11425,7 @@ var ip_mreq = new StructT('ip_mreq', {
 
 var SOCKADDR = new StructT('SOCKADDR', {
  sa_family: u_short,
- sa_data: ARRAY(undefined, 14)
+ sa_data: new ArrayT(undefined, 14)
 });
 
 var sockproto = new StructT('sockproto', {
@@ -11564,7 +11472,7 @@ var PROV_ENUMALGS = new StructT('PROV_ENUMALGS', {
  aiAlgid: ALG_ID,
  dwBitLen: DWORD,
  dwNameLen: DWORD,
- szName: ARRAY(CHAR, 20)
+ szName: new ArrayT(CHAR, 20)
 });
 
 var PROV_ENUMALGS_EX = new StructT('PROV_ENUMALGS_EX', {
@@ -11574,9 +11482,9 @@ var PROV_ENUMALGS_EX = new StructT('PROV_ENUMALGS_EX', {
  dwMaxLen: DWORD,
  dwProtocols: DWORD,
  dwNameLen: DWORD,
- szName: ARRAY(CHAR, 20),
+ szName: new ArrayT(CHAR, 20),
  dwLongNameLen: DWORD,
- szLongName: ARRAY(CHAR, 40)
+ szLongName: new ArrayT(CHAR, 40)
 });
 
 var PUBLICKEYSTRUC = new StructT('PUBLICKEYSTRUC', {
@@ -11599,7 +11507,7 @@ var TEKPUBKEY = new StructT('TEKPUBKEY', {
 
 var DSSSEED = new StructT('DSSSEED', {
  counter: DWORD,
- seed: ARRAY(BYTE, 20)
+ seed: new ArrayT(BYTE, 20)
 });
 
 var DSSPUBKEY_VER3 = new StructT('DSSPUBKEY_VER3', {
@@ -11626,44 +11534,44 @@ var KEY_TYPE_SUBTYPE = new StructT('KEY_TYPE_SUBTYPE', {
 });
 
 var CERT_FORTEZZA_DATA_PROP = new StructT('CERT_FORTEZZA_DATA_PROP', {
- SerialNumber: ARRAY(undefined, 8),
+ SerialNumber: new ArrayT(undefined, 8),
  CertIndex: int,
- CertLabel: ARRAY(undefined, 36)
+ CertLabel: new ArrayT(undefined, 36)
 });
 
 var CRYPT_RC4_KEY_STATE = new StructT('CRYPT_RC4_KEY_STATE', {
- Key: ARRAY(undefined, 16),
- SBox: ARRAY(undefined, 256),
+ Key: new ArrayT(undefined, 16),
+ SBox: new ArrayT(undefined, 256),
  i: uchar,
  j: uchar
 });
 
 var CRYPT_DES_KEY_STATE = new StructT('CRYPT_DES_KEY_STATE', {
- Key: ARRAY(undefined, 8),
- IV: ARRAY(undefined, 8),
- Feedback: ARRAY(undefined, 8)
+ Key: new ArrayT(undefined, 8),
+ IV: new ArrayT(undefined, 8),
+ Feedback: new ArrayT(undefined, 8)
 });
 
 var CRYPT_3DES_KEY_STATE = new StructT('CRYPT_3DES_KEY_STATE', {
- Key: ARRAY(undefined, 24),
- IV: ARRAY(undefined, 8),
- Feedback: ARRAY(undefined, 8)
+ Key: new ArrayT(undefined, 24),
+ IV: new ArrayT(undefined, 8),
+ Feedback: new ArrayT(undefined, 8)
 });
 
 var CRYPT_AES_128_KEY_STATE = new StructT('CRYPT_AES_128_KEY_STATE', {
- Key: ARRAY(undefined, 16),
- IV: ARRAY(undefined, 16),
- EncryptionState: ARRAY(undefined, 11),
- DecryptionState: ARRAY(undefined, 11),
- Feedback: ARRAY(undefined, 16)
+ Key: new ArrayT(undefined, 16),
+ IV: new ArrayT(undefined, 16),
+ EncryptionState: new ArrayT(undefined, 11),
+ DecryptionState: new ArrayT(undefined, 11),
+ Feedback: new ArrayT(undefined, 16)
 });
 
 var CRYPT_AES_256_KEY_STATE = new StructT('CRYPT_AES_256_KEY_STATE', {
- Key: ARRAY(undefined, 32),
- IV: ARRAY(undefined, 16),
- EncryptionState: ARRAY(undefined, 15),
- DecryptionState: ARRAY(undefined, 15),
- Feedback: ARRAY(undefined, 16)
+ Key: new ArrayT(undefined, 32),
+ IV: new ArrayT(undefined, 16),
+ EncryptionState: new ArrayT(undefined, 15),
+ DecryptionState: new ArrayT(undefined, 15),
+ Feedback: new ArrayT(undefined, 16)
 });
 
 var CRYPT_ATTR_BLOB = new StructT('CRYPT_ATTR_BLOB', {
@@ -11770,9 +11678,9 @@ var BCRYPT_DH_PARAMETER_HEADER = new StructT('BCRYPT_DH_PARAMETER_HEADER', {
 var BCRYPT_DSA_KEY_BLOB = new StructT('BCRYPT_DSA_KEY_BLOB', {
  dwMagic: ULONG,
  cbKey: ULONG,
- Count: ARRAY(UCHAR, 4),
- Seed: ARRAY(UCHAR, 20),
- q: ARRAY(UCHAR, 20)
+ Count: new ArrayT(UCHAR, 4),
+ Seed: new ArrayT(UCHAR, 20),
+ q: new ArrayT(UCHAR, 20)
 });
 
 var BCRYPT_KEY_DATA_BLOB_HEADER = new StructT('BCRYPT_KEY_DATA_BLOB_HEADER', {
@@ -11785,9 +11693,9 @@ var BCRYPT_DSA_PARAMETER_HEADER = new StructT('BCRYPT_DSA_PARAMETER_HEADER', {
  cbLength: ULONG,
  dwMagic: ULONG,
  cbKeyLength: ULONG,
- Count: ARRAY(UCHAR, 4),
- Seed: ARRAY(UCHAR, 20),
- q: ARRAY(UCHAR, 20)
+ Count: new ArrayT(UCHAR, 4),
+ Seed: new ArrayT(UCHAR, 20),
+ q: new ArrayT(UCHAR, 20)
 });
 
 var BCRYPT_ALGORITHM_IDENTIFIER = new StructT('BCRYPT_ALGORITHM_IDENTIFIER', {
@@ -12371,21 +12279,21 @@ var CERT_X942_DH_PARAMETERS = new StructT('CERT_X942_DH_PARAMETERS', {
 
 var CRYPT_X942_OTHER_INFO = new StructT('CRYPT_X942_OTHER_INFO', {
  pszContentEncryptionObjId: LPSTR,
- rgbCounter: ARRAY(BYTE, CRYPT_X942_COUNTER_BYTE_LENGTH),
- rgbKeyLength: ARRAY(BYTE, CRYPT_X942_KEY_LENGTH_BYTE_LENGTH),
+ rgbCounter: new ArrayT(BYTE, CRYPT_X942_COUNTER_BYTE_LENGTH),
+ rgbKeyLength: new ArrayT(BYTE, CRYPT_X942_KEY_LENGTH_BYTE_LENGTH),
  PubInfo: CRYPT_DATA_BLOB
 });
 
 var CRYPT_ECC_CMS_SHARED_INFO = new StructT('CRYPT_ECC_CMS_SHARED_INFO', {
  Algorithm: CRYPT_ALGORITHM_IDENTIFIER,
  EntityUInfo: CRYPT_DATA_BLOB,
- rgbSuppPubInfo: ARRAY(BYTE, CRYPT_ECC_CMS_SHARED_INFO_SUPPPUBINFO_BYTE_LENGTH)
+ rgbSuppPubInfo: new ArrayT(BYTE, CRYPT_ECC_CMS_SHARED_INFO_SUPPPUBINFO_BYTE_LENGTH)
 });
 
 var CRYPT_RC2_CBC_PARAMETERS = new StructT('CRYPT_RC2_CBC_PARAMETERS', {
  dwVersion: DWORD,
  fIV: BOOL,
- rgbIV: ARRAY(BYTE, 8)
+ rgbIV: new ArrayT(BYTE, 8)
 });
 
 var CRYPT_SMIME_CAPABILITY = new StructT('CRYPT_SMIME_CAPABILITY', {
@@ -13022,7 +12930,7 @@ var ROOT_INFO_LUID = new StructT('ROOT_INFO_LUID', {
 });
 
 var CRYPT_SMART_CARD_ROOT_INFO = new StructT('CRYPT_SMART_CARD_ROOT_INFO', {
- rgbCardID: ARRAY(BYTE, 16),
+ rgbCardID: new ArrayT(BYTE, 16),
  luid: ROOT_INFO_LUID
 });
 
@@ -13238,7 +13146,7 @@ var CERT_CHAIN = new StructT('CERT_CHAIN', {
  keyLocatorInfo: CRYPT_KEY_PROV_INFO
 });
 
-var CRYPT_BLOB_ARRAY = new StructT('CRYPT_BLOB_ARRAY', {
+var CRYPT_BLOB_new ArrayT = new StructT('CRYPT_BLOB_new ArrayT', {
  cBlob: DWORD,
  rgBlob: PCRYPT_DATA_BLOB
 });
@@ -13305,7 +13213,7 @@ var CRYPT_ASYNC_RETRIEVAL_COMPLETION = new StructT('CRYPT_ASYNC_RETRIEVAL_COMPLE
  pvCompletion: LPVOID
 });
 
-var CRYPT_URL_ARRAY = new StructT('CRYPT_URL_ARRAY', {
+var CRYPT_URL_new ArrayT = new StructT('CRYPT_URL_new ArrayT', {
  cUrl: DWORD,
  rgwszUrl: LPWSTR.Δ
 });
@@ -13648,7 +13556,7 @@ var RPC_IMPORT_CONTEXT_P = new StructT('RPC_IMPORT_CONTEXT_P', {
 });
 
 var undefined = new StructT('undefined', {
- pad: ARRAY(undefined, 2),
+ pad: new ArrayT(undefined, 2),
  userContext: _void.Δ
 });
 
@@ -13710,7 +13618,7 @@ var MIDL_STUB_MESSAGE = new StructT('MIDL_STUB_MESSAGE', {
  SavedContextHandles: NDR_SCONTEXT.Δ,
  ParamNumber: long,
  pRpcChannelBuffer: IRpcChannelBuffer.Δ,
- pArrayInfo: PARRAY_INFO,
+ pArrayInfo: Pnew ArrayT_INFO,
  SizePtrCountArray: ulong.Δ,
  SizePtrOffsetArray: ulong.Δ,
  SizePtrLengthArray: ulong.Δ,
@@ -13763,7 +13671,7 @@ var FULL_PTR_XLAT_TABLES = new StructT('FULL_PTR_XLAT_TABLES', {
  XlatSide: XLAT_SIDE
 });
 
-var ARRAY_INFO = new StructT('ARRAY_INFO', {
+var new ArrayT_INFO = new StructT('new ArrayT_INFO', {
  Dimension: long,
  BufferConformanceMark: ulong.Δ,
  BufferVarianceMark: ulong.Δ,
@@ -13890,7 +13798,7 @@ var NDR_USER_MARSHAL_INFO_LEVEL1 = new StructT('NDR_USER_MARSHAL_INFO_LEVEL1', {
  pfnAllocate: new CallbackT(_void.Δ, [uint]).Δ,
  pfnFree: new CallbackT(_void, [_void.Δ]).Δ,
  pRpcChannelBuffer: IRpcChannelBuffer.Δ,
- Reserved: ARRAY(ULONG_PTR, 5)
+ Reserved: new ArrayT(ULONG_PTR, 5)
 });
 
 var NDR_USER_MARSHAL_INFO = new StructT('NDR_USER_MARSHAL_INFO', {
@@ -13900,7 +13808,7 @@ var NDR_USER_MARSHAL_INFO = new StructT('NDR_USER_MARSHAL_INFO', {
 var RemHGLOBAL = new StructT('RemHGLOBAL', {
  fNullHGlobal: long,
  cbData: ulong,
- data: ARRAY(byte,  1 )
+ data: new ArrayT(byte,  1 )
 });
 
 var RemHMETAFILEPICT = new StructT('RemHMETAFILEPICT', {
@@ -13908,27 +13816,27 @@ var RemHMETAFILEPICT = new StructT('RemHMETAFILEPICT', {
  xExt: long,
  yExt: long,
  cbData: ulong,
- data: ARRAY(byte,  1 )
+ data: new ArrayT(byte,  1 )
 });
 
 var RemHENHMETAFILE = new StructT('RemHENHMETAFILE', {
  cbData: ulong,
- data: ARRAY(byte,  1 )
+ data: new ArrayT(byte,  1 )
 });
 
 var RemHBITMAP = new StructT('RemHBITMAP', {
  cbData: ulong,
- data: ARRAY(byte,  1 )
+ data: new ArrayT(byte,  1 )
 });
 
 var RemHPALETTE = new StructT('RemHPALETTE', {
  cbData: ulong,
- data: ARRAY(byte,  1 )
+ data: new ArrayT(byte,  1 )
 });
 
 var RemHBRUSH = new StructT('RemHBRUSH', {
  cbData: ulong,
- data: ARRAY(byte,  1 )
+ data: new ArrayT(byte,  1 )
 });
 
 var COAUTHIDENTITY = new StructT('COAUTHIDENTITY', {
@@ -13953,29 +13861,29 @@ var COAUTHINFO = new StructT('COAUTHINFO', {
 
 var BYTE_BLOB = new StructT('BYTE_BLOB', {
  clSize: ulong,
- abData: ARRAY(byte,  1 )
+ abData: new ArrayT(byte,  1 )
 });
 
 var WORD_BLOB = new StructT('WORD_BLOB', {
  clSize: ulong,
- asData: ARRAY(undefined,  1 )
+ asData: new ArrayT(undefined,  1 )
 });
 
 var DWORD_BLOB = new StructT('DWORD_BLOB', {
  clSize: ulong,
- alData: ARRAY(undefined,  1 )
+ alData: new ArrayT(undefined,  1 )
 });
 
 var FLAGGED_BYTE_BLOB = new StructT('FLAGGED_BYTE_BLOB', {
  fFlags: ulong,
  clSize: ulong,
- abData: ARRAY(byte,  1 )
+ abData: new ArrayT(byte,  1 )
 });
 
 var FLAGGED_WORD_BLOB = new StructT('FLAGGED_WORD_BLOB', {
  fFlags: ulong,
  clSize: ulong,
- asData: ARRAY(undefined,  1 )
+ asData: new ArrayT(undefined,  1 )
 });
 
 var BYTE_SIZEDARR = new StructT('BYTE_SIZEDARR', {
@@ -14043,7 +13951,7 @@ var userBITMAP = new StructT('userBITMAP', {
  bmPlanes: WORD,
  bmBitsPixel: WORD,
  cbSize: ULONG,
- pBuffer: ARRAY(byte,  1 )
+ pBuffer: new ArrayT(byte,  1 )
 });
 
 var userHBITMAP = new StructT('userHBITMAP', {
@@ -14222,18 +14130,18 @@ var undefined = new StructT('undefined', {
 var GET_MEDIA_TYPES = new StructT('GET_MEDIA_TYPES', {
  DeviceType: DWORD,
  MediaInfoCount: DWORD,
- MediaInfo: ARRAY(DEVICE_MEDIA_INFO, 1)
+ MediaInfo: new ArrayT(DEVICE_MEDIA_INFO, 1)
 });
 
 var STORAGE_PREDICT_FAILURE = new StructT('STORAGE_PREDICT_FAILURE', {
  PredictFailure: DWORD,
- VendorSpecific: ARRAY(BYTE, 512)
+ VendorSpecific: new ArrayT(BYTE, 512)
 });
 
 var STORAGE_PROPERTY_QUERY = new StructT('STORAGE_PROPERTY_QUERY', {
  PropertyId: STORAGE_PROPERTY_ID,
  QueryType: STORAGE_QUERY_TYPE,
- AdditionalParameters: ARRAY(BYTE, 1)
+ AdditionalParameters: new ArrayT(BYTE, 1)
 });
 
 var STORAGE_DESCRIPTOR_HEADER = new StructT('STORAGE_DESCRIPTOR_HEADER', {
@@ -14254,7 +14162,7 @@ var STORAGE_DEVICE_DESCRIPTOR = new StructT('STORAGE_DEVICE_DESCRIPTOR', {
  SerialNumberOffset: DWORD,
  BusType: STORAGE_BUS_TYPE,
  RawPropertiesLength: DWORD,
- RawDeviceProperties: ARRAY(BYTE, 1)
+ RawDeviceProperties: new ArrayT(BYTE, 1)
 });
 
 var STORAGE_ADAPTER_DESCRIPTOR = new StructT('STORAGE_ADAPTER_DESCRIPTOR', {
@@ -14296,14 +14204,14 @@ var STORAGE_IDENTIFIER = new StructT('STORAGE_IDENTIFIER', {
  IdentifierSize: WORD,
  NextOffset: WORD,
  Association: STORAGE_ASSOCIATION_TYPE,
- Identifier: ARRAY(BYTE, 1)
+ Identifier: new ArrayT(BYTE, 1)
 });
 
 var STORAGE_DEVICE_ID_DESCRIPTOR = new StructT('STORAGE_DEVICE_ID_DESCRIPTOR', {
  Version: DWORD,
  Size: DWORD,
  NumberOfIdentifiers: DWORD,
- Identifiers: ARRAY(BYTE, 1)
+ Identifiers: new ArrayT(BYTE, 1)
 });
 
 var DEVICE_SEEK_PENALTY_DESCRIPTOR = new StructT('DEVICE_SEEK_PENALTY_DESCRIPTOR', {
@@ -14343,7 +14251,7 @@ var DEVICE_DSM_NOTIFICATION_PARAMETERS = new StructT('DEVICE_DSM_NOTIFICATION_PA
  Size: DWORD,
  Flags: DWORD,
  NumFileTypeIDs: DWORD,
- FileTypeID: ARRAY(GUID, 1)
+ FileTypeID: new ArrayT(GUID, 1)
 });
 
 var STORAGE_GET_BC_PROPERTIES_OUTPUT = new StructT('STORAGE_GET_BC_PROPERTIES_OUTPUT', {
@@ -14361,7 +14269,7 @@ var STORAGE_ALLOCATE_BC_STREAM_INPUT = new StructT('STORAGE_ALLOCATE_BC_STREAM_I
  Period: DWORD,
  RetryFailures: BOOLEAN,
  Discardable: BOOLEAN,
- Reserved1: ARRAY(BOOLEAN, 2),
+ Reserved1: new ArrayT(BOOLEAN, 2),
  AccessType: DWORD,
  AccessMode: DWORD
 });
@@ -14378,7 +14286,7 @@ var STORAGE_PRIORITY_HINT_SUPPORT = new StructT('STORAGE_PRIORITY_HINT_SUPPORT',
 var STORAGE_MEDIA_SERIAL_NUMBER_DATA = new StructT('STORAGE_MEDIA_SERIAL_NUMBER_DATA', {
  Reserved: WORD,
  SerialNumberLength: WORD,
- SerialNumber: ARRAY(BYTE, 0)
+ SerialNumber: new ArrayT(BYTE, 0)
 });
 
 var STORAGE_READ_CAPACITY = new StructT('STORAGE_READ_CAPACITY', {
@@ -14417,7 +14325,7 @@ var undefined = new StructT('undefined', {
  Reserved1: BYTE,
  Type: BYTE,
  Scope: BYTE,
- ParameterList: ARRAY(BYTE, 0)
+ ParameterList: new ArrayT(BYTE, 0)
 });
 
 var FORMAT_PARAMETERS = new StructT('FORMAT_PARAMETERS', {
@@ -14436,7 +14344,7 @@ var FORMAT_EX_PARAMETERS = new StructT('FORMAT_EX_PARAMETERS', {
  EndHeadNumber: DWORD,
  FormatGapLength: WORD,
  SectorsPerTrack: WORD,
- SectorNumber: ARRAY(WORD, 1)
+ SectorNumber: new ArrayT(WORD, 1)
 });
 
 var DISK_GEOMETRY = new StructT('DISK_GEOMETRY', {
@@ -14465,7 +14373,7 @@ var SET_PARTITION_INFORMATION_MBR = new StructT('SET_PARTITION_INFORMATION_MBR',
 var DRIVE_LAYOUT_INFORMATION = new StructT('DRIVE_LAYOUT_INFORMATION', {
  PartitionCount: DWORD,
  Signature: DWORD,
- PartitionEntry: ARRAY(PARTITION_INFORMATION, 1)
+ PartitionEntry: new ArrayT(PARTITION_INFORMATION, 1)
 });
 
 var VERIFY_INFORMATION = new StructT('VERIFY_INFORMATION', {
@@ -14476,20 +14384,20 @@ var VERIFY_INFORMATION = new StructT('VERIFY_INFORMATION', {
 var REASSIGN_BLOCKS = new StructT('REASSIGN_BLOCKS', {
  Reserved: WORD,
  Count: WORD,
- BlockNumber: ARRAY(DWORD, 1)
+ BlockNumber: new ArrayT(DWORD, 1)
 });
 
 var REASSIGN_BLOCKS_EX = new StructT('REASSIGN_BLOCKS_EX', {
  Reserved: WORD,
  Count: WORD,
- BlockNumber: ARRAY(LARGE_INTEGER, 1)
+ BlockNumber: new ArrayT(LARGE_INTEGER, 1)
 });
 
 var SET_PARTITION_INFORMATION_GPT = new StructT('SET_PARTITION_INFORMATION_GPT', {
  PartitionType: GUID,
  PartitionId: GUID,
  Attributes: DWORD64,
- Name: ARRAY(WCHAR, 36)
+ Name: new ArrayT(WCHAR, 36)
 });
 
 var PARTITION_INFORMATION_MBR = new StructT('PARTITION_INFORMATION_MBR', {
@@ -14542,7 +14450,7 @@ var DRIVE_LAYOUT_INFORMATION_MBR = new StructT('DRIVE_LAYOUT_INFORMATION_MBR', {
 var DRIVE_LAYOUT_INFORMATION_EX = new StructT('DRIVE_LAYOUT_INFORMATION_EX', {
  PartitionStyle: DWORD,
  PartitionCount: DWORD,
- PartitionEntry: ARRAY(PARTITION_INFORMATION_EX, 1)
+ PartitionEntry: new ArrayT(PARTITION_INFORMATION_EX, 1)
 });
 
 var DISK_INT13_INFO = new StructT('DISK_INT13_INFO', {
@@ -14591,7 +14499,7 @@ var undefined = new StructT('undefined', {
 var DISK_GEOMETRY_EX = new StructT('DISK_GEOMETRY_EX', {
  Geometry: DISK_GEOMETRY,
  DiskSize: LARGE_INTEGER,
- Data: ARRAY(BYTE, 1)
+ Data: new ArrayT(BYTE, 1)
 });
 
 var DISK_CONTROLLER_NUMBER = new StructT('DISK_CONTROLLER_NUMBER', {
@@ -14656,7 +14564,7 @@ var DISK_PERFORMANCE = new StructT('DISK_PERFORMANCE', {
  SplitCount: DWORD,
  QueryTime: LARGE_INTEGER,
  StorageDeviceNumber: DWORD,
- StorageManagerName: ARRAY(WCHAR, 8)
+ StorageManagerName: new ArrayT(WCHAR, 8)
 });
 
 var DISK_RECORD = new StructT('DISK_RECORD', {
@@ -14683,7 +14591,7 @@ var BIN_RANGE = new StructT('BIN_RANGE', {
 var PERF_BIN = new StructT('PERF_BIN', {
  NumberOfBins: DWORD,
  TypeOfBin: DWORD,
- BinsRanges: ARRAY(BIN_RANGE, 1)
+ BinsRanges: new ArrayT(BIN_RANGE, 1)
 });
 
 var BIN_COUNT = new StructT('BIN_COUNT', {
@@ -14693,7 +14601,7 @@ var BIN_COUNT = new StructT('BIN_COUNT', {
 
 var BIN_RESULTS = new StructT('BIN_RESULTS', {
  NumberOfBins: DWORD,
- BinCounts: ARRAY(BIN_COUNT, 1)
+ BinCounts: new ArrayT(BIN_COUNT, 1)
 });
 
 var GETVERSIONINPARAMS = new StructT('GETVERSIONINPARAMS', {
@@ -14702,7 +14610,7 @@ var GETVERSIONINPARAMS = new StructT('GETVERSIONINPARAMS', {
  bReserved: BYTE,
  bIDEDeviceMap: BYTE,
  fCapabilities: DWORD,
- dwReserved: ARRAY(DWORD, 4)
+ dwReserved: new ArrayT(DWORD, 4)
 });
 
 var IDEREGS = new StructT('IDEREGS', {
@@ -14720,22 +14628,22 @@ var SENDCMDINPARAMS = new StructT('SENDCMDINPARAMS', {
  cBufferSize: DWORD,
  irDriveRegs: IDEREGS,
  bDriveNumber: BYTE,
- bReserved: ARRAY(BYTE, 3),
- dwReserved: ARRAY(DWORD, 4),
- bBuffer: ARRAY(BYTE, 1)
+ bReserved: new ArrayT(BYTE, 3),
+ dwReserved: new ArrayT(DWORD, 4),
+ bBuffer: new ArrayT(BYTE, 1)
 });
 
 var DRIVERSTATUS = new StructT('DRIVERSTATUS', {
  bDriverError: BYTE,
  bIDEError: BYTE,
- bReserved: ARRAY(BYTE, 2),
- dwReserved: ARRAY(DWORD, 2)
+ bReserved: new ArrayT(BYTE, 2),
+ dwReserved: new ArrayT(DWORD, 2)
 });
 
 var SENDCMDOUTPARAMS = new StructT('SENDCMDOUTPARAMS', {
  cBufferSize: DWORD,
  DriverStatus: DRIVERSTATUS,
- bBuffer: ARRAY(BYTE, 1)
+ bBuffer: new ArrayT(BYTE, 1)
 });
 
 var CHANGER_ELEMENT = new StructT('CHANGER_ELEMENT', {
@@ -14775,15 +14683,15 @@ var GET_CHANGER_PARAMETERS = new StructT('GET_CHANGER_PARAMETERS', {
  ExchangeFromDrive: BYTE,
  LockUnlockCapabilities: BYTE,
  PositionCapabilities: BYTE,
- Reserved1: ARRAY(BYTE, 2),
- Reserved2: ARRAY(DWORD, 2)
+ Reserved1: new ArrayT(BYTE, 2),
+ Reserved2: new ArrayT(DWORD, 2)
 });
 
 var CHANGER_PRODUCT_DATA = new StructT('CHANGER_PRODUCT_DATA', {
- VendorId: ARRAY(BYTE, VENDOR_ID_LENGTH),
- ProductId: ARRAY(BYTE, PRODUCT_ID_LENGTH),
- Revision: ARRAY(BYTE, REVISION_LENGTH),
- SerialNumber: ARRAY(BYTE, SERIAL_NUMBER_LENGTH),
+ VendorId: new ArrayT(BYTE, VENDOR_ID_LENGTH),
+ ProductId: new ArrayT(BYTE, PRODUCT_ID_LENGTH),
+ Revision: new ArrayT(BYTE, REVISION_LENGTH),
+ SerialNumber: new ArrayT(BYTE, SERIAL_NUMBER_LENGTH),
  DeviceType: BYTE
 });
 
@@ -14805,8 +14713,8 @@ var CHANGER_ELEMENT_STATUS = new StructT('CHANGER_ELEMENT_STATUS', {
  TargetId: BYTE,
  Lun: BYTE,
  Reserved: WORD,
- PrimaryVolumeID: ARRAY(BYTE, MAX_VOLUME_ID_SIZE),
- AlternateVolumeID: ARRAY(BYTE, MAX_VOLUME_ID_SIZE)
+ PrimaryVolumeID: new ArrayT(BYTE, MAX_VOLUME_ID_SIZE),
+ AlternateVolumeID: new ArrayT(BYTE, MAX_VOLUME_ID_SIZE)
 });
 
 var CHANGER_ELEMENT_STATUS_EX = new StructT('CHANGER_ELEMENT_STATUS_EX', {
@@ -14817,11 +14725,11 @@ var CHANGER_ELEMENT_STATUS_EX = new StructT('CHANGER_ELEMENT_STATUS_EX', {
  TargetId: BYTE,
  Lun: BYTE,
  Reserved: WORD,
- PrimaryVolumeID: ARRAY(BYTE, MAX_VOLUME_ID_SIZE),
- AlternateVolumeID: ARRAY(BYTE, MAX_VOLUME_ID_SIZE),
- VendorIdentification: ARRAY(BYTE, VENDOR_ID_LENGTH),
- ProductIdentification: ARRAY(BYTE, PRODUCT_ID_LENGTH),
- SerialNumber: ARRAY(BYTE, SERIAL_NUMBER_LENGTH)
+ PrimaryVolumeID: new ArrayT(BYTE, MAX_VOLUME_ID_SIZE),
+ AlternateVolumeID: new ArrayT(BYTE, MAX_VOLUME_ID_SIZE),
+ VendorIdentification: new ArrayT(BYTE, VENDOR_ID_LENGTH),
+ ProductIdentification: new ArrayT(BYTE, PRODUCT_ID_LENGTH),
+ SerialNumber: new ArrayT(BYTE, SERIAL_NUMBER_LENGTH)
 });
 
 var CHANGER_INITIALIZE_ELEMENT_STATUS = new StructT('CHANGER_INITIALIZE_ELEMENT_STATUS', {
@@ -14854,12 +14762,12 @@ var CHANGER_MOVE_MEDIUM = new StructT('CHANGER_MOVE_MEDIUM', {
 var CHANGER_SEND_VOLUME_TAG_INFORMATION = new StructT('CHANGER_SEND_VOLUME_TAG_INFORMATION', {
  StartingElement: CHANGER_ELEMENT,
  ActionCode: DWORD,
- VolumeIDTemplate: ARRAY(BYTE, MAX_VOLUME_TEMPLATE_SIZE)
+ VolumeIDTemplate: new ArrayT(BYTE, MAX_VOLUME_TEMPLATE_SIZE)
 });
 
 var READ_ELEMENT_ADDRESS_INFO = new StructT('READ_ELEMENT_ADDRESS_INFO', {
  NumberOfElements: DWORD,
- ElementStatus: ARRAY(CHANGER_ELEMENT_STATUS, 1)
+ ElementStatus: new ArrayT(CHANGER_ELEMENT_STATUS, 1)
 });
 
 var CSV_NAMESPACE_INFO = new StructT('CSV_NAMESPACE_INFO', {
@@ -14871,11 +14779,11 @@ var CSV_NAMESPACE_INFO = new StructT('CSV_NAMESPACE_INFO', {
 
 var PATHNAME_BUFFER = new StructT('PATHNAME_BUFFER', {
  PathNameLength: DWORD,
- Name: ARRAY(WCHAR, 1)
+ Name: new ArrayT(WCHAR, 1)
 });
 
 var FSCTL_QUERY_FAT_BPB_BUFFER = new StructT('FSCTL_QUERY_FAT_BPB_BUFFER', {
- First0x24BytesOfBootSector: ARRAY(BYTE, 0x24)
+ First0x24BytesOfBootSector: new ArrayT(BYTE, 0x24)
 });
 
 var NTFS_VOLUME_DATA_BUFFER = new StructT('NTFS_VOLUME_DATA_BUFFER', {
@@ -14908,7 +14816,7 @@ var STARTING_LCN_INPUT_BUFFER = new StructT('STARTING_LCN_INPUT_BUFFER', {
 var VOLUME_BITMAP_BUFFER = new StructT('VOLUME_BITMAP_BUFFER', {
  StartingLcn: LARGE_INTEGER,
  BitmapSize: LARGE_INTEGER,
- Buffer: ARRAY(BYTE, 1)
+ Buffer: new ArrayT(BYTE, 1)
 });
 
 var STARTING_VCN_INPUT_BUFFER = new StructT('STARTING_VCN_INPUT_BUFFER', {
@@ -14918,7 +14826,7 @@ var STARTING_VCN_INPUT_BUFFER = new StructT('STARTING_VCN_INPUT_BUFFER', {
 var RETRIEVAL_POINTERS_BUFFER = new StructT('RETRIEVAL_POINTERS_BUFFER', {
  ExtentCount: DWORD,
  StartingVcn: LARGE_INTEGER,
- Extents: ARRAY(undefined, 1)
+ Extents: new ArrayT(undefined, 1)
 });
 
 var undefined = new StructT('undefined', {
@@ -14933,7 +14841,7 @@ var NTFS_FILE_RECORD_INPUT_BUFFER = new StructT('NTFS_FILE_RECORD_INPUT_BUFFER',
 var NTFS_FILE_RECORD_OUTPUT_BUFFER = new StructT('NTFS_FILE_RECORD_OUTPUT_BUFFER', {
  FileReferenceNumber: LARGE_INTEGER,
  FileRecordLength: DWORD,
- FileRecordBuffer: ARRAY(BYTE, 1)
+ FileRecordBuffer: new ArrayT(BYTE, 1)
 });
 
 var MOVE_FILE_DATA = new StructT('MOVE_FILE_DATA', {
@@ -14958,7 +14866,7 @@ var FIND_BY_SID_OUTPUT = new StructT('FIND_BY_SID_OUTPUT', {
  NextEntryOffset: DWORD,
  FileIndex: DWORD,
  FileNameLength: DWORD,
- FileName: ARRAY(WCHAR, 1)
+ FileName: new ArrayT(WCHAR, 1)
 });
 
 var MFT_ENUM_DATA = new StructT('MFT_ENUM_DATA', {
@@ -14995,7 +14903,7 @@ var USN_RECORD = new StructT('USN_RECORD', {
  FileAttributes: DWORD,
  FileNameLength: WORD,
  FileNameOffset: WORD,
- FileName: ARRAY(WCHAR, 1)
+ FileName: new ArrayT(WCHAR, 1)
 });
 
 var USN_JOURNAL_DATA = new StructT('USN_JOURNAL_DATA', {
@@ -15021,20 +14929,20 @@ var MARK_HANDLE_INFO = new StructT('MARK_HANDLE_INFO', {
 
 var BULK_SECURITY_TEST_DATA = new StructT('BULK_SECURITY_TEST_DATA', {
  DesiredAccess: ACCESS_MASK,
- SecurityIds: ARRAY(DWORD, 1)
+ SecurityIds: new ArrayT(DWORD, 1)
 });
 
 var FILE_PREFETCH = new StructT('FILE_PREFETCH', {
  Type: DWORD,
  Count: DWORD,
- Prefetch: ARRAY(DWORDLONG, 1)
+ Prefetch: new ArrayT(DWORDLONG, 1)
 });
 
 var FILE_PREFETCH_EX = new StructT('FILE_PREFETCH_EX', {
  Type: DWORD,
  Count: DWORD,
  Context: PVOID,
- Prefetch: ARRAY(DWORDLONG, 1)
+ Prefetch: new ArrayT(DWORDLONG, 1)
 });
 
 var FILESYSTEM_STATISTICS = new StructT('FILESYSTEM_STATISTICS', {
@@ -15124,7 +15032,7 @@ var NTFS_STATISTICS = new StructT('NTFS_STATISTICS', {
  LogFileReadBytes: DWORD,
  LogFileWrites: DWORD,
  LogFileWriteBytes: DWORD,
- Allocate: 
+ Allocate:
 });
 
 var undefined = new StructT('undefined', {
@@ -15168,13 +15076,13 @@ var undefined = new StructT('undefined', {
 });
 
 var FILE_OBJECTID_BUFFER = new StructT('FILE_OBJECTID_BUFFER', {
- ObjectId: ARRAY(BYTE, 16)
+ ObjectId: new ArrayT(BYTE, 16)
 });
 
 var undefined = new StructT('undefined', {
- BirthVolumeId: ARRAY(BYTE, 16),
- BirthObjectId: ARRAY(BYTE, 16),
- DomainId: ARRAY(BYTE, 16)
+ BirthVolumeId: new ArrayT(BYTE, 16),
+ BirthObjectId: new ArrayT(BYTE, 16),
+ DomainId: new ArrayT(BYTE, 16)
 });
 
 var FILE_SET_SPARSE_BUFFER = new StructT('FILE_SET_SPARSE_BUFFER', {
@@ -15193,7 +15101,7 @@ var FILE_ALLOCATED_RANGE_BUFFER = new StructT('FILE_ALLOCATED_RANGE_BUFFER', {
 
 var ENCRYPTION_BUFFER = new StructT('ENCRYPTION_BUFFER', {
  EncryptionOperation: DWORD,
- Private: ARRAY(BYTE, 1)
+ Private: new ArrayT(BYTE, 1)
 });
 
 var DECRYPTION_STATUS_BUFFER = new StructT('DECRYPTION_STATUS_BUFFER', {
@@ -15216,7 +15124,7 @@ var ENCRYPTED_DATA_INFO = new StructT('ENCRYPTED_DATA_INFO', {
  ClusterShift: BYTE,
  EncryptionFormat: BYTE,
  NumberOfDataBlocks: WORD,
- DataBlockSize: ARRAY(DWORD, ANYSIZE_ARRAY)
+ DataBlockSize: new ArrayT(DWORD, ANYSIZE_new ArrayT)
 });
 
 var PLEX_READ_DATA_REQUEST = new StructT('PLEX_READ_DATA_REQUEST', {
@@ -15229,7 +15137,7 @@ var SI_COPYFILE = new StructT('SI_COPYFILE', {
  SourceFileNameLength: DWORD,
  DestinationFileNameLength: DWORD,
  Flags: DWORD,
- FileNameBuffer: ARRAY(WCHAR, 1)
+ FileNameBuffer: new ArrayT(WCHAR, 1)
 });
 
 var FILE_MAKE_COMPATIBLE_BUFFER = new StructT('FILE_MAKE_COMPATIBLE_BUFFER', {
@@ -15252,13 +15160,13 @@ var FILE_QUERY_ON_DISK_VOL_INFO_BUFFER = new StructT('FILE_QUERY_ON_DISK_VOL_INF
  FileCount: LARGE_INTEGER,
  FsFormatMajVersion: WORD,
  FsFormatMinVersion: WORD,
- FsFormatName: ARRAY(WCHAR,  12),
+ FsFormatName: new ArrayT(WCHAR,  12),
  FormatTime: LARGE_INTEGER,
  LastUpdateTime: LARGE_INTEGER,
- CopyrightInfo: ARRAY(WCHAR,  34),
- AbstractInfo: ARRAY(WCHAR,  34),
- FormattingImplementationInfo: ARRAY(WCHAR,  34),
- LastModifyingImplementationInfo: ARRAY(WCHAR,  34)
+ CopyrightInfo: new ArrayT(WCHAR,  34),
+ AbstractInfo: new ArrayT(WCHAR,  34),
+ FormattingImplementationInfo: new ArrayT(WCHAR,  34),
+ LastModifyingImplementationInfo: new ArrayT(WCHAR,  34)
 });
 
 var SHRINK_VOLUME_INFORMATION = new StructT('SHRINK_VOLUME_INFORMATION', {
@@ -15326,7 +15234,7 @@ var TXFS_START_RM_INFORMATION = new StructT('TXFS_START_RM_INFORMATION', {
  LoggingMode: WORD,
  LogPathLength: WORD,
  Reserved: WORD,
- LogPath: ARRAY(WCHAR, 1)
+ LogPath: new ArrayT(WCHAR, 1)
 });
 
 var TXFS_GET_METADATA_INFO_OUT = new StructT('TXFS_GET_METADATA_INFO_OUT', {
@@ -15348,7 +15256,7 @@ var TXFS_LIST_TRANSACTION_LOCKED_FILES_ENTRY = new StructT('TXFS_LIST_TRANSACTIO
  Reserved1: DWORD,
  Reserved2: DWORD,
  Reserved3: LONGLONG,
- FileName: ARRAY(WCHAR, 1)
+ FileName: new ArrayT(WCHAR, 1)
 });
 
 var TXFS_LIST_TRANSACTION_LOCKED_FILES = new StructT('TXFS_LIST_TRANSACTION_LOCKED_FILES', {
@@ -15373,7 +15281,7 @@ var TXFS_LIST_TRANSACTIONS = new StructT('TXFS_LIST_TRANSACTIONS', {
 
 
 var TXFS_WRITE_BACKUP_INFORMATION = new StructT('TXFS_WRITE_BACKUP_INFORMATION', {
- Buffer: ARRAY(BYTE, 1)
+ Buffer: new ArrayT(BYTE, 1)
 });
 
 var TXFS_GET_TRANSACTED_VERSION = new StructT('TXFS_GET_TRANSACTED_VERSION', {
@@ -15403,7 +15311,7 @@ var TXFS_TRANSACTION_ACTIVE_INFO = new StructT('TXFS_TRANSACTION_ACTIVE_INFO', {
 
 var BOOT_AREA_INFO = new StructT('BOOT_AREA_INFO', {
  BootSectorCount: DWORD,
- BootSectors: ARRAY(undefined, 2)
+ BootSectors: new ArrayT(undefined, 2)
 });
 
 var undefined = new StructT('undefined', {
@@ -15422,7 +15330,7 @@ var FILE_FS_PERSISTENT_VOLUME_INFORMATION = new StructT('FILE_FS_PERSISTENT_VOLU
 });
 
 var FILE_SYSTEM_RECOGNITION_INFORMATION = new StructT('FILE_SYSTEM_RECOGNITION_INFORMATION', {
- FileSystem: ARRAY(CHAR, 9)
+ FileSystem: new ArrayT(CHAR, 9)
 });
 
 var REQUEST_OPLOCK_INPUT_BUFFER = new StructT('REQUEST_OPLOCK_INPUT_BUFFER', {
@@ -15479,7 +15387,7 @@ var EXTENDED_ENCRYPTED_DATA_INFO = new StructT('EXTENDED_ENCRYPTED_DATA_INFO', {
 var LOOKUP_STREAM_FROM_CLUSTER_INPUT = new StructT('LOOKUP_STREAM_FROM_CLUSTER_INPUT', {
  Flags: DWORD,
  NumberOfClusters: DWORD,
- Cluster: ARRAY(LARGE_INTEGER, 1)
+ Cluster: new ArrayT(LARGE_INTEGER, 1)
 });
 
 var LOOKUP_STREAM_FROM_CLUSTER_OUTPUT = new StructT('LOOKUP_STREAM_FROM_CLUSTER_OUTPUT', {
@@ -15493,13 +15401,13 @@ var LOOKUP_STREAM_FROM_CLUSTER_ENTRY = new StructT('LOOKUP_STREAM_FROM_CLUSTER_E
  Flags: DWORD,
  Reserved: LARGE_INTEGER,
  Cluster: LARGE_INTEGER,
- FileName: ARRAY(WCHAR, 1)
+ FileName: new ArrayT(WCHAR, 1)
 });
 
 var FILE_TYPE_NOTIFICATION_INPUT = new StructT('FILE_TYPE_NOTIFICATION_INPUT', {
  Flags: DWORD,
  NumFileTypeIDs: DWORD,
- FileTypeID: ARRAY(GUID, 1)
+ FileTypeID: new ArrayT(GUID, 1)
 });
 
 var DISK_EXTENT = new StructT('DISK_EXTENT', {
@@ -15510,7 +15418,7 @@ var DISK_EXTENT = new StructT('DISK_EXTENT', {
 
 var VOLUME_DISK_EXTENTS = new StructT('VOLUME_DISK_EXTENTS', {
  NumberOfDiskExtents: DWORD,
- Extents: ARRAY(DISK_EXTENT, ANYSIZE_ARRAY)
+ Extents: new ArrayT(DISK_EXTENT, ANYSIZE_new ArrayT)
 });
 
 var VOLUME_GET_GPT_ATTRIBUTES_INFORMATION = new StructT('VOLUME_GET_GPT_ATTRIBUTES_INFORMATION', {
@@ -15546,7 +15454,7 @@ var SCARD_READERSTATE = new StructT('SCARD_READERSTATE', {
  dwCurrentState: DWORD,
  dwEventState: DWORD,
  cbAtr: DWORD,
- rgbAtr: ARRAY(BYTE, 36)
+ rgbAtr: new ArrayT(BYTE, 36)
 });
 
 var SCARD_READERSTATEW = new StructT('SCARD_READERSTATEW', {
@@ -15555,13 +15463,13 @@ var SCARD_READERSTATEW = new StructT('SCARD_READERSTATEW', {
  dwCurrentState: DWORD,
  dwEventState: DWORD,
  cbAtr: DWORD,
- rgbAtr: ARRAY(BYTE, 36)
+ rgbAtr: new ArrayT(BYTE, 36)
 });
 
 var SCARD_ATRMASK = new StructT('SCARD_ATRMASK', {
  cbAtr: DWORD,
- rgbAtr: ARRAY(BYTE, 36),
- rgbMask: ARRAY(BYTE, 36)
+ rgbAtr: new ArrayT(BYTE, 36),
+ rgbMask: new ArrayT(BYTE, 36)
 });
 
 var OPENCARD_SEARCH_CRITERIA = new StructT('OPENCARD_SEARCH_CRITERIA', {
@@ -16554,7 +16462,7 @@ var PRINTER_NOTIFY_INFO = new StructT('PRINTER_NOTIFY_INFO', {
  Version: DWORD,
  Flags: DWORD,
  Count: DWORD,
- aData: ARRAY(PRINTER_NOTIFY_INFO_DATA, 1)
+ aData: new ArrayT(PRINTER_NOTIFY_INFO_DATA, 1)
 });
 
 var BINARY_CONTAINER = new StructT('BINARY_CONTAINER', {
@@ -16577,7 +16485,7 @@ var BIDI_REQUEST_CONTAINER = new StructT('BIDI_REQUEST_CONTAINER', {
  Version: DWORD,
  Flags: DWORD,
  Count: DWORD,
- aData: ARRAY(BIDI_REQUEST_DATA,  1 )
+ aData: new ArrayT(BIDI_REQUEST_DATA,  1 )
 });
 
 var BIDI_RESPONSE_DATA = new StructT('BIDI_RESPONSE_DATA', {
@@ -16591,7 +16499,7 @@ var BIDI_RESPONSE_CONTAINER = new StructT('BIDI_RESPONSE_CONTAINER', {
  Version: DWORD,
  Flags: DWORD,
  Count: DWORD,
- aData: ARRAY(BIDI_RESPONSE_DATA,  1 )
+ aData: new ArrayT(BIDI_RESPONSE_DATA,  1 )
 });
 
 var PROVIDOR_INFO_1 = new StructT('PROVIDOR_INFO_1', {
@@ -16638,14 +16546,14 @@ var CORE_PRINTER_DRIVER = new StructT('CORE_PRINTER_DRIVER', {
  CoreDriverGUID: GUID,
  ftDriverDate: FILETIME,
  dwlDriverVersion: DWORDLONG,
- szPackageID: ARRAY(CHAR, MAX_PATH)
+ szPackageID: new ArrayT(CHAR, MAX_PATH)
 });
 
 var CORE_PRINTER_DRIVERW = new StructT('CORE_PRINTER_DRIVERW', {
  CoreDriverGUID: GUID,
  ftDriverDate: FILETIME,
  dwlDriverVersion: DWORDLONG,
- szPackageID: ARRAY(WCHAR, MAX_PATH)
+ szPackageID: new ArrayT(WCHAR, MAX_PATH)
 });
 
 var PrintPropertyValue = new StructT('PrintPropertyValue', {
@@ -16689,7 +16597,7 @@ var lldiv_t = new StructT('lldiv_t', {
 });
 
 var _LDOUBLE = new StructT('_LDOUBLE', {
- ld: ARRAY(undefined, 10)
+ ld: new ArrayT(undefined, 10)
 });
 
 var _CRT_DOUBLE = new StructT('_CRT_DOUBLE', {
@@ -16705,7 +16613,7 @@ var _LONGDOUBLE = new StructT('_LONGDOUBLE', {
 });
 
 var _LDBL12 = new StructT('_LDBL12', {
- ld12: ARRAY(undefined, 12)
+ ld12: new ArrayT(undefined, 12)
 });
 
 var IUnknown = new StructT('IUnknown', {
@@ -17396,7 +17304,7 @@ var IEnumSTATSTGVtbl = new StructT('IEnumSTATSTGVtbl', {
 var RemSNB = new StructT('RemSNB', {
  ulCntStr: ulong,
  ulCntChar: ulong,
- rgString: ARRAY(OLECHAR,  1 )
+ rgString: new ArrayT(OLECHAR,  1 )
 });
 
 var IStorageVtbl = new StructT('IStorageVtbl', {
@@ -17464,7 +17372,7 @@ var DVTARGETDEVICE = new StructT('DVTARGETDEVICE', {
  tdDeviceNameOffset: WORD,
  tdPortNameOffset: WORD,
  tdExtDevmodeOffset: WORD,
- tdData: ARRAY(BYTE,  1 )
+ tdData: new ArrayT(BYTE,  1 )
 });
 
 var FORMATETC = new StructT('FORMATETC', {
@@ -17515,7 +17423,7 @@ var RemSTGMEDIUM = new StructT('RemSTGMEDIUM', {
  pData: ulong,
  pUnkForRelease: ulong,
  cbData: ulong,
- data: ARRAY(byte,  1 )
+ data: new ArrayT(byte,  1 )
 });
 
 var ASYNC_STGMEDIUM = new StructT('ASYNC_STGMEDIUM', {
@@ -17652,7 +17560,7 @@ var RPCOLEMESSAGE = new StructT('RPCOLEMESSAGE', {
  Buffer: _void.Δ,
  cbBuffer: ULONG,
  iMethod: ULONG,
- reserved2: ARRAY(undefined,  5 ),
+ reserved2: new ArrayT(undefined,  5 ),
  rpcFlags: ULONG
 });
 
@@ -18149,12 +18057,12 @@ var IInitializeSpyVtbl = new StructT('IInitializeSpyVtbl', {
 });
 
 var SOleTlsDataPublic = new StructT('SOleTlsDataPublic', {
- pvReserved0: ARRAY(undefined, 2),
- dwReserved0: ARRAY(DWORD, 3),
- pvReserved1: ARRAY(undefined, 1),
- dwReserved1: ARRAY(DWORD, 3),
- pvReserved2: ARRAY(undefined, 4),
- dwReserved2: ARRAY(DWORD, 1),
+ pvReserved0: new ArrayT(undefined, 2),
+ dwReserved0: new ArrayT(DWORD, 3),
+ pvReserved1: new ArrayT(undefined, 1),
+ dwReserved1: new ArrayT(DWORD, 3),
+ pvReserved2: new ArrayT(undefined, 4),
+ dwReserved2: new ArrayT(DWORD, 1),
  pCurrentCtx: _void.Δ
 });
 
@@ -18635,7 +18543,7 @@ var OLEINPLACEFRAMEINFO = new StructT('OLEINPLACEFRAMEINFO', {
 });
 
 var OLEMENUGROUPWIDTHS = new StructT('OLEMENUGROUPWIDTHS', {
- width: ARRAY(LONG,  6 )
+ width: new ArrayT(LONG,  6 )
 });
 
 var IOleInPlaceFrameVtbl = new StructT('IOleInPlaceFrameVtbl', {
@@ -18973,7 +18881,7 @@ var IPropertyBag = new StructT('IPropertyBag', {
  lpVtbl: IPropertyBagVtbl.Δ
 });
 
-var SAFEARRAYBOUND = new StructT('SAFEARRAYBOUND', {
+var SAFEnew ArrayTBOUND = new StructT('SAFEnew ArrayTBOUND', {
  cElements: ULONG,
  lLbound: LONG
 });
@@ -19025,27 +18933,27 @@ var SAFEARR_HAVEIID = new StructT('SAFEARR_HAVEIID', {
  iid: IID
 });
 
-var SAFEARRAYUNION = new StructT('SAFEARRAYUNION', {
+var SAFEnew ArrayTUNION = new StructT('SAFEnew ArrayTUNION', {
  sfType: ULONG,
  u: __MIDL_IOleAutomationTypes_0001
 });
 
-var _wireSAFEARRAY = new StructT('_wireSAFEARRAY', {
+var _wireSAFEnew ArrayT = new StructT('_wireSAFEnew ArrayT', {
  cDims: USHORT,
  fFeatures: USHORT,
  cbElements: ULONG,
  cLocks: ULONG,
- uArrayStructs: SAFEARRAYUNION,
- rgsabound: ARRAY(SAFEARRAYBOUND,  1 )
+ uArrayStructs: SAFEnew ArrayTUNION,
+ rgsabound: new ArrayT(SAFEnew ArrayTBOUND,  1 )
 });
 
-var SAFEARRAY = new StructT('SAFEARRAY', {
+var SAFEnew ArrayT = new StructT('SAFEnew ArrayT', {
  cDims: USHORT,
  fFeatures: USHORT,
  cbElements: ULONG,
  cLocks: ULONG,
  pvData: PVOID,
- rgsabound: ARRAY(SAFEARRAYBOUND,  1 )
+ rgsabound: new ArrayT(SAFEnew ArrayTBOUND,  1 )
 });
 
 
@@ -19065,10 +18973,10 @@ var TYPEDESC = new StructT('TYPEDESC', {
  vt: VARTYPE
 });
 
-var ARRAYDESC = new StructT('ARRAYDESC', {
+var new ArrayTDESC = new StructT('new ArrayTDESC', {
  tdescElem: TYPEDESC,
  cDims: USHORT,
- rgbounds: ARRAY(SAFEARRAYBOUND,  1 )
+ rgbounds: new ArrayT(SAFEnew ArrayTBOUND,  1 )
 });
 
 var PARAMDESCEX = new StructT('PARAMDESCEX', {
@@ -21068,9 +20976,9 @@ var IInternetHostSecurityManagerVtbl = new StructT('IInternetHostSecurityManager
 
 var ZONEATTRIBUTES = new StructT('ZONEATTRIBUTES', {
  cbSize: ULONG,
- szDisplayName: ARRAY(WCHAR,  260 ),
- szDescription: ARRAY(WCHAR,  200 ),
- szIconPath: ARRAY(WCHAR,  260 ),
+ szDisplayName: new ArrayT(WCHAR,  260 ),
+ szDescription: new ArrayT(WCHAR,  200 ),
+ szIconPath: new ArrayT(WCHAR,  260 ),
  dwTemplateMinLevel: DWORD,
  dwTemplateRecommended: DWORD,
  dwTemplateCurrentLevel: DWORD,
@@ -21444,7 +21352,7 @@ var IEnumSTATPROPSETSTGVtbl = new StructT('IEnumSTATPROPSETSTGVtbl', {
 
 var SERIALIZEDPROPERTYVALUE = new StructT('SERIALIZEDPROPERTYVALUE', {
  dwType: DWORD,
- rgb: ARRAY(BYTE, 1)
+ rgb: new ArrayT(BYTE, 1)
 });
 
 var NUMPARSE = new StructT('NUMPARSE', {
@@ -22112,7 +22020,7 @@ var MODEMDEVCAPS = new StructT('MODEMDEVCAPS', {
  dwModemOptions: DWORD,
  dwMaxDTERate: DWORD,
  dwMaxDCERate: DWORD,
- abVariablePortion: ARRAY(BYTE, 1)
+ abVariablePortion: new ArrayT(BYTE, 1)
 });
 
 var MODEMSETTINGS = new StructT('MODEMSETTINGS', {
@@ -22127,7 +22035,7 @@ var MODEMSETTINGS = new StructT('MODEMSETTINGS', {
  dwPreferredModemOptions: DWORD,
  dwNegotiatedModemOptions: DWORD,
  dwNegotiatedDCERate: DWORD,
- abVariablePortion: ARRAY(BYTE, 1)
+ abVariablePortion: new ArrayT(BYTE, 1)
 });
 
 var HIMC__ = new StructT('HIMC__', {
@@ -22158,7 +22066,7 @@ var CANDIDATELIST = new StructT('CANDIDATELIST', {
  dwSelection: DWORD,
  dwPageStart: DWORD,
  dwPageSize: DWORD,
- dwOffset: ARRAY(DWORD, 1)
+ dwOffset: new ArrayT(DWORD, 1)
 });
 
 var REGISTERWORD = new StructT('REGISTERWORD', {
@@ -22184,12 +22092,12 @@ var RECONVERTSTRING = new StructT('RECONVERTSTRING', {
 
 var STYLEBUF = new StructT('STYLEBUF', {
  dwStyle: DWORD,
- szDescription: ARRAY(CHAR, STYLE_DESCRIPTION_SIZE)
+ szDescription: new ArrayT(CHAR, STYLE_DESCRIPTION_SIZE)
 });
 
 var STYLEBUFW = new StructT('STYLEBUFW', {
  dwStyle: DWORD,
- szDescription: ARRAY(WCHAR, STYLE_DESCRIPTION_SIZE)
+ szDescription: new ArrayT(WCHAR, STYLE_DESCRIPTION_SIZE)
 });
 
 var IMEMENUITEMINFO = new StructT('IMEMENUITEMINFO', {
@@ -22200,7 +22108,7 @@ var IMEMENUITEMINFO = new StructT('IMEMENUITEMINFO', {
  hbmpChecked: HBITMAP,
  hbmpUnchecked: HBITMAP,
  dwItemData: DWORD,
- szString: ARRAY(CHAR, IMEMENUITEM_STRING_SIZE),
+ szString: new ArrayT(CHAR, IMEMENUITEM_STRING_SIZE),
  hbmpItem: HBITMAP
 });
 
@@ -22212,7 +22120,7 @@ var IMEMENUITEMINFOW = new StructT('IMEMENUITEMINFOW', {
  hbmpChecked: HBITMAP,
  hbmpUnchecked: HBITMAP,
  dwItemData: DWORD,
- szString: ARRAY(WCHAR, IMEMENUITEM_STRING_SIZE),
+ szString: new ArrayT(WCHAR, IMEMENUITEM_STRING_SIZE),
  hbmpItem: HBITMAP
 });
 
@@ -23491,7 +23399,7 @@ var IMECHARPOSITION = new StructT('IMECHARPOSITION', {
   QueryInformationJobObject: [ BOOL, { hJob: HANDLE, JobObjectInformationClass: JOBOBJECTINFOCLASS, lpJobObjectInformation: LPVOID, cbJobObjectInformationLength: DWORD, lpReturnLength: LPDWORD } ],
   SetInformationJobObject: [ BOOL, { hJob: HANDLE, JobObjectInformationClass: JOBOBJECTINFOCLASS, lpJobObjectInformation: LPVOID, cbJobObjectInformationLength: DWORD } ],
   IsProcessInJob: [ BOOL, { ProcessHandle: HANDLE, JobHandle: HANDLE, Result: PBOOL } ],
-  CreateJobSet: [ BOOL, { NumJob: ULONG, UserJobSet: PJOB_SET_ARRAY, Flags: ULONG } ],
+  CreateJobSet: [ BOOL, { NumJob: ULONG, UserJobSet: PJOB_SET_new ArrayT, Flags: ULONG } ],
   AddVectoredExceptionHandler: [ PVOID, { First: ULONG, Handler: PVECTORED_EXCEPTION_HANDLER } ],
   RemoveVectoredExceptionHandler: [ ULONG, { Handle: PVOID } ],
   AddVectoredContinueHandler: [ PVOID, { First: ULONG, Handler: PVECTORED_EXCEPTION_HANDLER } ],
@@ -25836,7 +25744,7 @@ var IMECHARPOSITION = new StructT('IMECHARPOSITION', {
   CryptInstallCancelRetrieval: [ BOOL, { pfnCancel: PFN_CRYPT_CANCEL_RETRIEVAL, pvArg: _void.Δ, dwFlags: DWORD, pvReserved: _void.Δ } ],
   CryptUninstallCancelRetrieval: [ BOOL, { dwFlags: DWORD, pvReserved: _void.Δ } ],
   CryptCancelAsyncRetrieval: [ BOOL, { hAsyncRetrieval: HCRYPTASYNC } ],
-  CryptGetObjectUrl: [ BOOL, { pszUrlOid: LPCSTR, pvPara: LPVOID, dwFlags: DWORD, pUrlArray: PCRYPT_URL_ARRAY, pcbUrlArray: DWORD.Δ, pUrlInfo: PCRYPT_URL_INFO, pcbUrlInfo: DWORD.Δ, pvReserved: LPVOID } ],
+  CryptGetObjectUrl: [ BOOL, { pszUrlOid: LPCSTR, pvPara: LPVOID, dwFlags: DWORD, pUrlArray: PCRYPT_URL_new ArrayT, pcbUrlArray: DWORD.Δ, pUrlInfo: PCRYPT_URL_INFO, pcbUrlInfo: DWORD.Δ, pvReserved: LPVOID } ],
   CryptGetTimeValidObject: [ BOOL, { pszTimeValidOid: LPCSTR, pvPara: LPVOID, pIssuer: PCCERT_CONTEXT, pftValidFor: LPFILETIME, dwFlags: DWORD, dwTimeout: DWORD, ppvObject: LPVOID.Δ, pCredentials: PCRYPT_CREDENTIALS, pExtraInfo: PCRYPT_GET_TIME_VALID_OBJECT_EXTRA_INFO } ],
   CryptFlushTimeValidObject: [ BOOL, { pszFlushTimeValidOid: LPCSTR, pvPara: LPVOID, pIssuer: PCCERT_CONTEXT, dwFlags: DWORD, pvReserved: LPVOID } ],
   CryptProtectData: [ BOOL, { pDataIn: DATA_BLOB.Δ, szDataDescr: LPCWSTR, pOptionalEntropy: DATA_BLOB.Δ, pvReserved: PVOID, pPromptStruct: CRYPTPROTECT_PROMPTSTRUCT.Δ, dwFlags: DWORD, pDataOut: DATA_BLOB.Δ } ],
@@ -27214,14 +27122,14 @@ var IMECHARPOSITION = new StructT('IMECHARPOSITION', {
   FmtIdToPropStgName: [ HRESULT, { pfmtid: FMTID.Δ, oszName: LPOLESTR } ],
   PropStgNameToFmtId: [ HRESULT, { oszName: LPOLESTR, pfmtid: FMTID.Δ } ],
   StgConvertVariantToProperty: [ SERIALIZEDPROPERTYVALUE, { pvar: PROPVARIANT.Δ, CodePage: USHORT, pprop: SERIALIZEDPROPERTYVALUE.Δ, pcb: ULONG.Δ, pid: PROPID, fReserved: BOOLEAN, pcIndirect: ULONG.Δ } ],
-  LPSAFEARRAY_UserSize: [ _void, { LPSAFEARRAY.Δ: LPSAFEARRAY.Δ } ],
-  LPSAFEARRAY_UserMarshal: [ _void, { LPSAFEARRAY.Δ: LPSAFEARRAY.Δ } ],
-  LPSAFEARRAY_UserUnmarshal: [ _void, { LPSAFEARRAY.Δ: LPSAFEARRAY.Δ } ],
-  LPSAFEARRAY_UserFree: [ _void, { LPSAFEARRAY.Δ: LPSAFEARRAY.Δ } ],
-  LPSAFEARRAY_UserSize64: [ _void, { LPSAFEARRAY.Δ: LPSAFEARRAY.Δ } ],
-  LPSAFEARRAY_UserMarshal64: [ _void, { LPSAFEARRAY.Δ: LPSAFEARRAY.Δ } ],
-  LPSAFEARRAY_UserUnmarshal64: [ _void, { LPSAFEARRAY.Δ: LPSAFEARRAY.Δ } ],
-  LPSAFEARRAY_UserFree64: [ _void, { LPSAFEARRAY.Δ: LPSAFEARRAY.Δ } ],
+  LPSAFEnew ArrayT_UserSize: [ _void, { LPSAFEnew ArrayT.Δ: LPSAFEnew ArrayT.Δ } ],
+  LPSAFEnew ArrayT_UserMarshal: [ _void, { LPSAFEnew ArrayT.Δ: LPSAFEnew ArrayT.Δ } ],
+  LPSAFEnew ArrayT_UserUnmarshal: [ _void, { LPSAFEnew ArrayT.Δ: LPSAFEnew ArrayT.Δ } ],
+  LPSAFEnew ArrayT_UserFree: [ _void, { LPSAFEnew ArrayT.Δ: LPSAFEnew ArrayT.Δ } ],
+  LPSAFEnew ArrayT_UserSize64: [ _void, { LPSAFEnew ArrayT.Δ: LPSAFEnew ArrayT.Δ } ],
+  LPSAFEnew ArrayT_UserMarshal64: [ _void, { LPSAFEnew ArrayT.Δ: LPSAFEnew ArrayT.Δ } ],
+  LPSAFEnew ArrayT_UserUnmarshal64: [ _void, { LPSAFEnew ArrayT.Δ: LPSAFEnew ArrayT.Δ } ],
+  LPSAFEnew ArrayT_UserFree64: [ _void, { LPSAFEnew ArrayT.Δ: LPSAFEnew ArrayT.Δ } ],
   IEnumSTATPROPSTG_Next_Proxy: [ HRESULT, { This: IEnumSTATPROPSTG.Δ, celt: ULONG, rgelt: STATPROPSTG.Δ, pceltFetched: ULONG.Δ } ],
   IEnumSTATPROPSTG_Next_Stub: [ HRESULT, { This: IEnumSTATPROPSTG.Δ, celt: ULONG, rgelt: STATPROPSTG.Δ, pceltFetched: ULONG.Δ } ],
   IEnumSTATPROPSETSTG_Next_Proxy: [ HRESULT, { This: IEnumSTATPROPSETSTG.Δ, celt: ULONG, rgelt: STATPROPSETSTG.Δ, pceltFetched: ULONG.Δ } ],
@@ -27239,43 +27147,43 @@ var IMECHARPOSITION = new StructT('IMECHARPOSITION', {
   VariantTimeToDosDateTime: [ INT, { vtime: DOUBLE, pwDosDate: USHORT.Δ, pwDosTime: USHORT.Δ } ],
   SystemTimeToVariantTime: [ INT, { lpSystemTime: LPSYSTEMTIME, pvtime: DOUBLE.Δ } ],
   VariantTimeToSystemTime: [ INT, { vtime: DOUBLE, lpSystemTime: LPSYSTEMTIME } ],
-  SafeArrayAllocDescriptor: [ HRESULT, { cDims: UINT, ppsaOut: tagSAFEARRAY.Δ.Δ } ],
-  SafeArrayAllocDescriptorEx: [ HRESULT, { vt: VARTYPE, cDims: UINT, ppsaOut: tagSAFEARRAY.Δ.Δ } ],
-  SafeArrayAllocData: [ HRESULT, { psa: SAFEARRAY.Δ } ],
-  SafeArrayCreate: [ SAFEARRAY, { vt: VARTYPE, cDims: UINT, rgsabound: SAFEARRAYBOUND.Δ } ],
-  SafeArrayCreateEx: [ SAFEARRAY, { vt: VARTYPE, cDims: UINT, rgsabound: SAFEARRAYBOUND.Δ, pvExtra: PVOID } ],
-  SafeArrayCopyData: [ HRESULT, { psaSource: SAFEARRAY.Δ, psaTarget: SAFEARRAY.Δ } ],
-  SafeArrayDestroyDescriptor: [ HRESULT, { psa: SAFEARRAY.Δ } ],
-  SafeArrayDestroyData: [ HRESULT, { psa: SAFEARRAY.Δ } ],
-  SafeArrayDestroy: [ HRESULT, { psa: SAFEARRAY.Δ } ],
-  SafeArrayRedim: [ HRESULT, { psa: SAFEARRAY.Δ, psaboundNew: SAFEARRAYBOUND.Δ } ],
-  SafeArrayGetDim: [ UINT, { psa: SAFEARRAY.Δ } ],
-  SafeArrayGetElemsize: [ UINT, { psa: SAFEARRAY.Δ } ],
-  SafeArrayGetUBound: [ HRESULT, { psa: SAFEARRAY.Δ, nDim: UINT, plUbound: LONG.Δ } ],
-  SafeArrayGetLBound: [ HRESULT, { psa: SAFEARRAY.Δ, nDim: UINT, plLbound: LONG.Δ } ],
-  SafeArrayLock: [ HRESULT, { psa: SAFEARRAY.Δ } ],
-  SafeArrayUnlock: [ HRESULT, { psa: SAFEARRAY.Δ } ],
-  SafeArrayAccessData: [ HRESULT, { psa: SAFEARRAY.Δ, ppvData: _void.Δ.Δ } ],
-  SafeArrayUnaccessData: [ HRESULT, { psa: SAFEARRAY.Δ } ],
-  SafeArrayGetElement: [ HRESULT, { psa: SAFEARRAY.Δ, rgIndices: LONG.Δ, pv: _void.Δ } ],
-  SafeArrayPutElement: [ HRESULT, { psa: SAFEARRAY.Δ, rgIndices: LONG.Δ, pv: _void.Δ } ],
-  SafeArrayCopy: [ HRESULT, { psa: SAFEARRAY.Δ, ppsaOut: tagSAFEARRAY.Δ.Δ } ],
-  SafeArrayPtrOfIndex: [ HRESULT, { psa: SAFEARRAY.Δ, rgIndices: LONG.Δ, ppvData: _void.Δ.Δ } ],
-  SafeArraySetRecordInfo: [ HRESULT, { psa: SAFEARRAY.Δ, prinfo: IRecordInfo.Δ } ],
-  SafeArrayGetRecordInfo: [ HRESULT, { psa: SAFEARRAY.Δ, prinfo: IRecordInfo.Δ.Δ } ],
-  SafeArraySetIID: [ HRESULT, { psa: SAFEARRAY.Δ, guid: GUID.Δ } ],
-  SafeArrayGetIID: [ HRESULT, { psa: SAFEARRAY.Δ, pguid: GUID.Δ } ],
-  SafeArrayGetVartype: [ HRESULT, { psa: SAFEARRAY.Δ, pvt: VARTYPE.Δ } ],
-  SafeArrayCreateVector: [ SAFEARRAY, { vt: VARTYPE, lLbound: LONG, cElements: ULONG } ],
-  SafeArrayCreateVectorEx: [ SAFEARRAY, { vt: VARTYPE, lLbound: LONG, cElements: ULONG, pvExtra: PVOID } ],
+  SafeArrayAllocDescriptor: [ HRESULT, { cDims: UINT, ppsaOut: tagSAFEnew ArrayT.Δ.Δ } ],
+  SafeArrayAllocDescriptorEx: [ HRESULT, { vt: VARTYPE, cDims: UINT, ppsaOut: tagSAFEnew ArrayT.Δ.Δ } ],
+  SafeArrayAllocData: [ HRESULT, { psa: SAFEnew ArrayT.Δ } ],
+  SafeArrayCreate: [ SAFEnew ArrayT, { vt: VARTYPE, cDims: UINT, rgsabound: SAFEnew ArrayTBOUND.Δ } ],
+  SafeArrayCreateEx: [ SAFEnew ArrayT, { vt: VARTYPE, cDims: UINT, rgsabound: SAFEnew ArrayTBOUND.Δ, pvExtra: PVOID } ],
+  SafeArrayCopyData: [ HRESULT, { psaSource: SAFEnew ArrayT.Δ, psaTarget: SAFEnew ArrayT.Δ } ],
+  SafeArrayDestroyDescriptor: [ HRESULT, { psa: SAFEnew ArrayT.Δ } ],
+  SafeArrayDestroyData: [ HRESULT, { psa: SAFEnew ArrayT.Δ } ],
+  SafeArrayDestroy: [ HRESULT, { psa: SAFEnew ArrayT.Δ } ],
+  SafeArrayRedim: [ HRESULT, { psa: SAFEnew ArrayT.Δ, psaboundNew: SAFEnew ArrayTBOUND.Δ } ],
+  SafeArrayGetDim: [ UINT, { psa: SAFEnew ArrayT.Δ } ],
+  SafeArrayGetElemsize: [ UINT, { psa: SAFEnew ArrayT.Δ } ],
+  SafeArrayGetUBound: [ HRESULT, { psa: SAFEnew ArrayT.Δ, nDim: UINT, plUbound: LONG.Δ } ],
+  SafeArrayGetLBound: [ HRESULT, { psa: SAFEnew ArrayT.Δ, nDim: UINT, plLbound: LONG.Δ } ],
+  SafeArrayLock: [ HRESULT, { psa: SAFEnew ArrayT.Δ } ],
+  SafeArrayUnlock: [ HRESULT, { psa: SAFEnew ArrayT.Δ } ],
+  SafeArrayAccessData: [ HRESULT, { psa: SAFEnew ArrayT.Δ, ppvData: _void.Δ.Δ } ],
+  SafeArrayUnaccessData: [ HRESULT, { psa: SAFEnew ArrayT.Δ } ],
+  SafeArrayGetElement: [ HRESULT, { psa: SAFEnew ArrayT.Δ, rgIndices: LONG.Δ, pv: _void.Δ } ],
+  SafeArrayPutElement: [ HRESULT, { psa: SAFEnew ArrayT.Δ, rgIndices: LONG.Δ, pv: _void.Δ } ],
+  SafeArrayCopy: [ HRESULT, { psa: SAFEnew ArrayT.Δ, ppsaOut: tagSAFEnew ArrayT.Δ.Δ } ],
+  SafeArrayPtrOfIndex: [ HRESULT, { psa: SAFEnew ArrayT.Δ, rgIndices: LONG.Δ, ppvData: _void.Δ.Δ } ],
+  SafeArraySetRecordInfo: [ HRESULT, { psa: SAFEnew ArrayT.Δ, prinfo: IRecordInfo.Δ } ],
+  SafeArrayGetRecordInfo: [ HRESULT, { psa: SAFEnew ArrayT.Δ, prinfo: IRecordInfo.Δ.Δ } ],
+  SafeArraySetIID: [ HRESULT, { psa: SAFEnew ArrayT.Δ, guid: GUID.Δ } ],
+  SafeArrayGetIID: [ HRESULT, { psa: SAFEnew ArrayT.Δ, pguid: GUID.Δ } ],
+  SafeArrayGetVartype: [ HRESULT, { psa: SAFEnew ArrayT.Δ, pvt: VARTYPE.Δ } ],
+  SafeArrayCreateVector: [ SAFEnew ArrayT, { vt: VARTYPE, lLbound: LONG, cElements: ULONG } ],
+  SafeArrayCreateVectorEx: [ SAFEnew ArrayT, { vt: VARTYPE, lLbound: LONG, cElements: ULONG, pvExtra: PVOID } ],
   VariantInit: [ _void, { pvarg: VARIANTARG.Δ } ],
   VariantClear: [ HRESULT, { pvarg: VARIANTARG.Δ } ],
   VariantCopy: [ HRESULT, { pvargDest: VARIANTARG.Δ, pvargSrc: VARIANTARG.Δ } ],
   VariantCopyInd: [ HRESULT, { pvarDest: VARIANT.Δ, pvargSrc: VARIANTARG.Δ } ],
   VariantChangeType: [ HRESULT, { pvargDest: VARIANTARG.Δ, pvarSrc: VARIANTARG.Δ, wFlags: USHORT, vt: VARTYPE } ],
   VariantChangeTypeEx: [ HRESULT, { pvargDest: VARIANTARG.Δ, pvarSrc: VARIANTARG.Δ, lcid: LCID, wFlags: USHORT, vt: VARTYPE } ],
-  VectorFromBstr: [ HRESULT, { bstr: BSTR, ppsa: tagSAFEARRAY.Δ.Δ } ],
-  BstrFromVector: [ HRESULT, { psa: SAFEARRAY.Δ, pbstr: BSTR.Δ } ],
+  VectorFromBstr: [ HRESULT, { bstr: BSTR, ppsa: tagSAFEnew ArrayT.Δ.Δ } ],
+  BstrFromVector: [ HRESULT, { psa: SAFEnew ArrayT.Δ, pbstr: BSTR.Δ } ],
   VarUI1FromI2: [ HRESULT, { sIn: SHORT, pbOut: BYTE.Δ } ],
   VarUI1FromI4: [ HRESULT, { lIn: LONG, pbOut: BYTE.Δ } ],
   VarUI1FromI8: [ HRESULT, { i64In: LONG64, pbOut: BYTE.Δ } ],

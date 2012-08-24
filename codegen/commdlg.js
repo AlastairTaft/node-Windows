@@ -1,7 +1,6 @@
 var ffi = require('ffi');
 
 var
- voi\u0064 = ffi.types.voi\u0064,
  _void = ffi.types.void,
  int8 = ffi.types.int8,
  uint8 = ffi.types.uint8,
@@ -37,32 +36,6 @@ var
  CStringΔ = ffi.types.CStringΔ;
 
 
-
-data.enums = {};
-data.callbacks = {};
-data.structs = {};
-data.functions = {};
-
-
-function ENUM(name, def){
- return data.enums[name] = new Enum(name, def);
-}
-
-function CallbackT(ret, params){}
-
-function STRUCT(name, def){
- return data.structs[name] = new Struct(name, def);
-}
-
-function FUNCTION(name, ret, params){
- return exports.functions[name] = new ffi.ForeignFunction(name, 'windows', ret, params);
-}
-
-
-function DEF(name, ffiType, type){
-  return ffiType;
-}
-
 var
  DWORD = ulong.typedef('DWORD'),
  BOOL = int.typedef('BOOL'),
@@ -78,16 +51,15 @@ var
  HGLOBAL = _void.Δ.typedef('HGLOBAL'),
  COLORREF = ulong.typedef('COLORREF');
 
-
-
-  LPOFNHOOKPROC = new CallbackT('LPOFNHOOKPROC', uint, [HWND__.Δ, uint, uint, long]),
-  LPCCHOOKPROC = new CallbackT('LPCCHOOKPROC', uint, [HWND__.Δ, uint, uint, long]),
-  LPFRHOOKPROC = new CallbackT('LPFRHOOKPROC', uint, [HWND__.Δ, uint, uint, long]),
-  LPCFHOOKPROC = new CallbackT('LPCFHOOKPROC', uint, [HWND__.Δ, uint, uint, long]),
-  LPPRINTHOOKPROC = new CallbackT('LPPRINTHOOKPROC', uint, [HWND__.Δ, uint, uint, long]),
-  LPSETUPHOOKPROC = new CallbackT('LPSETUPHOOKPROC', uint, [HWND__.Δ, uint, uint, long]),
-  LPPAGEPAINTHOOK = new CallbackT('LPPAGEPAINTHOOK', uint, [HWND__.Δ, uint, uint, long]),
-  LPPAGESETUPHOOK = new CallbackT('LPPAGESETUPHOOK', uint, [HWND__.Δ, uint, uint, long]),
+var
+ LPOFNHOOKPROC = new CallbackT('LPOFNHOOKPROC', uint, [HWND.Δ, uint, uint, long]),
+ LPCCHOOKPROC = new CallbackT('LPCCHOOKPROC', uint, [HWND.Δ, uint, uint, long]),
+ LPFRHOOKPROC = new CallbackT('LPFRHOOKPROC', uint, [HWND.Δ, uint, uint, long]),
+ LPCFHOOKPROC = new CallbackT('LPCFHOOKPROC', uint, [HWND.Δ, uint, uint, long]),
+ LPPRINTHOOKPROC = new CallbackT('LPPRINTHOOKPROC', uint, [HWND.Δ, uint, uint, long]),
+ LPSETUPHOOKPROC = new CallbackT('LPSETUPHOOKPROC', uint, [HWND.Δ, uint, uint, long]),
+ LPPAGEPAINTHOOK = new CallbackT('LPPAGEPAINTHOOK', uint, [HWND.Δ, uint, uint, long]),
+ LPPAGESETUPHOOK = new CallbackT('LPPAGESETUPHOOK', uint, [HWND.Δ, uint, uint, long]);
 
 var OPENFILENAME_NT4 = new StructT('OPENFILENAME_NT4', {
  lStructSize: DWORD,
@@ -357,7 +329,7 @@ var IPrintDialogCallbackVtbl = new StructT('IPrintDialogCallbackVtbl', {
  Release: new CallbackT(ulong, [IPrintDialogCallback.Δ]).Δ,
  InitDone: new CallbackT(long, [IPrintDialogCallback.Δ]).Δ,
  SelectionChange: new CallbackT(long, [IPrintDialogCallback.Δ]).Δ,
- HandleMessage: new CallbackT(long, [IPrintDialogCallback.Δ, HWND__.Δ, uint, uint, long, long.Δ]).Δ
+ HandleMessage: new CallbackT(long, [IPrintDialogCallback.Δ, HWND.Δ, uint, uint, long, long.Δ]).Δ
 });
 
 var IPrintDialogServices = new StructT('IPrintDialogServices', {
@@ -468,6 +440,7 @@ var PAGESETUPDLGW = new StructT('PAGESETUPDLGW', {
 });
 
 
+var commdlg = new Library('commdlg', {
   GetOpenFileNameA: [ BOOL, { LPOPENFILENAMEA: LPOPENFILENAMEA } ],
   GetOpenFileNameW: [ BOOL, { LPOPENFILENAMEW: LPOPENFILENAMEW } ],
   GetSaveFileNameA: [ BOOL, { LPOPENFILENAMEA: LPOPENFILENAMEA } ],
@@ -488,4 +461,5 @@ var PAGESETUPDLGW = new StructT('PAGESETUPDLGW', {
   PrintDlgExW: [ HRESULT, { pPD: LPPRINTDLGEXW } ],
   CommDlgExtendedError: [ DWORD, {  } ],
   PageSetupDlgA: [ BOOL, { LPPAGESETUPDLGA: LPPAGESETUPDLGA } ],
-  PageSetupDlgW: [ BOOL, { LPPAGESETUPDLGW: LPPAGESETUPDLGW } ],
+  PageSetupDlgW: [ BOOL, { LPPAGESETUPDLGW: LPPAGESETUPDLGW } ]
+});

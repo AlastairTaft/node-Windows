@@ -1,67 +1,45 @@
-var ffi = require('ffi');
+var api = require('windows/api');
 
 var
- voi\u0064 = ffi.types.voi\u0064,
- _void = ffi.types.void,
- int8 = ffi.types.int8,
- uint8 = ffi.types.uint8,
- int16 = ffi.types.int16,
- uint16 = ffi.types.uint16,
- int32 = ffi.types.int32,
- uint32 = ffi.types.uint32,
- int64 = ffi.types.int64,
- uint64 = ffi.types.uint64,
- float = ffi.types.float,
- double = ffi.types.double,
- CString = ffi.types.CString,
- WString = ffi.types.WString,
- bool = ffi.types.bool,
- byte = ffi.types.byte,
- char = ffi.types.char,
- uchar = ffi.types.uchar,
- short = ffi.types.short,
- ushort = ffi.types.ushort,
- int = ffi.types.int,
- uint = ffi.types.uint,
- long = ffi.types.long,
- ulong = ffi.types.ulong,
- longlong = ffi.types.longlong,
- ulonglong = ffi.types.ulonglong,
- size_t = ffi.types.size_t,
- charΔ = ffi.types.charΔ,
- wchar = ffi.types.wchar,
- wcharΔ = ffi.types.wcharΔ,
- voidΔ = ffi.types.voidΔ,
- FFI_TYPEΔ = ffi.types.FFI_TYPEΔ,
- intΔ = ffi.types.intΔ,
- CStringΔ = ffi.types.CStringΔ;
+ CallbackT = api.CallbackT,
+ StructT = api.StructT,
+ Library = api.Library,
+ ArrayT = api.ArrayT,
+ EnumT = api.EnumT,
+ NULL = api.NULL
 
-
-
-data.enums = {};
-data.callbacks = {};
-data.structs = {};
-data.functions = {};
-
-
-function ENUM(name, def){
- return data.enums[name] = new Enum(name, def);
-}
-
-function CallbackT(ret, params){}
-
-function STRUCT(name, def){
- return data.structs[name] = new Struct(name, def);
-}
-
-function FUNCTION(name, ret, params){
- return exports.functions[name] = new ffi.ForeignFunction(name, 'windows', ret, params);
-}
-
-
-function DEF(name, ffiType, type){
-  return ffiType;
-}
+var
+ _void     = api('void'),
+ int8      = api('int8'),
+ uint8     = api('uint8'),
+ int16     = api('int16'),
+ uint16    = api('uint16'),
+ int32     = api('int32'),
+ uint32    = api('uint32'),
+ int64     = api('int64'),
+ uint64    = api('uint64'),
+ float     = api('float'),
+ double    = api('double'),
+ CString   = api('CString'),
+ WString   = api('WString'),
+ bool      = api('bool'),
+ byte      = api('byte'),
+ char      = api('char'),
+ uchar     = api('uchar'),
+ short     = api('short'),
+ ushort    = api('ushort'),
+ int       = api('int'),
+ uint      = api('uint'),
+ long      = api('long'),
+ ulong     = api('ulong'),
+ longlong  = api('longlong'),
+ ulonglong = api('ulonglong'),
+ size_t    = api('size_t'),
+ charΔ     = api('charΔ'),
+ voidΔ     = api('voidΔ'),
+ intΔ      = api('intΔ'),
+ NULL      = api('NULL'),
+ VoidT     = api('VoidT');
 
 var
  ULONG = ulong.typedef('ULONG'),
@@ -115,17 +93,17 @@ var COWAIT_FLAGS = new EnumT('COWAIT_FLAGS', {
  Inputavailable: 4
 });
 
-
-  LPFNGETCLASSOBJECT = new CallbackT('LPFNGETCLASSOBJECT', long, [_GUID.Δ, _GUID.Δ, _void.Δ.Δ]),
-  LPFNCANUNLOADNOW = new CallbackT('LPFNCANUNLOADNOW', long, []),
+var
+ LPFNGETCLASSOBJECT = new CallbackT('LPFNGETCLASSOBJECT', long, [_GUID.Δ, _GUID.Δ, _void.Δ.Δ]),
+ LPFNCANUNLOADNOW = new CallbackT('LPFNCANUNLOADNOW', long, []);
 
 var SOleTlsDataPublic = new StructT('SOleTlsDataPublic', {
- pvReserved0: ARRAY(undefined, 2),
- dwReserved0: ARRAY(DWORD, 3),
- pvReserved1: ARRAY(undefined, 1),
- dwReserved1: ARRAY(DWORD, 3),
- pvReserved2: ARRAY(undefined, 4),
- dwReserved2: ARRAY(DWORD, 1),
+ pvReserved0: new Array(undefined, 2),
+ dwReserved0: new Array(DWORD, 3),
+ pvReserved1: new Array(undefined, 1),
+ dwReserved1: new Array(DWORD, 3),
+ pvReserved2: new Array(undefined, 4),
+ dwReserved2: new Array(DWORD, 1),
  pCurrentCtx: _void.Δ
 });
 

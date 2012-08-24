@@ -1,7 +1,6 @@
 var ffi = require('ffi');
 
 var
- voi\u0064 = ffi.types.voi\u0064,
  _void = ffi.types.void,
  int8 = ffi.types.int8,
  uint8 = ffi.types.uint8,
@@ -35,33 +34,6 @@ var
  FFI_TYPEΔ = ffi.types.FFI_TYPEΔ,
  intΔ = ffi.types.intΔ,
  CStringΔ = ffi.types.CStringΔ;
-
-
-
-data.enums = {};
-data.callbacks = {};
-data.structs = {};
-data.functions = {};
-
-
-function ENUM(name, def){
- return data.enums[name] = new Enum(name, def);
-}
-
-function CallbackT(ret, params){}
-
-function STRUCT(name, def){
- return data.structs[name] = new Struct(name, def);
-}
-
-function FUNCTION(name, ret, params){
- return exports.functions[name] = new ffi.ForeignFunction(name, 'windows', ret, params);
-}
-
-
-function DEF(name, ffiType, type){
-  return ffiType;
-}
 
 var
  BOOL = int.typedef('BOOL'),
@@ -125,10 +97,11 @@ var DDEUP = new StructT('DDEUP', {
  rgb: ARRAY(BYTE, 1)
 });
 
-
+var dde = new Library('dde', {
   DdeSetQualityOfService: [ BOOL, { hwndClient: HWND, pqosNew: SECURITY_QUALITY_OF_SERVICE.Δ, pqosPrev: PSECURITY_QUALITY_OF_SERVICE } ],
   ImpersonateDdeClientWindow: [ BOOL, { hWndClient: HWND, hWndServer: HWND } ],
   PackDDElParam: [ LPARAM, { msg: UINT, uiLo: UINT_PTR, uiHi: UINT_PTR } ],
   UnpackDDElParam: [ BOOL, { msg: UINT, lParam: LPARAM, puiLo: PUINT_PTR, puiHi: PUINT_PTR } ],
   FreeDDElParam: [ BOOL, { msg: UINT, lParam: LPARAM } ],
   ReuseDDElParam: [ LPARAM, { lParam: LPARAM, msgIn: UINT, msgOut: UINT, uiLo: UINT_PTR, uiHi: UINT_PTR } ],
+});

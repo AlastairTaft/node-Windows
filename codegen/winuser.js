@@ -1,67 +1,45 @@
-var ffi = require('ffi');
+var api = require('windows/api');
 
 var
- voi\u0064 = ffi.types.voi\u0064,
- _void = ffi.types.void,
- int8 = ffi.types.int8,
- uint8 = ffi.types.uint8,
- int16 = ffi.types.int16,
- uint16 = ffi.types.uint16,
- int32 = ffi.types.int32,
- uint32 = ffi.types.uint32,
- int64 = ffi.types.int64,
- uint64 = ffi.types.uint64,
- float = ffi.types.float,
- double = ffi.types.double,
- CString = ffi.types.CString,
- WString = ffi.types.WString,
- bool = ffi.types.bool,
- byte = ffi.types.byte,
- char = ffi.types.char,
- uchar = ffi.types.uchar,
- short = ffi.types.short,
- ushort = ffi.types.ushort,
- int = ffi.types.int,
- uint = ffi.types.uint,
- long = ffi.types.long,
- ulong = ffi.types.ulong,
- longlong = ffi.types.longlong,
- ulonglong = ffi.types.ulonglong,
- size_t = ffi.types.size_t,
- charΔ = ffi.types.charΔ,
- wchar = ffi.types.wchar,
- wcharΔ = ffi.types.wcharΔ,
- voidΔ = ffi.types.voidΔ,
- FFI_TYPEΔ = ffi.types.FFI_TYPEΔ,
- intΔ = ffi.types.intΔ,
- CStringΔ = ffi.types.CStringΔ;
+ CallbackT = api.CallbackT,
+ StructT = api.StructT,
+ Library = api.Library,
+ ArrayT = api.ArrayT,
+ EnumT = api.EnumT,
+ NULL = api.NULL
 
-
-
-data.enums = {};
-data.callbacks = {};
-data.structs = {};
-data.functions = {};
-
-
-function ENUM(name, def){
- return data.enums[name] = new Enum(name, def);
-}
-
-function CallbackT(ret, params){}
-
-function STRUCT(name, def){
- return data.structs[name] = new Struct(name, def);
-}
-
-function FUNCTION(name, ret, params){
- return exports.functions[name] = new ffi.ForeignFunction(name, 'windows', ret, params);
-}
-
-
-function DEF(name, ffiType, type){
-  return ffiType;
-}
+var
+ _void     = api('void'),
+ int8      = api('int8'),
+ uint8     = api('uint8'),
+ int16     = api('int16'),
+ uint16    = api('uint16'),
+ int32     = api('int32'),
+ uint32    = api('uint32'),
+ int64     = api('int64'),
+ uint64    = api('uint64'),
+ float     = api('float'),
+ double    = api('double'),
+ CString   = api('CString'),
+ WString   = api('WString'),
+ bool      = api('bool'),
+ byte      = api('byte'),
+ char      = api('char'),
+ uchar     = api('uchar'),
+ short     = api('short'),
+ ushort    = api('ushort'),
+ int       = api('int'),
+ uint      = api('uint'),
+ long      = api('long'),
+ ulong     = api('ulong'),
+ longlong  = api('longlong'),
+ ulonglong = api('ulonglong'),
+ size_t    = api('size_t'),
+ charΔ     = api('charΔ'),
+ voidΔ     = api('voidΔ'),
+ intΔ      = api('intΔ'),
+ NULL      = api('NULL'),
+ VoidT     = api('VoidT');
 
 var
  va_list = char.Δ.typedef('va_list'),
@@ -97,7 +75,7 @@ var
  LPCWSTR = ushort.Δ.typedef('LPCWSTR'),
  LPSTR = char.Δ.typedef('LPSTR'),
  LPCSTR = char.Δ.typedef('LPCSTR'),
- HANDLE = _void.Δ.typedef('HANDLE'),
+ HANDLE = ulong.typedef('HANDLE'),
  LCID = ulong.typedef('LCID'),
  ULONGLONG = ulonglong.typedef('ULONGLONG'),
  PSECURITY_DESCRIPTOR = _void.Δ.typedef('PSECURITY_DESCRIPTOR'),
@@ -113,43 +91,104 @@ var
  HPOWERNOTIFY = _void.Δ.typedef('HPOWERNOTIFY');
 
 
+var
+ HWND = HANDLE.typedef('HWND'),
+ HHOOK = HANDLE.typedef('HHOOK'),
+ HKEY = HANDLE.typedef('HKEY'),
+ HACCEL = HANDLE.typedef('HACCEL'),
+ HBITMAP = HANDLE.typedef('HBITMAP'),
+ HBRUSH = HANDLE.typedef('HBRUSH'),
+ HCURSOR = HANDLE.typedef('HCURSOR'),
+ HCOLORSPACE = HANDLE.typedef('HCOLORSPACE'),
+ HDC = HANDLE.typedef('HDC'),
+ HGLRC = HANDLE.typedef('HGLRC'),
+ HDESK = HANDLE.typedef('HDESK'),
+ HENHMETAFILE = HANDLE.typedef('HENHMETAFILE'),
+ HFONT = HANDLE.typedef('HFONT'),
+ HICON = HANDLE.typedef('HICON'),
+ HMENU = HANDLE.typedef('HMENU'),
+ HMETAFILE = HANDLE.typedef('HMETAFILE'),
+ HINSTANCE = HANDLE.typedef('HINSTANCE'),
+ HPALETTE = HANDLE.typedef('HPALETTE'),
+ HPEN = HANDLE.typedef('HPEN'),
+ HRGN = HANDLE.typedef('HRGN'),
+ HRSRC = HANDLE.typedef('HRSRC'),
+ HSPRITE = HANDLE.typedef('HSPRITE'),
+ HLSURF = HANDLE.typedef('HLSURF'),
+ HSTR = HANDLE.typedef('HSTR'),
+ HTASK = HANDLE.typedef('HTASK'),
+ HWINSTA = HANDLE.typedef('HWINSTA'),
+ HKL = HANDLE.typedef('HKL'),
+ HWINEVENTHOOK = HANDLE.typedef('HWINEVENTHOOK'),
+ HMONITOR = HANDLE.typedef('HMONITOR'),
+ HUMPD = HANDLE.typedef('HUMPD');
 
-  WNDPROC = new CallbackT('WNDPROC', long, [HWND__.Δ, uint, uint, long]),
-  DLGPROC = new CallbackT('DLGPROC', int, [HWND__.Δ, uint, uint, long]),
-  TIMERPROC = new CallbackT('TIMERPROC', _void, [HWND__.Δ, uint, uint, ulong]),
-  GRAYSTRINGPROC = new CallbackT('GRAYSTRINGPROC', int, [HDC__.Δ, long, int]),
-  WNDENUMPROC = new CallbackT('WNDENUMPROC', int, [HWND__.Δ, long]),
-  HOOKPROC = new CallbackT('HOOKPROC', long, [int, uint, long]),
-  SENDASYNCPROC = new CallbackT('SENDASYNCPROC', _void, [HWND__.Δ, uint, ulong, long]),
-  PROPENUMPROCA = new CallbackT('PROPENUMPROCA', int, [HWND__.Δ, char.Δ, _void.Δ]),
-  PROPENUMPROCW = new CallbackT('PROPENUMPROCW', int, [HWND__.Δ, ushort.Δ, _void.Δ]),
-  PROPENUMPROCEXA = new CallbackT('PROPENUMPROCEXA', int, [HWND__.Δ, char.Δ, _void.Δ, ulong]),
-  PROPENUMPROCEXW = new CallbackT('PROPENUMPROCEXW', int, [HWND__.Δ, ushort.Δ, _void.Δ, ulong]),
-  EDITWORDBREAKPROCA = new CallbackT('EDITWORDBREAKPROCA', int, [char.Δ, int, int, int]),
-  EDITWORDBREAKPROCW = new CallbackT('EDITWORDBREAKPROCW', int, [ushort.Δ, int, int, int]),
-  DRAWSTATEPROC = new CallbackT('DRAWSTATEPROC', int, [HDC__.Δ, long, uint, int, int]),
-  PROPENUMPROC = new CallbackT('PROPENUMPROC', int, [HWND__.Δ, char.Δ, _void.Δ]),
-  PROPENUMPROCEX = new CallbackT('PROPENUMPROCEX', int, [HWND__.Δ, char.Δ, _void.Δ, ulong]),
-  EDITWORDBREAKPROC = new CallbackT('EDITWORDBREAKPROC', int, [char.Δ, int, int, int]),
-  NAMEENUMPROCA = new CallbackT('NAMEENUMPROCA', int, [char.Δ, long]),
-  NAMEENUMPROCW = new CallbackT('NAMEENUMPROCW', int, [ushort.Δ, long]),
-  WINSTAENUMPROCA = new CallbackT('WINSTAENUMPROCA', int, [char.Δ, long]),
-  DESKTOPENUMPROCA = new CallbackT('DESKTOPENUMPROCA', int, [char.Δ, long]),
-  WINSTAENUMPROCW = new CallbackT('WINSTAENUMPROCW', int, [ushort.Δ, long]),
-  DESKTOPENUMPROCW = new CallbackT('DESKTOPENUMPROCW', int, [ushort.Δ, long]),
-  WINSTAENUMPROC = new CallbackT('WINSTAENUMPROC', int, [char.Δ, long]),
-  DESKTOPENUMPROC = new CallbackT('DESKTOPENUMPROC', int, [char.Δ, long]),
-  PREGISTERCLASSNAMEW = new CallbackT('PREGISTERCLASSNAMEW', uchar, [ushort.Δ]),
-  MSGBOXCALLBACK = new CallbackT('MSGBOXCALLBACK', _void, [tagHELPINFO.Δ]),
-  MONITORENUMPROC = new CallbackT('MONITORENUMPROC', int, [HMONITOR__.Δ, HDC__.Δ, tagRECT.Δ, long]),
-  WINEVENTPROC = new CallbackT('WINEVENTPROC', _void, [HWINEVENTHOOK__.Δ, ulong, HWND__.Δ, long, long, ulong, ulong]),
+var
+ WNDPROC = new CallbackT('WNDPROC', long, [HWND.Δ, uint, uint, long]),
+ DLGPROC = new CallbackT('DLGPROC', int, [HWND.Δ, uint, uint, long]),
+ TIMERPROC = new CallbackT('TIMERPROC', _void, [HWND.Δ, uint, uint, ulong]),
+ GRAYSTRINGPROC = new CallbackT('GRAYSTRINGPROC', int, [HWND.Δ, long, int]),
+ WNDENUMPROC = new CallbackT('WNDENUMPROC', int, [HWND.Δ, long]),
+ HOOKPROC = new CallbackT('HOOKPROC', long, [int, uint, long]),
+ SENDASYNCPROC = new CallbackT('SENDASYNCPROC', _void, [HWND.Δ, uint, ulong, long]),
+ PROPENUMPROCA = new CallbackT('PROPENUMPROCA', int, [HWND.Δ, char.Δ, _void.Δ]),
+ PROPENUMPROCW = new CallbackT('PROPENUMPROCW', int, [HWND.Δ, ushort.Δ, _void.Δ]),
+ PROPENUMPROCEXA = new CallbackT('PROPENUMPROCEXA', int, [HWND.Δ, char.Δ, _void.Δ, ulong]),
+ PROPENUMPROCEXW = new CallbackT('PROPENUMPROCEXW', int, [HWND.Δ, ushort.Δ, _void.Δ, ulong]),
+ EDITWORDBREAKPROCA = new CallbackT('EDITWORDBREAKPROCA', int, [char.Δ, int, int, int]),
+ EDITWORDBREAKPROCW = new CallbackT('EDITWORDBREAKPROCW', int, [ushort.Δ, int, int, int]),
+ DRAWSTATEPROC = new CallbackT('DRAWSTATEPROC', int, [HWND.Δ, long, uint, int, int]),
+ PROPENUMPROC = new CallbackT('PROPENUMPROC', int, [HWND.Δ, char.Δ, _void.Δ]),
+ PROPENUMPROCEX = new CallbackT('PROPENUMPROCEX', int, [HWND.Δ, char.Δ, _void.Δ, ulong]),
+ EDITWORDBREAKPROC = new CallbackT('EDITWORDBREAKPROC', int, [char.Δ, int, int, int]),
+ NAMEENUMPROCA = new CallbackT('NAMEENUMPROCA', int, [char.Δ, long]),
+ NAMEENUMPROCW = new CallbackT('NAMEENUMPROCW', int, [ushort.Δ, long]),
+ WINSTAENUMPROCA = new CallbackT('WINSTAENUMPROCA', int, [char.Δ, long]),
+ DESKTOPENUMPROCA = new CallbackT('DESKTOPENUMPROCA', int, [char.Δ, long]),
+ WINSTAENUMPROCW = new CallbackT('WINSTAENUMPROCW', int, [ushort.Δ, long]),
+ DESKTOPENUMPROCW = new CallbackT('DESKTOPENUMPROCW', int, [ushort.Δ, long]),
+ WINSTAENUMPROC = new CallbackT('WINSTAENUMPROC', int, [char.Δ, long]),
+ DESKTOPENUMPROC = new CallbackT('DESKTOPENUMPROC', int, [char.Δ, long]),
+ PREGISTERCLASSNAMEW = new CallbackT('PREGISTERCLASSNAMEW', uchar, [ushort.Δ]);
 
-var CBT_CREATEWND = new StructT('CBT_CREATEWND', {
- lpcs: tagCREATESTRUCTA.Δ,
- hwndInsertAfter: HWND
+var MAX_PATH = 260;
+
+var RECT = new StructT('RECT', {
+ Left: LONG,
+ Top: LONG,
+ Right: LONG,
+ Bottom: LONG
 });
 
-var CREATESTRUCT = new StructT('CREATESTRUCT', {
+var POINT = new StructT('POINT', {
+ x: LONG,
+ y: LONG
+});
+
+var POINTS = new StructT('POINTS', {
+ x: SHORT,
+ y: SHORT
+});
+
+var SIZE = new StructT('SIZEL', {
+ cx: LONG,
+ cy: LONG
+});
+
+var LUID = new StructT('LUID', {
+ LowPart: DWORD,
+ HighPart: LONG
+});
+
+var GUID = new StructT('GUID', {
+ Data1: ulong,
+ Data2: ushort,
+ Data3: ushort,
+ Data4: new ArrayT(byte, 8)
+});
+
+
+var CREATESTRUCTA = new StructT('CREATESTRUCTA', {
  lpCreateParams: LPVOID,
  hInstance: HINSTANCE,
  hMenu: HMENU,
@@ -162,11 +201,6 @@ var CREATESTRUCT = new StructT('CREATESTRUCT', {
  lpszName: LPCSTR,
  lpszClass: LPCSTR,
  dwExStyle: DWORD
-});
-
-var CBT_CREATEWNDW = new StructT('CBT_CREATEWNDW', {
- lpcs: tagCREATESTRUCTW.Δ,
- hwndInsertAfter: HWND
 });
 
 var CREATESTRUCTW = new StructT('CREATESTRUCTW', {
@@ -182,6 +216,17 @@ var CREATESTRUCTW = new StructT('CREATESTRUCTW', {
  lpszName: LPCWSTR,
  lpszClass: LPCWSTR,
  dwExStyle: DWORD
+});
+
+
+var CBT_CREATEWND = new StructT('CBT_CREATEWND', {
+ lpcs: CREATESTRUCTA.Δ,
+ hwndInsertAfter: HWND
+});
+
+var CBT_CREATEWNDW = new StructT('CBT_CREATEWNDW', {
+ lpcs: CREATESTRUCTW.Δ,
+ hwndInsertAfter: HWND
 });
 
 var CBTACTIVATESTRUCT = new StructT('CBTACTIVATESTRUCT', {
@@ -365,7 +410,7 @@ var MDINEXTMENU = new StructT('MDINEXTMENU', {
 var POWERBROADCAST_SETTING = new StructT('POWERBROADCAST_SETTING', {
  PowerSetting: GUID,
  DataLength: DWORD,
- Data: ARRAY(UCHAR, 1)
+ Data: new ArrayT(UCHAR, 1)
 });
 
 var WINDOWPOS = new StructT('WINDOWPOS', {
@@ -378,8 +423,10 @@ var WINDOWPOS = new StructT('WINDOWPOS', {
  flags: UINT
 });
 
+var PWINDOWPOS = WINDOWPOS.Δ.typedef('PWINDOWPOS');
+
 var NCCALCSIZE_PARAMS = new StructT('NCCALCSIZE_PARAMS', {
- rgrc: ARRAY(RECT, 3),
+ rgrc: new ArrayT(RECT, 3),
  lppos: PWINDOWPOS
 });
 
@@ -402,7 +449,7 @@ var PAINTSTRUCT = new StructT('PAINTSTRUCT', {
  rcPaint: RECT,
  fRestore: BOOL,
  fIncUpdate: BOOL,
- rgbReserved: ARRAY(BYTE, 32)
+ rgbReserved: new ArrayT(BYTE, 32)
 });
 
 var WINDOWPLACEMENT = new StructT('WINDOWPLACEMENT', {
@@ -472,6 +519,13 @@ var BSMINFO = new StructT('BSMINFO', {
  luid: LUID
 });
 
+var BLENDFUNCTION = new StructT('BLENDFUNCTION', {
+ BlendOp: BYTE,
+ BlendFlags: BYTE,
+ SourceConstantAlpha: BYTE,
+ AlphaFormat: BYTE
+});
+
 var UPDATELAYEREDWINDOWINFO = new StructT('UPDATELAYEREDWINDOWINFO', {
  cbSize: DWORD,
  hdcDst: HDC,
@@ -538,10 +592,6 @@ var HARDWAREINPUT = new StructT('HARDWAREINPUT', {
 
 var INPUT = new StructT('INPUT', {
  type: DWORD
-});
-
-var HTOUCHINPUT__ = new StructT('HTOUCHINPUT__', {
- unused: int
 });
 
 var TOUCHINPUT = new StructT('TOUCHINPUT', {
@@ -675,7 +725,7 @@ var MENUITEMTEMPLATEHEADER = new StructT('MENUITEMTEMPLATEHEADER', {
 var MENUITEMTEMPLATE = new StructT('MENUITEMTEMPLATE', {
  mtOption: WORD,
  mtID: WORD,
- mtString: ARRAY(WCHAR, 1)
+ mtString: new ArrayT(WCHAR, 1)
 });
 
 var ICONINFO = new StructT('ICONINFO', {
@@ -704,8 +754,8 @@ var ICONINFOEX = new StructT('ICONINFOEX', {
  hbmMask: HBITMAP,
  hbmColor: HBITMAP,
  wResID: WORD,
- szModName: ARRAY(CHAR, MAX_PATH),
- szResName: ARRAY(CHAR, MAX_PATH)
+ szModName: new ArrayT(CHAR, MAX_PATH),
+ szResName: new ArrayT(CHAR, MAX_PATH)
 });
 
 var ICONINFOEXW = new StructT('ICONINFOEXW', {
@@ -716,8 +766,8 @@ var ICONINFOEXW = new StructT('ICONINFOEXW', {
  hbmMask: HBITMAP,
  hbmColor: HBITMAP,
  wResID: WORD,
- szModName: ARRAY(WCHAR, MAX_PATH),
- szResName: ARRAY(WCHAR, MAX_PATH)
+ szModName: new ArrayT(WCHAR, MAX_PATH),
+ szResName: new ArrayT(WCHAR, MAX_PATH)
 });
 
 var SCROLLINFO = new StructT('SCROLLINFO', {
@@ -762,13 +812,13 @@ var CLIENTCREATESTRUCT = new StructT('CLIENTCREATESTRUCT', {
 var MULTIKEYHELP = new StructT('MULTIKEYHELP', {
  mkSize: DWORD,
  mkKeylist: CHAR,
- szKeyphrase: ARRAY(CHAR, 1)
+ szKeyphrase: new ArrayT(CHAR, 1)
 });
 
 var MULTIKEYHELPW = new StructT('MULTIKEYHELPW', {
  mkSize: DWORD,
  mkKeylist: WCHAR,
- szKeyphrase: ARRAY(WCHAR, 1)
+ szKeyphrase: new ArrayT(WCHAR, 1)
 });
 
 var HELPWININFO = new StructT('HELPWININFO', {
@@ -778,7 +828,7 @@ var HELPWININFO = new StructT('HELPWININFO', {
  dx: int,
  dy: int,
  wMax: int,
- rgchMember: ARRAY(CHAR, 2)
+ rgchMember: new ArrayT(CHAR, 2)
 });
 
 var HELPWININFOW = new StructT('HELPWININFOW', {
@@ -788,7 +838,43 @@ var HELPWININFOW = new StructT('HELPWININFOW', {
  dx: int,
  dy: int,
  wMax: int,
- rgchMember: ARRAY(WCHAR, 2)
+ rgchMember: new ArrayT(WCHAR, 2)
+});
+
+var LF_FACESIZE = 32;
+
+var LOGFONTA = new StructT('LOGFONTA', {
+ lfHeight: LONG,
+ lfWidth: LONG,
+ lfEscapement: LONG,
+ lfOrientation: LONG,
+ lfWeight: LONG,
+ lfItalic: BYTE,
+ lfUnderline: BYTE,
+ lfStrikeOut: BYTE,
+ lfCharSet: BYTE,
+ lfOutPrecision: BYTE,
+ lfClipPrecision: BYTE,
+ lfQuality: BYTE,
+ lfPitchAndFamily: BYTE,
+ lfFaceName: new ArrayT(CHAR, LF_FACESIZE)
+});
+
+var LOGFONTW = new StructT('LOGFONTW', {
+ lfHeight: LONG,
+ lfWidth: LONG,
+ lfEscapement: LONG,
+ lfOrientation: LONG,
+ lfWeight: LONG,
+ lfItalic: BYTE,
+ lfUnderline: BYTE,
+ lfStrikeOut: BYTE,
+ lfCharSet: BYTE,
+ lfOutPrecision: BYTE,
+ lfClipPrecision: BYTE,
+ lfQuality: BYTE,
+ lfPitchAndFamily: BYTE,
+ lfFaceName: new ArrayT(WCHAR, LF_FACESIZE)
 });
 
 var NONCLIENTMETRICS = new StructT('NONCLIENTMETRICS', {
@@ -968,12 +1054,14 @@ var MONITORINFO = new StructT('MONITORINFO', {
  dwFlags: DWORD
 });
 
+var CCHDEVICENAME = 32;
+
 var MONITORINFOEX = new StructT('MONITORINFOEX', {
- szDevice: ARRAY(CHAR, CCHDEVICENAME)
+ szDevice: new ArrayT(CHAR, CCHDEVICENAME)
 });
 
 var MONITORINFOEXW = new StructT('MONITORINFOEXW', {
- szDevice: ARRAY(WCHAR, CCHDEVICENAME)
+ szDevice: new ArrayT(WCHAR, CCHDEVICENAME)
 });
 
 var GUITHREADINFO = new StructT('GUITHREADINFO', {
@@ -1011,14 +1099,14 @@ var WINDOWINFO = new StructT('WINDOWINFO', {
 var TITLEBARINFO = new StructT('TITLEBARINFO', {
  cbSize: DWORD,
  rcTitleBar: RECT,
- rgstate: ARRAY(DWORD, undefined)
+ rgstate: new ArrayT(DWORD, undefined)
 });
 
 var TITLEBARINFOEX = new StructT('TITLEBARINFOEX', {
  cbSize: DWORD,
  rcTitleBar: RECT,
- rgstate: ARRAY(DWORD, undefined),
- rgrect: ARRAY(RECT, undefined)
+ rgstate: new ArrayT(DWORD, 5),
+ rgrect: new ArrayT(RECT, 5)
 });
 
 var MENUBARINFO = new StructT('MENUBARINFO', {
@@ -1037,7 +1125,7 @@ var SCROLLBARINFO = new StructT('SCROLLBARINFO', {
  xyThumbTop: int,
  xyThumbBottom: int,
  reserved: int,
- rgstate: ARRAY(DWORD, undefined)
+ rgstate: new ArrayT(DWORD, undefined)
 });
 
 var COMBOBOXINFO = new StructT('COMBOBOXINFO', {
@@ -1060,10 +1148,6 @@ var ALTTABINFO = new StructT('ALTTABINFO', {
  cxItem: int,
  cyItem: int,
  ptStart: POINT
-});
-
-var HRAWINPUT__ = new StructT('HRAWINPUT__', {
- unused: int
 });
 
 var RAWINPUTHEADER = new StructT('RAWINPUTHEADER', {
@@ -1098,12 +1182,12 @@ var RAWKEYBOARD = new StructT('RAWKEYBOARD', {
 var RAWHID = new StructT('RAWHID', {
  dwSizeHid: DWORD,
  dwCount: DWORD,
- bRawData: ARRAY(BYTE, 1)
+ bRawData: new ArrayT(BYTE, 1)
 });
 
 var RAWINPUT = new StructT('RAWINPUT', {
  header: RAWINPUTHEADER,
- data: c:winuser.h@307660@S@tagRAWINPUT@Ua
+ data: VoidT //new Union(RID_DEVICE_INFO_MOUSE, RID_DEVICE_INFO_KEYBOARD, RID_DEVICE_INFO_HID)
 });
 
 var RID_DEVICE_INFO_MOUSE = new StructT('RID_DEVICE_INFO_MOUSE', {
@@ -1152,10 +1236,6 @@ var CHANGEFILTERSTRUCT = new StructT('CHANGEFILTERSTRUCT', {
  ExtStatus: DWORD
 });
 
-var HGESTUREINFO__ = new StructT('HGESTUREINFO__', {
- unused: int
-});
-
 var GESTUREINFO = new StructT('GESTUREINFO', {
  cbSize: UINT,
  dwFlags: DWORD,
@@ -1183,6 +1263,105 @@ var GESTURECONFIG = new StructT('GESTURECONFIG', {
 });
 
 
+var DEVMODE = new StructT('DEVMODE', {
+ dmDeviceName: new ArrayT(BYTE, CCHDEVICENAME),
+ dmSpecVersion: WORD,
+ dmDriverVersion: WORD,
+ dmSize: WORD,
+ dmDriverExtra: WORD,
+ dmFields: DWORD,
+ dmColor: short,
+ dmDuplex: short,
+ dmYResolution: short,
+ dmTTOption: short,
+ dmCollate: short,
+ dmFormName: new ArrayT(BYTE, CCHFORMNAME),
+ dmLogPixels: WORD,
+ dmBitsPerPel: DWORD,
+ dmPelsWidth: DWORD,
+ dmPelsHeight: DWORD,
+ dmDisplayFrequency: DWORD,
+ dmICMMethod: DWORD,
+ dmICMIntent: DWORD,
+ dmMediaType: DWORD,
+ dmDitherType: DWORD,
+ dmReserved1: DWORD,
+ dmReserved2: DWORD,
+ dmPanningWidth: DWORD,
+ dmPanningHeight: DWORD
+});
+
+var undefined = new StructT('undefined', {
+ dmOrientation: short,
+ dmPaperSize: short,
+ dmPaperLength: short,
+ dmPaperWidth: short,
+ dmScale: short,
+ dmCopies: short,
+ dmDefaultSource: short,
+ dmPrintQuality: short
+});
+
+var undefined = new StructT('undefined', {
+ dmPosition: POINTL,
+ dmDisplayOrientation: DWORD,
+ dmDisplayFixedOutput: DWORD
+});
+
+var DEVMODEW = new StructT('DEVMODEW', {
+ dmDeviceName: new ArrayT(WCHAR, CCHDEVICENAME),
+ dmSpecVersion: WORD,
+ dmDriverVersion: WORD,
+ dmSize: WORD,
+ dmDriverExtra: WORD,
+ dmFields: DWORD,
+ dmColor: short,
+ dmDuplex: short,
+ dmYResolution: short,
+ dmTTOption: short,
+ dmCollate: short,
+ dmFormName: new ArrayT(WCHAR, CCHFORMNAME),
+ dmLogPixels: WORD,
+ dmBitsPerPel: DWORD,
+ dmPelsWidth: DWORD,
+ dmPelsHeight: DWORD,
+ dmDisplayFrequency: DWORD,
+ dmICMMethod: DWORD,
+ dmICMIntent: DWORD,
+ dmMediaType: DWORD,
+ dmDitherType: DWORD,
+ dmReserved1: DWORD,
+ dmReserved2: DWORD,
+ dmPanningWidth: DWORD,
+ dmPanningHeight: DWORD
+});
+
+var undefined = new StructT('undefined', {
+ dmOrientation: short,
+ dmPaperSize: short,
+ dmPaperLength: short,
+ dmPaperWidth: short,
+ dmScale: short,
+ dmCopies: short,
+ dmDefaultSource: short,
+ dmPrintQuality: short
+});
+
+var undefined = new StructT('undefined', {
+ dmPosition: POINTL,
+ dmDisplayOrientation: DWORD,
+ dmDisplayFixedOutput: DWORD
+});
+
+
+var
+ MSGBOXCALLBACK = new CallbackT('MSGBOXCALLBACK', _void, [HELPINFO.Δ]),
+ MONITORENUMPROC = new CallbackT('MONITORENUMPROC', int, [HMONITOR.Δ, HWND.Δ, RECT.Δ, long]),
+ WINEVENTPROC = new CallbackT('WINEVENTPROC', _void, [HWINEVENTHOOK.Δ, ulong, HWND.Δ, long, long, ulong, ulong]);
+
+var LPMOUSEMOVEPOINT = MOUSEMOVEPOINT.Δ.typedef('LPMOUSEMOVEPOINT');
+
+var user32 = new Library('use32', {
   wvsprintfA: [ _void, { LPCSTR: LPCSTR, arglist: va_list } ],
   wvsprintfW: [ _void, { LPCWSTR: LPCWSTR, arglist: va_list } ],
   wsprintfA: [ _void, { LPCSTR: LPCSTR } ],
@@ -1292,8 +1471,8 @@ var GESTURECONFIG = new StructT('GESTURECONFIG', {
   UnregisterClassW: [ BOOL, { lpClassName: LPCWSTR, hInstance: HINSTANCE } ],
   GetClassInfoA: [ BOOL, { hInstance: HINSTANCE, lpClassName: LPCSTR, lpWndClass: LPWNDCLASSA } ],
   GetClassInfoW: [ BOOL, { hInstance: HINSTANCE, lpClassName: LPCWSTR, lpWndClass: LPWNDCLASSW } ],
-  RegisterClassExA: [ ATOM, { WNDCLASSEXA.Δ: WNDCLASSEXA.Δ } ],
-  RegisterClassExW: [ ATOM, { WNDCLASSEXW.Δ: WNDCLASSEXW.Δ } ],
+  RegisterClassExA: [ ATOM, { class: WNDCLASSEXA.Δ } ],
+  RegisterClassExW: [ ATOM, { class: WNDCLASSEXW.Δ } ],
   GetClassInfoExA: [ BOOL, { hInstance: HINSTANCE, lpszClass: LPCSTR, lpwcx: LPWNDCLASSEXA } ],
   GetClassInfoExW: [ BOOL, { hInstance: HINSTANCE, lpszClass: LPCWSTR, lpwcx: LPWNDCLASSEXW } ],
   CreateWindowExA: [ HWND, { dwExStyle: DWORD, lpClassName: LPCSTR, lpWindowName: LPCSTR, dwStyle: DWORD, X: int, Y: int, nWidth: int, nHeight: int, hWndParent: HWND, hMenu: HMENU, hInstance: HINSTANCE, lpParam: LPVOID } ],
@@ -1807,3 +1986,4 @@ var GESTURECONFIG = new StructT('GESTURECONFIG', {
   ShutdownBlockReasonCreate: [ BOOL, { hWnd: HWND, pwszReason: LPCWSTR } ],
   ShutdownBlockReasonQuery: [ BOOL, { hWnd: HWND, pwszBuff: LPWSTR, pcchBuff: DWORD.Δ } ],
   ShutdownBlockReasonDestroy: [ BOOL, { hWnd: HWND } ],
+});
