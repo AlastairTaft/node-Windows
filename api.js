@@ -1,21 +1,20 @@
 var ffi = require('ffi'),
     ref = require('ref'),
-    StructT = require('ref-struct'),
-    BitfieldT = require('./BitfieldType');
+    StructT = require('ref-struct');
 
 var decorate = require('./utils').decorate,
     inherit = require('./utils').inherit;
 
 var Library = ffi.Library,
     Type = ref.Type,
-    VoidT = ref.types.VoidT,
     NULL = ref.NULL;
+
 
 
 module.exports = lookup;
 
 
-var groups = ['libs', 'types', 'structs', 'callbacks', 'enums'];
+var groups = ['libs', 'types', 'structs', 'callbacks', 'enums', 'bitfields'];
 var data = {};
 
 
@@ -24,6 +23,9 @@ groups.forEach(function(name){
 });
 
 var types = data.types = ref.types;
+var int = types.int;
+var VoidT = types.VoidT;
+
 
 Library.on('create', function(lib){
   data.libs[lib.name] = lib;
@@ -42,6 +44,98 @@ function _(){}
 _.prototype = Object.create(null);
 
 
+function typeFit(n){
+  if (n < 0) return types.VoidT;
+  if (n < 0x100) return types.uint8;
+  if (n < 0x10000) return types.uint16;
+  if (n < 0x100000000) return types.uint32;
+  return types.uint64;
+}
+
+
+function bitfieldToValue(fields, val){
+  if (!val) {
+    return 0;
+  } else if (typeof val === 'number') {
+    return isFinite(val) ? val : 0;
+  } else if (typeof val === 'object') {
+    var o = val;
+    val = 0;
+    for (var k in o) {
+      if (k in fields) {
+        o[k] ? (val |= fields[k]) : (val &= ~fields[k]);
+      }
+    }
+    return val;
+  } else {
+    return 0;
+  }
+}
+
+
+
+function BitfieldT(name, type, values){
+  var self = BitfieldT.typedef(name);
+  data.bitfields[name] = self;
+
+  if (!(type instanceof Type)) {
+    values || (values = type);
+    var max = Object.keys(Object(values)).reduce(function(max, key){
+      return Math.max(max, +values[key]);
+    }, 0);
+    type = typeFit(max);
+  }
+
+  self.fields = new _;
+  self.type = type;
+
+  Object.keys(values).forEach(function(k){
+    var value = self.fields[k] = values[k];
+    Object.defineProperty(self.prototype, k, {
+      enumerable: true,
+      configurable: true,
+      get: function(){
+        return (value & type.get(this)) > 0;
+      },
+      set: function(v){
+        var current = type.get(this);
+        type.set(this, v ? current | value : current & ~value);
+      }
+    });
+  });
+
+  Object.freeze(self.fields);
+
+  return self;
+}
+
+int.adopt(BitfieldT);
+
+decorate(BitfieldT, true, [
+  function initialize(instance, offset, val){
+    if (arguments.length === 1) {
+      return this.type.initialize(instance, 0, 0);
+    } else if (arguments.length === 2) {
+      val = offset;
+      offset = 0;
+    }
+    offset = offset || 0;
+    return this.type.initialize.call(this, instance, offset, bitfieldToValue(this.fields, val));
+  },
+  function get(buf, offset){
+    var val = this.type.get(buf, offset),
+        out = {};
+    for (var k in this.fields) {
+      out[k] = (this.fields[k] & val) > 0;
+    }
+    return out;
+  },
+  function set(buf, offset, val){
+    return this.type.set(buf, offset, bitfieldToValue(this.fields, val));
+  },
+]);
+
+
 // #############
 // ### EnumT ###
 // #############
@@ -52,20 +146,18 @@ function EnumT(name, values){
 
   decorate(self, true, {
     name: name,
-    keys: new _,
     vals: new _,
   });
 
   Object.keys(values).forEach(function(key){
-    self.keys[key] = values[key];
+    self[key] = values[key];
     self.vals[values[key]] = key;
   });
 
   return self;
 }
-var int = types.int;
 
-EnumT.__proto__ = int;
+int.adopt(EnumT);
 
 decorate(EnumT, true, [
   function initialize(instance, offset, value){
@@ -75,36 +167,30 @@ decorate(EnumT, true, [
       value = offset;
       offset = 0;
     }
-    if (value in this.keys) {
-      return int.initialize(instance, offset, this.keys[value]);
+    if (value in this) {
+      return int.initialize(instance, offset, this[value]);
     } else if (value in this.vals) {
       return int.initialize(instance, offset, value);
     } else {
-      throw new Error('Invalid arguments for enum "'+this.name+'"" type: '+ JSON.stringify(value));
     }
+    return int.initialize(instance, offset, 0);
   },
   function get(buf, offset){
     var val = int.get(buf, offset);
     return val in this.vals ? this.vals[val] : val;
   },
   function set(buf, offset, val){
-    if (val in this.keys) {
-      val = this.keys[val];
+    if (val in this) {
+      val = this[val];
     }
     return int.set(buf, offset, val);
   },
   function toKey(v){
-    return v in this.keys ? v : this.vals[v];
+    return v in this ? v : this.vals[v];
   },
   function toValue(v){
-    return v in this.vals ? v : this.keys[v];
+    return v in this.vals ? v : this[v];
   },
-]);
-
-inherit(EnumT, int, [
-  function inspect(){
-    return '<'+this._type.name+'@0x'+this.address().toString(16)+' '+this.lval()+'>';
-  }
 ]);
 
 
